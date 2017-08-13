@@ -25,3 +25,11 @@
 - `[R]` -> move the origin to centroid of model(?)
 - `[W,S,A,D,Z,X]` -> key should allow translation along +ve and -ve Y,X and Z axis respectively
 
+## Compiling
+
+- `[cd "Assignment 1"]`
+- `[make]`
+
+## Testing
+
+- `[./bin/preview]`
