@@ -26,6 +26,9 @@ GLfloat xrot=0.0,yrot=0.0,zrot=0.0;
 std::vector<bool> key_state_rotation(6);
 const GLfloat ROT_DELTA = 0.03;
 
+//Recenter Parameters
+bool key_state_recenter=false;
+
 //Running variable to toggle culling on/off
 bool enable_culling=true;
 //Running variable to toggle wireframe/solid modelling

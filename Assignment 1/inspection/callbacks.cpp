@@ -11,6 +11,8 @@ extern std::vector<bool> key_state_translation;
 //Y     2 -> W      3 -> S
 //Z     4 -> Z      5 -> X
 
+extern bool key_state_recenter;
+
 namespace inspectMode {
 
 void rotation_callback(int key, int action) {
@@ -128,7 +130,10 @@ void translation_callback(int key, int action) {
 
 void recenter_callback(int key, int action) {
     if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-        // Recenter CallBack
+    	key_state_recenter = true;
+    }
+    else if (key == GLFW_KEY_R && action == GLFW_RELEASE) {
+    	key_state_recenter = false;
     }
 }
 
