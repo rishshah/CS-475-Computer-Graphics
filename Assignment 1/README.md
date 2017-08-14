@@ -27,9 +27,9 @@
 
 ## Compiling
 
-- `[cd "Assignment 1"]`
-- `[make]`
+- `cd "Assignment 1"`
+- `make`
 
 ## Testing
 
-- `[./bin/preview]`
+- `./bin/preview`
