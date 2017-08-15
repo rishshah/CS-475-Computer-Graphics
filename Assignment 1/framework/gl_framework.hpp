@@ -7,23 +7,18 @@
 #include <iostream>
 #include <vector>
 
-#include "../inspection/callbacks.hpp"
-#include "../modelling/callbacks.hpp"
-
 // Define a helpful macro for handling offsets into buffer objects
 #define BUFFER_OFFSET( offset )   ((GLvoid*) (offset))
 
-namespace base
-{
-  //! Initialize GL State
-  void initGL(void);
- 
-  //!GLFW Error Callback
-  void error_callback(int error, const char* description);
-  //!GLFW framebuffer resize callback
-  void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-  //!GLFW keyboard callback
-  void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+namespace base {
+    //! Initialize GL State
+    void initGL(void);
+    //!GLFW Error Callback
+    void error_callback(int error, const char* description);
+    //!GLFW framebuffer resize callback
+    void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    //!GLFW keyboard callback
+
 };
 
 #endif
