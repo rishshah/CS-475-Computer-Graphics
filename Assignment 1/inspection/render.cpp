@@ -14,6 +14,9 @@ const GLfloat ROT_DELTA = 0.04;
 //Y     2 -> Left   3 -> Right
 //Z     4 -> pgUp   5 -> PgDown
 
+glm::vec4 x_unit = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+glm::vec4 y_unit = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+glm::vec4 z_unit = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
 //extern variables
 glm::mat4 rotation_matrix = glm::mat4(1.0f);
@@ -27,29 +30,25 @@ bool key_state_recenter = false;
 
 void handle_rotation() {
     if (key_state_rotation[0]) {
-        xrot += ROT_DELTA;
+        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * x_unit));
     }
     else if (key_state_rotation[1]) {
-        xrot -= ROT_DELTA;
+        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * x_unit));
     }
 
     if (key_state_rotation[2]) {
-        yrot += ROT_DELTA;
+        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * y_unit));
     }
     else if (key_state_rotation[3]) {
-        yrot -= ROT_DELTA;
+        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * y_unit));
     }
 
     if (key_state_rotation[4]) {
-        zrot += ROT_DELTA;
+        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * z_unit));
     }
     else if (key_state_rotation[5]) {
-        zrot -= ROT_DELTA;
+        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * z_unit));
     }
-
-    rotation_matrix = glm::rotate(glm::mat4(1.0f), xrot, glm::vec3(1.0f, 0.0f, 0.0f));
-    rotation_matrix = glm::rotate(rotation_matrix, yrot, glm::vec3(0.0f, 1.0f, 0.0f));
-    rotation_matrix = glm::rotate(rotation_matrix, zrot, glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void handle_translation() {
@@ -83,8 +82,8 @@ void handle_translation() {
 }
 
 namespace inspectMode {
-    void renderGL() {
-        handle_rotation();
-        handle_translation();
-    }
+void renderGL() {
+    handle_rotation();
+    handle_translation();
+}
 };
