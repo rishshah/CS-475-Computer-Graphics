@@ -1,6 +1,6 @@
 #ifndef _MODEL_HPP_
 #define _MODEL_HPP_
-
+#include <stdio.h>
 #include "../../glm/vec4.hpp"
 #include "../../glm/vec3.hpp"
 #include "../framework/gl_framework.hpp"
