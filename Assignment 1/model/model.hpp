@@ -21,9 +21,12 @@ private:
 
 public:
 	
-	int num_of_vertices;
+	float red_value = 0.0;
+	float green_value = 0.0;
+	float blue_value = 0.0;
+	int num_of_vertices = 0;
 	std::vector<Vertex> vertex_list;
-	int num_of_triangles;
+	int num_of_triangles = 0;
 	std::vector<int> configuration_list;
 	void combine_configuration_and_vertices();
 

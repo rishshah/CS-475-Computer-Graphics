@@ -11,6 +11,9 @@ extern std::vector<bool> key_state_io;
 // 0 - Save
 // 1 - Load
 // 2 - Shift
+// 3 - Red
+// 4 - Green
+// 5 - Blue
 extern bool left_click;
 
 namespace modellingMode {

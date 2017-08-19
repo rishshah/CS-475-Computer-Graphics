@@ -3,7 +3,7 @@
 //extern variables
 Model m;
 GLuint vbo = 0, vao = 0;
-std::vector<bool> key_state_io(3, false);
+std::vector<bool> key_state_io(6, false);
 bool left_click = false;
 //-----------------------------------------------------------------
 
@@ -37,30 +37,36 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y){
 }
 
 void add_point_to_buffer(float x, float y){
-    float z = 0.0;
+    float z = 0.5;
     m.num_of_vertices++;
     m.vertex_list.resize(m.num_of_vertices);
     m.vertex_list[m.num_of_vertices-1].position = glm::vec3(x, y, z);
-    m.vertex_list[m.num_of_vertices-1].color = glm::vec3(1.0, 1.0, 1.0);
-    m.num_of_triangles++;
-    m.configuration_list.resize(3 * m.num_of_triangles);
-    m.configuration_list[3*m.num_of_triangles -3] = m.num_of_vertices-3;
-    m.configuration_list[3*m.num_of_triangles -2] = m.num_of_vertices-2;
-    m.configuration_list[3*m.num_of_triangles -1] = m.num_of_vertices-1;
-    m.combine_configuration_and_vertices();
-    initBuffersGL();
+    m.vertex_list[m.num_of_vertices-1].color = glm::vec3(m.red_value, m.green_value, m.blue_value);
+    if(m.num_of_vertices>=3){
+        m.num_of_triangles++;
+        m.configuration_list.resize(3 * m.num_of_triangles);
+        m.configuration_list[3*m.num_of_triangles -3] = m.num_of_vertices-3;
+        m.configuration_list[3*m.num_of_triangles -2] = m.num_of_vertices-2;
+        m.configuration_list[3*m.num_of_triangles -1] = m.num_of_vertices-1;
+        m.combine_configuration_and_vertices();
+        initBuffersGL();
+    }
 }
 
-void remove_point_from_buffer(){
+void remove_point_from_buffer(void){
     m.num_of_vertices--;
     m.vertex_list.resize(m.num_of_vertices);
     int last_triangle = 0;
-    for(int h = 0; h < 3 * num_of_triangles){
+    for(int h = 0; h < 3 * m.num_of_triangles; h++){
         if(m.configuration_list[h]==m.num_of_vertices){
-            last_triangle = ;
+            last_triangle = h/3;
+            m.num_of_triangles=last_triangle;
+            m.configuration_list.resize(3 * m.num_of_triangles);
+            m.combine_configuration_and_vertices();
+            initBuffersGL();
+            break;
         }
     }
-    m.combine_configuration_and_vertices();
 }
 
 void handle_io(GLFWwindow* window) {
@@ -80,9 +86,54 @@ void handle_io(GLFWwindow* window) {
             printf("Shift + Left Click \n");
             float x, y;
             print_abs_rel_cursor_pos(window, x, y);            
-            add_point_to_buffer(x, y);
+            remove_point_from_buffer();
             left_click = false;
         }
+    }
+    if ( key_state_io[3] ){
+        if(key_state_io[2]){
+            if(m.red_value >= 0.09){
+                m.red_value-=0.1;
+            }
+            key_state_io[3] = false;
+        }
+        else{
+            if(m.red_value <= 0.91){
+                m.red_value+=0.1;
+            }
+            key_state_io[3] = false;   
+        }
+        printf("Red value is %f \n", m.red_value);
+    }
+    if ( key_state_io[4] ){
+        if(key_state_io[2]){
+            if(m.green_value >= 0.09){
+                m.green_value-=0.1;
+            }
+            key_state_io[4] = false;
+        }
+        else{
+            if(m.green_value <= 0.91){
+                m.green_value+=0.1;
+            }
+            key_state_io[4] = false;   
+        }
+        printf("Green value is %f \n", m.green_value);
+    }
+    if ( key_state_io[5] ){
+        if(key_state_io[2]){
+            if(m.blue_value >= 0.09){
+                m.blue_value-=0.1;
+            }
+            key_state_io[5] = false;
+        }
+        else{
+            if(m.blue_value <= 0.91){
+                m.blue_value+=0.1;
+            }
+            key_state_io[5] = false;   
+        }
+        printf("Blue value is %f \n", m.blue_value);
     }
 }
 
@@ -91,6 +142,7 @@ void handle_mouse_click(GLFWwindow* window) {
         printf("Clicked!\n");
         float x, y;
         print_abs_rel_cursor_pos(window, x, y);
+        add_point_to_buffer(x, y);
         left_click = false;
     }
 }

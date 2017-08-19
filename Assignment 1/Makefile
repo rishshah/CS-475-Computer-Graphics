@@ -30,7 +30,7 @@ INCLUDES= ./main.hpp $(FRAMEWORK_INC) $(SHADER_INC) $(MODEL_INC) $(CALLBACKS_INC
 all: $(BIN)
 
 $(BIN): $(SRCS) $(INCLUDES)
-	g++ $(CPPFLAGS) $(SRCS) -o $(BIN) $(LDFLAGS) $(LIBS)
+	g++ -std=c++11 $(CPPFLAGS) $(SRCS) -o $(BIN) $(LDFLAGS) $(LIBS)
 
 clean:
 	rm -f *~ *.o $(BIN)

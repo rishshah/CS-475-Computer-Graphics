@@ -39,7 +39,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	//Modelling callbacks
 	else if ( key == GLFW_KEY_K or
 	          key == GLFW_KEY_L or 
-	          key == GLFW_KEY_LEFT_SHIFT
+	          key == GLFW_KEY_LEFT_SHIFT or
+	          key == GLFW_KEY_T or
+	          key == GLFW_KEY_G or
+	          key == GLFW_KEY_B
 	          ) {
 		modellingMode::io_callback(key, action);
 	}
