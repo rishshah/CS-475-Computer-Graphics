@@ -14,9 +14,9 @@
 - ensure features to get 3D coordinates
 
 #### Features to add points in Modelling Mode
-- '[T.G.B]'' to decide color of points to add
+- `[T.G.B]` to decide color of points to add
 -  Rotation by 90 degrees to change planes of drawing
-- '[Z,X]' for moving the plane of modelling by one unit
+- `[Z,X]` for moving the plane of modelling by one unit
 -  Something for deciding which points form triangles
 -  Hover display of coordinates
 -  Deciding the centroid of the model
