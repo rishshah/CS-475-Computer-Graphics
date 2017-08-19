@@ -1,7 +1,7 @@
 #include "render.hpp"
 
 float ROT_90 = glm::half_pi<float>();
-float z = 0.5;
+float z = 0.0;
 //extern variables
 Model m;
 GLuint vbo = 0, vao = 0;
@@ -135,6 +135,20 @@ void handle_fixed_rotation() {
     }
 }
 
+void handle_depth() {
+    if (key_state_recenter == true){
+        z = 0;
+    }
+    if (key_state_translation[4]) {
+        z += 0.04;
+        printf("z plane at %f \n ", z);
+    }
+    else if (key_state_translation[5]) {
+        z -= 0.04;
+        printf("z plane at %f \n ", z);
+    }
+}
+
 void handle_color() {
     if ( key_state_color[0] ) {
         if (key_state_io[2]) {
@@ -237,7 +251,7 @@ namespace modellingMode {
 void renderGL(GLFWwindow* window) {
     handle_io();
     handle_mouse_click(window);
-    
+    handle_depth();
     handle_fixed_rotation();
     handle_color();
     handle_entry_mode();
