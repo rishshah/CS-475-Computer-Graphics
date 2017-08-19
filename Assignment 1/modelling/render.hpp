@@ -4,7 +4,7 @@
 #include "../main.hpp"
 
 namespace modellingMode{
-    void renderGL();
+    void renderGL(GLFWwindow* window);
 };
 
 #endif

@@ -14,17 +14,19 @@ public:
 
 class Model{
 private:
-	int num_of_vertices;
-	std::vector<Vertex> vertex_list;
-	
-	int num_of_triangles;
-	std::vector<int> configuration_list;
 	
 	glm::vec3 centroid;
 	void calc_centroid();
-	void combine_configuration_and_vertices();
+	
 
 public:
+	
+	int num_of_vertices;
+	std::vector<Vertex> vertex_list;
+	int num_of_triangles;
+	std::vector<int> configuration_list;
+	void combine_configuration_and_vertices();
+
 	std::vector<glm::vec3> position_ptr;
 	std::vector<glm::vec3> color_ptr;
 

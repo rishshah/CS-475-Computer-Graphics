@@ -15,6 +15,12 @@ void io_callback(int key, int action) {
     else if (key == GLFW_KEY_L && action == GLFW_RELEASE) {
         key_state_io[1] = false;
     }
+    else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) {
+        key_state_io[2] = true;
+    }
+    else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE) {
+        key_state_io[2] = false;
+    }
 }
 
 void mouse_callback(int button, int action) {

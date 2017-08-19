@@ -37,7 +37,7 @@ void hanldle_camera(){
     camera_matrix = glm::lookAt(camera_position, camera_target, look_at_vec);
 }
 
-void renderGL(){
+void renderGL(GLFWwindow* window){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     hanldle_camera();
@@ -46,7 +46,7 @@ void renderGL(){
     if(mode_inspection)
         inspectMode::renderGL();
     else
-        modellingMode::renderGL();  
+        modellingMode::renderGL(window);  
 
     modelview_matrix = projection_matrix * camera_matrix * translation_matrix * rotation_matrix;
     glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
@@ -117,7 +117,7 @@ int main() {
     // Loop until the user closes the window
     while (glfwWindowShouldClose(window) == 0) {
 
-        renderGL();
+        renderGL(window);
 
         // Swap front and back buffers
         glfwSwapBuffers(window);

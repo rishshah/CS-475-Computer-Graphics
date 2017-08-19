@@ -4,11 +4,13 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <stdio.h>
 
 
 extern std::vector<bool> key_state_io;
 // 0 - Save
 // 1 - Load
+// 2 - Shift
 extern bool left_click;
 
 namespace modellingMode {
