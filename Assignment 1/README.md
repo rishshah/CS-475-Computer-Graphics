@@ -14,6 +14,14 @@
 - `[L]` -> Load the model from file.raw
 - ensure features to get 3D coordinates
 
+###### Features to add points in Modelling Mode
+- '[T.G.B] to decide color of points to add'
+- 'Rotation by 90 degrees to change planes of drawing'
+- '[Z,X] for moving the plane of modelling by one unit'
+- 'Something for deciding which points form triangles'
+- 'Hover display of coordinates' 
+-  'Deciding the centroid of the model'
+
 ---
 
 ##### 2. Inspection Mode [I] 
@@ -25,23 +33,26 @@
 - `[R]` -> move the origin to centroid of model(?)
 - `[W,S,A,D,Z,X]` -> key should allow translation along +ve and -ve Y,X and Z axis respectively
 
-#### Progress - **Rishabh**
+---
+
+##### Done 
 - Inspection mode all commands done... 
 - Load/Save command done
 - File system created
 - Mode differenciation
 - Managed data strcuture for efficient implementation of modelling part
-
-#### ToDo - **Purav**
 - Click Input
+
+##### In Progress
 - Giving features and drawing corresponding to this
+
+##### ToDo
 - Creating 3 structures accordingly
 
-## Compiling
 
+## Compiling
 - `cd "Assignment 1"`
 - `make`
 
 ## Testing
-
 - `./bin/preview`
