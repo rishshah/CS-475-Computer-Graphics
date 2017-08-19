@@ -44,10 +44,10 @@ void handle_rotation() {
     }
 
     if (key_state_rotation[4]) {
-        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * z_unit));
+        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * z_unit));
     }
     else if (key_state_rotation[5]) {
-        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * z_unit));
+        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * z_unit));
     }
 }
 
