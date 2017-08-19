@@ -38,13 +38,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	//Modelling callbacks
 	else if ( key == GLFW_KEY_K or
-	          key == GLFW_KEY_L or 
-	          key == GLFW_KEY_LEFT_SHIFT or
-	          key == GLFW_KEY_T or
+	          key == GLFW_KEY_L or
+	          key == GLFW_KEY_LEFT_SHIFT
+	        )
+		modellingMode::io_callback(key, action);
+	else if ( key == GLFW_KEY_T or
 	          key == GLFW_KEY_G or
 	          key == GLFW_KEY_B
-	          ) {
-		modellingMode::io_callback(key, action);
+	        ) {
+		modellingMode::color_callback(key, action);
+	}
+	else if ( key == GLFW_KEY_1 or
+	          key == GLFW_KEY_2 or
+	          key == GLFW_KEY_3
+	        ) {
+		modellingMode::entry_mode_callback(key, action);
 	}
 }
 
