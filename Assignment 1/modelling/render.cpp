@@ -1,7 +1,7 @@
 #include "render.hpp"
 
 float ROT_90 = glm::half_pi<float>();
-
+float z = 0.5;
 //extern variables
 Model m;
 Model grid;
@@ -10,6 +10,9 @@ std::vector<bool> key_state_io(3, false);
 std::vector<bool> key_state_color(3, false);
 std::vector<bool> key_state_entry(3, false);
 bool left_click = false;
+
+int mode=0;
+int vertex_num_to_start = 0;
 
 //-----------------------------------------------------------------
 
@@ -42,30 +45,51 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
     std::cout << x << " " << y << "\n" ;
 }
 
+void common_stuff(){
+    m.num_of_triangles++;
+    m.configuration_list.resize(3 * m.num_of_triangles);
+    if ( mode != 2){
+        m.configuration_list[3 * m.num_of_triangles - 3] = m.num_of_vertices - 3;
+    }
+    else {
+        m.configuration_list[3 * m.num_of_triangles - 3] = vertex_num_to_start;
+    }
+    m.configuration_list[3 * m.num_of_triangles - 2] = m.num_of_vertices - 2;
+    m.configuration_list[3 * m.num_of_triangles - 1] = m.num_of_vertices - 1;
+    m.combine_configuration_and_vertices();
+    initBuffersGL();
+}
+
+void modify_configurations(){
+    if (mode == 1){
+        if (m.num_of_vertices - vertex_num_to_start >= 3) {
+            common_stuff();
+        }
+    }
+    else if (mode == 0){
+        if( (m.num_of_vertices - vertex_num_to_start)%3 == 0 && m.num_of_vertices > vertex_num_to_start){
+            common_stuff();
+        }
+    }
+    else if (mode == 2){
+        if (m.num_of_vertices - vertex_num_to_start >=3){
+            common_stuff();
+        }
+    }
+    return;
+}
+
 void add_point_to_buffer(float x, float y) {
-    float z = 0.0;
     m.num_of_vertices++;
     m.vertex_list.resize(m.num_of_vertices);
     m.vertex_list[m.num_of_vertices - 1].position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x, y, z, 1.0));
     m.vertex_list[m.num_of_vertices - 1].color = glm::vec3(m.red_value, m.green_value, m.blue_value);
-    if (m.num_of_vertices >= 3) {
-        m.num_of_triangles++;
-        m.configuration_list.resize(3 * m.num_of_triangles);
-        m.configuration_list[3 * m.num_of_triangles - 3] = m.num_of_vertices - 3;
-        m.configuration_list[3 * m.num_of_triangles - 2] = m.num_of_vertices - 2;
-        m.configuration_list[3 * m.num_of_triangles - 1] = m.num_of_vertices - 1;
-        m.combine_configuration_and_vertices();
-        initBuffersGL();
-    }
-}
-
-void modify_configurations(int mode){
-    return;
+    modify_configurations();
 }
 
 
 void remove_point_from_buffer(void) {
-    if(m.num_of_vertices < 0) { return ;}
+    if(m.num_of_vertices <= 0) { return ;}
     m.num_of_vertices--;
     m.vertex_list.resize(m.num_of_vertices);
     int last_triangle = 0;
@@ -160,14 +184,20 @@ void handle_color() {
 void handle_entry_mode() {
     if (key_state_entry[0]) {
         printf("Entry Mode: GL_TRIANGLES\n");
+        mode = 0;
+        vertex_num_to_start = m.num_of_vertices;
         key_state_entry[0] = false;
     }
     if (key_state_entry[1]) {
         printf("Entry Mode: GL_STRIP\n");
+        mode = 1;
+        vertex_num_to_start = m.num_of_vertices;
         key_state_entry[1] = false;
     }
     if (key_state_entry[2]) {
         printf("Entry Mode: GL_FAN\n");
+        mode = 2;
+        vertex_num_to_start = m.num_of_vertices;
         key_state_entry[2] = false;
     }    
 }
