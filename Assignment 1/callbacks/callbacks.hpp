@@ -9,6 +9,7 @@
 
 #include "modelling_callbacks.hpp"
 #include "inspection_callbacks.hpp"
+#include "../../glm/vec4.hpp"
 
 extern bool mode_inspection;
 
