@@ -6,22 +6,22 @@
 #include "../framework/gl_framework.hpp"
 
 
-class Vertex{
+class Vertex {
 public:
 	glm::vec3 position;
 	glm::vec3 color;
 };
 
-class Model{
+class Model {
 public:
-	
+
 	float red_value = 1.0;
 	float green_value = 1.0;
 	float blue_value = 1.0;
-	
+
 	int num_of_vertices = 0;
 	std::vector<Vertex> vertex_list;
-	
+
 	int num_of_triangles = 0;
 	std::vector<int> configuration_list;
 

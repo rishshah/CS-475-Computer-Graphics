@@ -11,6 +11,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	// Switching Mode
 	else if (key == GLFW_KEY_M and action == GLFW_PRESS) {
 		mode_inspection = false;
+		rotation_matrix = glm::mat4(1.0f);
 		printf("MODELLING MODE\n");
 	}
 	else if (key == GLFW_KEY_I and action == GLFW_PRESS) {

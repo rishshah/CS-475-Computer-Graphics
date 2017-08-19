@@ -3,113 +3,24 @@
 
 //extern variables
 GLuint shaderProgram = 0;
-glm::mat4 modelview_matrix = glm::mat4(1.0f);
 GLuint uModelViewMatrix = 0;
 bool mode_inspection = false;
 
-//global variables
-glm::vec3 camera_position = glm::vec3(0.0f, 0.0f, 4.0f);
-glm::vec3 camera_target = glm::vec3(0.0f, 0.0f, 0.0f);
-glm::vec3 look_at_vec = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::mat4 perspective_projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 100.0f);
+glm::mat4 ortho_projection_matrix = glm::ortho(-2.0, 2.0, -2.0, 2.0, -2.0, 2.0);
+glm::mat4 camera_matrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+glm::mat4 modelview_matrix = glm::mat4(1.0f);
 
-glm::mat4 projection_matrix;
-glm::mat4 camera_matrix;
-
-std::vector<glm::vec3> grid_points_position;
-std::vector<glm::vec3> grid_points_color;
-GLuint vbo_grid;
-GLuint vao_grid;
-
-void drawgrid() {
-    glGenBuffers (1, &vbo_grid);
-    glBindBuffer (GL_ARRAY_BUFFER, vbo_grid);
-
-    glGenVertexArrays (1, &vao_grid);
-    glBindVertexArray (vao_grid);
-
-    GLuint vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
-    glEnableVertexAttribArray( vPosition );
-
-    GLuint vColor = glGetAttribLocation( shaderProgram, "vColor" );
-    glEnableVertexAttribArray( vColor );
-
-    size_t size_points = sizeof(glm::vec3) * grid_points_position.size();
-
-    glBufferData (GL_ARRAY_BUFFER, 2 * size_points , NULL, GL_STATIC_DRAW);
-    glBufferSubData( GL_ARRAY_BUFFER, 0, size_points, &grid_points_position[0] );
-    glBufferSubData( GL_ARRAY_BUFFER, size_points, size_points, &grid_points_color[0] );
-
-    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
-    glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(size_points) );
-}
-
-void initgrid() {
-    for (float x = -1; x < 1.01; x += 0.1) {
-        grid_points_position.push_back(glm::vec3(x, 1.0f, 0.0f));
-        grid_points_position.push_back(glm::vec3(x, -1.0f, 0.0f));
-
-        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
-        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
-    }
-    for (float y = -1; y < 1.01; y += 0.1) {
-        grid_points_position.push_back(glm::vec3(1.0f, y, 0.0f));
-        grid_points_position.push_back(glm::vec3(-1.0f, y, 0.0f));
-
-        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
-        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
-    }
-    drawgrid();
-}
-
-void load_shader_program() {
-    std::string vertex_shader_file("./shaders/vshader.glsl");
-    std::string fragment_shader_file("./shaders/fshader.glsl");
-
-    std::vector<GLuint> shaderList;
-    shaderList.push_back(base::LoadShaderGL(GL_VERTEX_SHADER, vertex_shader_file));
-    shaderList.push_back(base::LoadShaderGL(GL_FRAGMENT_SHADER, fragment_shader_file));
-
-    shaderProgram = base::CreateProgramGL(shaderList);
-    glUseProgram( shaderProgram );
-}
-
-void hanldle_projection(bool ortho) {
-    if (ortho)
-        projection_matrix = glm::ortho(-2.0, 2.0, -2.0, 2.0, -2.0, 2.0);
-    else
-        projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 100.0f);
-}
-
-void hanldle_camera() {
-    camera_matrix = glm::lookAt(camera_position, camera_target, look_at_vec);
-}
 
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if (mode_inspection) {
-        hanldle_projection(false);
+    
+    if (mode_inspection)
         inspectMode::renderGL();
-        hanldle_camera();
-        modelview_matrix = projection_matrix * camera_matrix * translation_matrix * rotation_matrix;
-    }
-    else {
-        hanldle_projection(true);
+    else{
         modellingMode::renderGL(window);
-        modelview_matrix = projection_matrix * translation_matrix * rotation_matrix;
-    }
-
-    glBindVertexArray(vao);
-    glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
-    glDrawArrays(GL_TRIANGLES, 0, m.num_of_triangles * 3);
-
-
-    if (!mode_inspection) {
-        glBindVertexArray(vao_grid);
-        modelview_matrix = glm::mat4(1.0f);
-        glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
-        glDrawArrays(GL_LINES, 0, grid_points_position.size());
-    }
+        modellingMode::render_grid();
+    } 
 }
 
 int main() {
@@ -170,9 +81,21 @@ int main() {
     //Initialize GL state
     base::initGL();
 
-    load_shader_program();
-    initgrid();
-    // Loop until the user closes the window
+    //Load shader Program
+    std::string vertex_shader_file("./shaders/vshader.glsl");
+    std::string fragment_shader_file("./shaders/fshader.glsl");
+
+    std::vector<GLuint> shaderList;
+    shaderList.push_back(base::LoadShaderGL(GL_VERTEX_SHADER, vertex_shader_file));
+    shaderList.push_back(base::LoadShaderGL(GL_FRAGMENT_SHADER, fragment_shader_file));
+
+    shaderProgram = base::CreateProgramGL(shaderList);
+    glUseProgram( shaderProgram );
+    uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
+
+    modellingMode::initgrid();
+
+    printf("MODELLING MODE\n");
     while (glfwWindowShouldClose(window) == 0) {
 
         renderGL(window);

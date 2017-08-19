@@ -79,5 +79,9 @@ namespace inspectMode {
 void renderGL() {
     handle_rotation();
     handle_translation();
+    modelview_matrix = perspective_projection_matrix * camera_matrix * translation_matrix * rotation_matrix;
+    glBindVertexArray(vao);
+    glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
+    glDrawArrays(GL_TRIANGLES, 0, m.num_of_triangles * 3);
 }
 };

@@ -7,15 +7,17 @@
 #include <vector>
 #include <iostream>
 
+
 #include "modelling_callbacks.hpp"
 #include "inspection_callbacks.hpp"
 #include "../../glm/vec4.hpp"
+#include "../main.hpp" // for modiying the rotation matrix
 
 extern bool mode_inspection;
 
-namespace base{
-	void key_callback(int key, int action);
-	void mouse_callback(int key, int action);
+namespace base {
+void key_callback(int key, int action);
+void mouse_callback(int key, int action);
 };
 
 #endif

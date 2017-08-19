@@ -11,7 +11,7 @@ std::vector<bool> key_state_color(3, false);
 std::vector<bool> key_state_entry(3, false);
 bool left_click = false;
 
-int mode=0;
+int mode = 0;
 int vertex_num_to_start = 0;
 
 //-----------------------------------------------------------------
@@ -45,10 +45,10 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
     std::cout << x << " " << y << "\n" ;
 }
 
-void common_stuff(){
+void common_stuff() {
     m.num_of_triangles++;
     m.configuration_list.resize(3 * m.num_of_triangles);
-    if ( mode != 2){
+    if ( mode != 2) {
         m.configuration_list[3 * m.num_of_triangles - 3] = m.num_of_vertices - 3;
     }
     else {
@@ -60,19 +60,19 @@ void common_stuff(){
     initBuffersGL();
 }
 
-void modify_configurations(){
-    if (mode == 1){
+void modify_configurations() {
+    if (mode == 1) {
         if (m.num_of_vertices - vertex_num_to_start >= 3) {
             common_stuff();
         }
     }
-    else if (mode == 0){
-        if( (m.num_of_vertices - vertex_num_to_start)%3 == 0 && m.num_of_vertices > vertex_num_to_start){
+    else if (mode == 0) {
+        if ( (m.num_of_vertices - vertex_num_to_start) % 3 == 0 && m.num_of_vertices > vertex_num_to_start) {
             common_stuff();
         }
     }
-    else if (mode == 2){
-        if (m.num_of_vertices - vertex_num_to_start >=3){
+    else if (mode == 2) {
+        if (m.num_of_vertices - vertex_num_to_start >= 3) {
             common_stuff();
         }
     }
@@ -89,7 +89,7 @@ void add_point_to_buffer(float x, float y) {
 
 
 void remove_point_from_buffer(void) {
-    if(m.num_of_vertices <= 0) { return ;}
+    if (m.num_of_vertices <= 0) { return ;}
     m.num_of_vertices--;
     m.vertex_list.resize(m.num_of_vertices);
     int last_triangle = 0;
@@ -137,7 +137,7 @@ void handle_fixed_rotation() {
 }
 
 void handle_depth() {
-    if (key_state_recenter == true){
+    if (key_state_recenter == true) {
         z = 0;
     }
     if (key_state_translation[4]) {
@@ -213,7 +213,7 @@ void handle_entry_mode() {
         mode = 2;
         vertex_num_to_start = m.num_of_vertices;
         key_state_entry[2] = false;
-    }    
+    }
 }
 
 void handle_io() {
@@ -256,7 +256,10 @@ void renderGL(GLFWwindow* window) {
     handle_fixed_rotation();
     handle_color();
     handle_entry_mode();
-    
+    modelview_matrix = ortho_projection_matrix * translation_matrix * rotation_matrix;
+    glBindVertexArray(vao);
+    glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
+    glDrawArrays(GL_TRIANGLES, 0, m.num_of_triangles * 3);
 }
 };
 
