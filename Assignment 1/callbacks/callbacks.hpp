@@ -16,8 +16,14 @@
 extern bool mode_inspection;
 
 namespace base {
-void key_callback(int key, int action);
-void mouse_callback(int key, int action);
+/**
+ * @brief      { distribute Keyboard callbacks to inspection and modelling modes}
+ */
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+/**
+ * @brief      { Mouse Callbacks distribute to modelling Mode }
+ */
+void mouse_callback(GLFWwindow* window, int button, int action, int mods);
 };
 
 #endif

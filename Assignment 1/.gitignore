@@ -2,4 +2,4 @@
 .fuse*
 *.raw
 ./executable
-
+./html/*

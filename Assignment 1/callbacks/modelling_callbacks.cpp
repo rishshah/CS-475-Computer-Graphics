@@ -2,6 +2,17 @@
 
 namespace modellingMode {
 
+/**
+ * @brief      { Update(Set/Reset) global shared varible key_state_io according to
+ *             the key used. 
+ *             0 - K |
+ *             1 - L |
+ *             2 - Left Shift  
+ *             }
+ *
+ * @param[in]  key     The key pressed
+ * @param[in]  action  The action (release or press)
+ */
 void io_callback(int key, int action) {
     if (key == GLFW_KEY_K && action == GLFW_PRESS) {
         key_state_io[0] = true;
@@ -25,6 +36,18 @@ void io_callback(int key, int action) {
     }
 }
 
+
+/**
+ * @brief      { Update(Set/Reset) global shared varible key_state_color according to
+ *             the key used. 
+ *             0 - T |
+ *             1 - G |
+ *             2 - B 
+ *             }
+ *
+ * @param[in]  key     The key pressed
+ * @param[in]  action  The action (release or press)
+ */
 void color_callback(int key, int action) {    
     if (key == GLFW_KEY_T && action == GLFW_PRESS) {
         key_state_color[0] = true;
@@ -48,6 +71,17 @@ void color_callback(int key, int action) {
     }
 }
 
+/**
+ * @brief      { Update(Set/Reset) global shared varible key_state_entry according to
+ *             the key used. 
+ *             0 - Num 1 | 
+ *             1 - Num 2 |
+ *             2 - Num 3 
+ *             }
+ *
+ * @param[in]  key     The key pressed
+ * @param[in]  action  The action (release or press)
+ */
 void entry_mode_callback(int key, int action) {    
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
         key_state_entry[0] = true;
@@ -71,7 +105,13 @@ void entry_mode_callback(int key, int action) {
     }
 }
 
-
+/**
+ * @brief      { Update(Set/Reset) global shared varible left_click if button is
+ *             clicked or released}
+ *
+ * @param[in]  button  The button clicked
+ * @param[in]  action  The action (release or press)
+ */
 void mouse_callback(int button, int action) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         left_click = true;

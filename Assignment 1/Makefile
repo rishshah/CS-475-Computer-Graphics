@@ -36,3 +36,4 @@ $(BIN): $(SRCS) $(INCLUDES)
 
 clean:
 	rm -f *~ *.o $(BIN)
+	rm -rf html/

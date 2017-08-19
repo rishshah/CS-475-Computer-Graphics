@@ -1,8 +1,6 @@
 #include "callbacks.hpp"
 
 namespace base {
-
-//keyboard callbacks
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	//!Close the window if the ESC key was pressed
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
@@ -57,7 +55,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 }
 
-//Mouse callbacks
 void mouse_callback(GLFWwindow* window, int button, int action, int mods) {
 	modellingMode::mouse_callback(button, action);
 }

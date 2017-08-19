@@ -6,12 +6,19 @@
 #include "../framework/gl_framework.hpp"
 
 
+/**
+ * @brief      Class for storing vertex attributes.
+ */
 class Vertex {
 public:
 	glm::vec3 position;
 	glm::vec3 color;
 };
 
+
+/**
+ * @brief      Class for storing model data.
+ */
 class Model {
 public:
 
@@ -27,10 +34,37 @@ public:
 
 	std::vector<glm::vec3> position_ptr;
 	std::vector<glm::vec3> color_ptr;
-
+	/**
+	 * @brief      {recalculate the vector containting all triangles data to be drawn directly}
+	 */
 	void combine_configuration_and_vertices();
+	/**
+	* @brief      { load model from a file }
+	*
+	* @param      filename  The filename to load from
+	*
+	* @return     { true if successfully loaded }
+	*/
 	bool load(char* filename);
+	/**
+	* @brief      { save model to a file }
+	*
+	* @param      filename  The filename to save the model into
+	*
+	* @return     { true if successfully saved }
+	*/
 	bool save(char* filename);
+	/**
+	* @brief      { assign model buffer to given vbo and vaos and accordingly
+	*             adjust how the values will be interpreted by vertex shader}
+	*
+	* @param      vao        The current context vertex array object
+	* @param      vbo        The current context vertex buffer object
+	* @param      vPosition  The varible pointing to location of vertex position in
+	*                        shader
+	* @param      vColor     The varible pointing to location of vertex color in
+	*                        shader
+	*/
 	void assignBuffer(GLuint &vbo, GLuint &vao, GLuint &vPosition, GLuint &vColor);
 };
 

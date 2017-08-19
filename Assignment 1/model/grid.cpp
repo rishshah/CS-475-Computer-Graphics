@@ -5,7 +5,25 @@ std::vector<glm::vec3> grid_points_color;
 GLuint vbo_grid;
 GLuint vao_grid;
 
-void drawgrid() {
+namespace modellingMode {
+
+void initgrid() {
+    for (float x = -1; x < 1.01; x += 0.1) {
+        grid_points_position.push_back(glm::vec3(x, 1.0f, 0.0f));
+        grid_points_position.push_back(glm::vec3(x, -1.0f, 0.0f));
+
+        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
+        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
+    }
+    for (float y = -1; y < 1.01; y += 0.1) {
+        grid_points_position.push_back(glm::vec3(1.0f, y, 0.0f));
+        grid_points_position.push_back(glm::vec3(-1.0f, y, 0.0f));
+
+        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
+        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
+    }
+    
+
     glGenBuffers (1, &vbo_grid);
     glBindBuffer (GL_ARRAY_BUFFER, vbo_grid);
 
@@ -28,24 +46,6 @@ void drawgrid() {
     glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(size_points) );
 }
 
-namespace modellingMode {
-void initgrid() {
-    for (float x = -1; x < 1.01; x += 0.1) {
-        grid_points_position.push_back(glm::vec3(x, 1.0f, 0.0f));
-        grid_points_position.push_back(glm::vec3(x, -1.0f, 0.0f));
-
-        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
-        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
-    }
-    for (float y = -1; y < 1.01; y += 0.1) {
-        grid_points_position.push_back(glm::vec3(1.0f, y, 0.0f));
-        grid_points_position.push_back(glm::vec3(-1.0f, y, 0.0f));
-
-        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
-        grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
-    }
-    drawgrid();
-}
 void render_grid() {
     glBindVertexArray(vao_grid);
     modelview_matrix = glm::mat4(1.0f);

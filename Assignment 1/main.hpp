@@ -1,3 +1,4 @@
+
 #ifndef _MAIN_HPP_
 #define _MAIN_HPP__
 
@@ -22,22 +23,40 @@
 #include "../glm/gtc/matrix_transform.hpp"
 #include "../glm/gtc/type_ptr.hpp"
 
-extern GLuint shaderProgram;  // Defined in main, changed in modelling callbacks
-extern GLuint vbo, vao;		  // Defined/changed in modelling callbacks
+/**
+ * { One buffer and array object shared accross many files}
+ */
+extern GLuint shaderProgram;  
+extern GLuint vbo, vao;
 
-
+/**
+ * { CONST Shared variables}
+ */
 extern glm::mat4 perspective_projection_matrix;
 extern glm::mat4 ortho_projection_matrix;
 extern glm::mat4 camera_matrix;
-// Defined/changed in inspection callbacks
+
+/**
+ * { modleling matrices shared}
+ */
 extern glm::mat4 rotation_matrix;
 extern glm::mat4 translation_matrix;
+
 
 extern glm::mat4 modelview_matrix;
 extern GLuint uModelViewMatrix;
 
-// Defined/changed in modelling callbacks
+/**
+ * {One model currently drawn shred across all files}
+ */
 extern Model m;
+
+/**
+ * @brief      { calls render functions according to the current mode }
+ *
+ * @param      window  The window object
+ */
+ void renderGL(GLFWwindow* window)
 namespace base {
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow* window, int button, int action, int mods);

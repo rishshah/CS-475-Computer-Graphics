@@ -2,17 +2,15 @@
 
 float ROT_90 = glm::half_pi<float>();
 float z = 0.0;
+int vertex_num_to_start = 0;
+int mode = 0;
+
 //extern variables
-Model m;
-Model grid;
-GLuint vbo = 0, vao = 0;
 std::vector<bool> key_state_io(3, false);
 std::vector<bool> key_state_color(3, false);
 std::vector<bool> key_state_entry(3, false);
 bool left_click = false;
 
-int mode = 0;
-int vertex_num_to_start = 0;
 
 //-----------------------------------------------------------------
 
@@ -141,12 +139,14 @@ void handle_depth() {
         z = 0;
     }
     if (key_state_translation[4]) {
-        z += 0.04;
+        z += 0.1;
         printf("z plane at %f \n ", z);
+        key_state_translation[4] = false;
     }
     else if (key_state_translation[5]) {
-        z -= 0.04;
+        z -= 0.1;
         printf("z plane at %f \n ", z);
+        key_state_translation[5] = false;
     }
 }
 
@@ -249,6 +249,12 @@ void handle_mouse_click(GLFWwindow* window) {
 
 
 namespace modellingMode {
+
+/**
+ * @brief      { render model in modelling mode }
+ *
+ * @param      window  The window
+ */
 void renderGL(GLFWwindow* window) {
     handle_io();
     handle_mouse_click(window);

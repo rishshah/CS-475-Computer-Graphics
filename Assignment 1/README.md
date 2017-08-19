@@ -2,7 +2,7 @@
 
 ## Tasks
 
-- Make three models `( chair, x, x )` from the code - **Rishabh**
+- Make three models `( laptop, lighthouse, bat )` from the code
 
 ***
 ### 1. Modelling Mode [M]
@@ -14,13 +14,10 @@
 - ensure features to get 3D coordinates
 
 #### Features to add points in Modelling Mode
-- `[T.G.B]` to decide color of points to add
+- `[T,G,B]` to decide color of points to add
 -  Rotation by 90 degrees to change planes of drawing
 - `[Z,X]` for moving the plane of modelling by one unit
--  Something for deciding which points form triangles
--  Hover display of coordinates
--  Deciding the centroid of the model
-
+-  `[1,2,3]` for deciding entry mode of points that form triangles
 
 ***
 ### 2. Inspection Mode [I] 
@@ -42,11 +39,9 @@
 - Mode differenciation
 - Managed data strcuture for efficient implementation of modelling part
 - Click Input
-
-### In Progress
 - Giving features and drawing corresponding to this
 
-### ToDo
+### In Progress
 - Creating 3 structures accordingly
 
 ---
@@ -58,3 +53,9 @@
 
 ### Testing
 - `./executable`
+
+---
+## HTML Report
+- `cd "Assignment 1"`
+- `doxygen config_file`
+- `open in web-browser ./html/index.html`

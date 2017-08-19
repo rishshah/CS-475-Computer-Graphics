@@ -3,15 +3,9 @@
 // Translation Parameters
 GLfloat xpos = 0.0, ypos = 0.0, zpos = 0.0;
 const GLfloat TRANS_DELTA = 0.04;
-//X     0 -> A      1 -> D
-//Y     2 -> W      3 -> S
-//Z     4 -> Z      5 -> X
 
 // Rotation Parameters
 const GLfloat ROT_DELTA = 0.04;
-//X     0 -> Up     1 -> Down
-//Y     2 -> Left   3 -> Right
-//Z     4 -> pgUp   5 -> PgDown
 
 //extern variables
 glm::mat4 rotation_matrix = glm::mat4(1.0f);
@@ -21,7 +15,6 @@ std::vector<bool> key_state_rotation(6, false);
 bool key_state_recenter = false;
 
 //-----------------------------------------------------------------
-
 void handle_rotation() {
     if (key_state_rotation[0]) {
         rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
