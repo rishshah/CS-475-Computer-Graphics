@@ -43,10 +43,10 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
 }
 
 void add_point_to_buffer(float x, float y) {
-    float z = 0.5;
+    float z = 0.0;
     m.num_of_vertices++;
     m.vertex_list.resize(m.num_of_vertices);
-    m.vertex_list[m.num_of_vertices - 1].position = glm::vec3(x, y, z);
+    m.vertex_list[m.num_of_vertices - 1].position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x, y, z, 1.0));
     m.vertex_list[m.num_of_vertices - 1].color = glm::vec3(m.red_value, m.green_value, m.blue_value);
     if (m.num_of_vertices >= 3) {
         m.num_of_triangles++;
@@ -59,7 +59,13 @@ void add_point_to_buffer(float x, float y) {
     }
 }
 
+void modify_configurations(int mode){
+    return;
+}
+
+
 void remove_point_from_buffer(void) {
+    if(m.num_of_vertices < 0) { return ;}
     m.num_of_vertices--;
     m.vertex_list.resize(m.num_of_vertices);
     int last_triangle = 0;

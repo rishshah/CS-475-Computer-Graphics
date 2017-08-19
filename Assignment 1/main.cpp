@@ -41,14 +41,19 @@ void renderGL(GLFWwindow* window){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     hanldle_camera();
-    hanldle_projection(false);  
+      
 
-    if(mode_inspection)
+    if(mode_inspection){
+        hanldle_projection(false);
         inspectMode::renderGL();
-    else
+        modelview_matrix = projection_matrix * camera_matrix * translation_matrix * rotation_matrix;
+    }
+    else{
+        hanldle_projection(true);
         modellingMode::renderGL(window);  
-
-    modelview_matrix = projection_matrix * camera_matrix * translation_matrix * rotation_matrix;
+        modelview_matrix = projection_matrix * translation_matrix * rotation_matrix;
+    }
+    
     glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
 
     glDrawArrays(GL_TRIANGLES, 0, m.get_num_of_triangles() * 3);

@@ -21,9 +21,9 @@ private:
 
 public:
 	
-	float red_value = 0.0;
-	float green_value = 0.0;
-	float blue_value = 0.0;
+	float red_value = 1.0;
+	float green_value = 1.0;
+	float blue_value = 1.0;
 	int num_of_vertices = 0;
 	std::vector<Vertex> vertex_list;
 	int num_of_triangles = 0;

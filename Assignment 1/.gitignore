@@ -1,5 +1,4 @@
 *.o
 .fuse*
 *.raw
-bin/preview
-executable
+./executable
