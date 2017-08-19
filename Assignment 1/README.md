@@ -5,8 +5,7 @@
 - Make three models `( chair, x, x )` from the code - **Rishabh**
 
 ***
-
-##### 1. Modelling Mode [M]
+### 1. Modelling Mode [M]
 
 - `[Left Click]` -> Add a point to Model
 - `[Shift Left Click]` -> Remove the last added point
@@ -14,7 +13,7 @@
 - `[L]` -> Load the model from file.raw
 - ensure features to get 3D coordinates
 
-###### Features to add points in Modelling Mode
+#### Features to add points in Modelling Mode
 - '[T.G.B] to decide color of points to add'
 - 'Rotation by 90 degrees to change planes of drawing'
 - '[Z,X] for moving the plane of modelling by one unit'
@@ -22,9 +21,9 @@
 - 'Hover display of coordinates' 
 -  'Deciding the centroid of the model'
 
----
 
-##### 2. Inspection Mode [I] 
+***
+### 2. Inspection Mode [I] 
 
 - All rotations about centroid
 - `[Up/Down]` -> rotate about X axis 
@@ -34,8 +33,9 @@
 - `[W,S,A,D,Z,X]` -> key should allow translation along +ve and -ve Y,X and Z axis respectively
 
 ---
+## Status
 
-##### Done 
+### Done 
 - Inspection mode all commands done... 
 - Load/Save command done
 - File system created
@@ -43,16 +43,18 @@
 - Managed data strcuture for efficient implementation of modelling part
 - Click Input
 
-##### In Progress
+### In Progress
 - Giving features and drawing corresponding to this
 
-##### ToDo
+### ToDo
 - Creating 3 structures accordingly
 
+---
+## Execution
 
-## Compiling
+### Compiling
 - `cd "Assignment 1"`
 - `make`
 
-## Testing
-- `./bin/preview`
+### Testing
+- `./executable`
