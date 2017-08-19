@@ -4,6 +4,7 @@ float ROT_90 = glm::half_pi<float>();
 float z = 0.0;
 //extern variables
 Model m;
+Model grid;
 GLuint vbo = 0, vao = 0;
 std::vector<bool> key_state_io(3, false);
 std::vector<bool> key_state_color(3, false);

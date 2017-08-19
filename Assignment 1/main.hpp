@@ -33,7 +33,6 @@ extern GLuint uModelViewMatrix;
 
 // Defined/changed in modelling callbacks
 extern Model m;
-
 namespace base {
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	void mouse_callback(GLFWwindow* window, int button, int action, int mods);

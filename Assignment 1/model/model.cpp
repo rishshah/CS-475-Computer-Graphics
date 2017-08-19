@@ -63,10 +63,6 @@ bool Model::save(char* filename) {
 	return true;
 }
 
-int Model::get_num_of_triangles() {
-	return num_of_triangles;
-}
-
 void Model::assignBuffer(GLuint &vao, GLuint &vbo, GLuint &vPosition, GLuint &vColor) {
 	size_t size_points = 3 * num_of_triangles * sizeof (glm::vec3);
 
@@ -76,16 +72,4 @@ void Model::assignBuffer(GLuint &vao, GLuint &vbo, GLuint &vPosition, GLuint &vC
 
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(size_points) );
-}
-
-void Model::calc_centroid() {
-	centroid = glm::vec3(0.0f, 0.0f, 0.0f);
-	for (int i = 0; i < num_of_vertices; ++i) {
-		centroid += vertex_list[i].position;
-	}
-	centroid /= num_of_vertices;
-}
-
-glm::vec3 Model::get_centroid() {
-	return centroid;
 }
