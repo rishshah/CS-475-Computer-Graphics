@@ -53,6 +53,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	        ) {
 		modellingMode::entry_mode_callback(key, action);
 	}
+	else if( key == GLFW_KEY_LEFT_CONTROL)
+		modellingMode::mouse_locate_callback(key, action);
+		
 }
 
 void mouse_callback(GLFWwindow* window, int button, int action, int mods) {

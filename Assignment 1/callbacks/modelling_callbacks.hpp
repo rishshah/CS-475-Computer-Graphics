@@ -21,12 +21,14 @@ extern std::vector<bool> key_state_entry;
 // 2 - All the points form triangle with fist and last (GL_TRIANGLES_FAN)
 
 extern bool left_click;
+extern bool key_state_mouse_location;
 
 namespace modellingMode {
 	void io_callback(int key, int action);
 	void mouse_callback(int button, int action);
 	void color_callback(int key, int action);
 	void entry_mode_callback(int key, int action);
+	void mouse_locate_callback(int key, int action);
 };
 
 #endif

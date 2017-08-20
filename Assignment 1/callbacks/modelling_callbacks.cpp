@@ -106,6 +106,22 @@ void entry_mode_callback(int key, int action) {
 }
 
 /**
+ * @brief      { Update(Set/Reset) global shared varible key_state_mouse_location
+ *             according to the GLFW_KEY_LEFT_CONTROL  key used. }
+ *
+ * @param[in]  key     The key pressed
+ * @param[in]  action  The action (release or press)
+ */
+void  mouse_locate_callback(int key, int action) {    
+    if (key == GLFW_KEY_LEFT_CONTROL  && action == GLFW_PRESS) {
+        key_state_mouse_location = true;
+    }
+    else if (key == GLFW_KEY_LEFT_CONTROL  && action == GLFW_RELEASE) {
+        key_state_mouse_location = false;
+    }
+}
+
+/**
  * @brief      { Update(Set/Reset) global shared varible left_click if button is
  *             clicked or released}
  *

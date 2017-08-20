@@ -10,7 +10,13 @@ std::vector<bool> key_state_io(3, false);
 std::vector<bool> key_state_color(3, false);
 std::vector<bool> key_state_entry(3, false);
 bool left_click = false;
+bool key_state_mouse_location = false;
 
+
+std::vector<glm::vec3> mouse_point_position(2, glm::vec3(0.0f, 0.0f, 0.0f));
+std::vector<glm::vec3> mouse_point_color(2, glm::vec3(1.0f, 1.0f, 1.0f));
+GLuint vbo_point = 0;
+GLuint vao_point = 0;
 
 //-----------------------------------------------------------------
 
@@ -34,13 +40,15 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
     int width, height;
-    std::cout << xpos << " " << ypos << "\n";
+    // std::cout << xpos << " " << ypos << "\n";
     glfwGetWindowSize(window, &width, &height);
     float xwid = width / 2.0;
     float yht = height / 2.0;
     x = int((xpos - xwid) * 100 / xwid + 0.5) / 50.0 ;
     y = -int((ypos - yht) * 100 / yht + 0.5) / 50.0 ;
-    std::cout << x << " " << y << "\n" ;
+    x = round(x * 10) / 10.0;
+    y = round(y * 10) / 10.0;
+    printf("%.1f \t %.1f \t %.1f\n", x, y, z);
 }
 
 void common_stuff() {
@@ -139,12 +147,18 @@ void handle_depth() {
         z = 0;
     }
     if (key_state_translation[4]) {
-        z += 0.1;
+        if (!key_state_io[3])
+            z += 1;
+        else
+            z += 0.1;
         printf("z plane at %f \n ", z);
         key_state_translation[4] = false;
     }
     else if (key_state_translation[5]) {
-        z -= 0.1;
+        if (!key_state_io[3])
+            z -= 1;
+        else
+            z -= 0.1;
         printf("z plane at %f \n ", z);
         key_state_translation[5] = false;
     }
@@ -230,23 +244,64 @@ void handle_io() {
     }
 }
 
+void draw_last_mouse_click() {
+    glGenBuffers (1, &vbo_point);
+    glBindBuffer (GL_ARRAY_BUFFER, vbo_point);
+
+    glGenVertexArrays (1, &vao_point);
+    glBindVertexArray (vao_point);
+
+    GLuint vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
+    glEnableVertexAttribArray( vPosition );
+
+    GLuint vColor = glGetAttribLocation( shaderProgram, "vColor" );
+    glEnableVertexAttribArray( vColor );
+
+    glBufferData (GL_ARRAY_BUFFER, 4 * sizeof(glm::vec3) , NULL, GL_STATIC_DRAW);
+    glBufferSubData( GL_ARRAY_BUFFER, 0, 2 * sizeof(glm::vec3), &mouse_point_position[0] );
+    glBufferSubData( GL_ARRAY_BUFFER, 2 * sizeof(glm::vec3), 2 * sizeof(glm::vec3), &mouse_point_color[0] );
+
+    glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
+    glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(2 * sizeof(glm::vec3)) );
+}
+
 void handle_mouse_click(GLFWwindow* window) {
     if (left_click && !key_state_io[2]) {
-        printf("Clicked!\n");
         float x, y;
         print_abs_rel_cursor_pos(window, x, y);
+        mouse_point_position[1] = mouse_point_position[0];
+        mouse_point_position[0] = glm::vec3(x / 2.0, y / 2.0, 0.0f);
+        draw_last_mouse_click();
         add_point_to_buffer(x, y);
         left_click = false;
+        printf("Point added!\n");
     }
     if (key_state_io[2] and left_click) {
-        printf("Shift + Left Click \n");
         float x, y;
         print_abs_rel_cursor_pos(window, x, y);
         remove_point_from_buffer();
         left_click = false;
+        printf("Point removed!\n");
     }
 }
 
+void render_last_mouse_point() {
+    if (vao_point != 0) {
+        glPointSize(4.0f);
+        glBindVertexArray(vao_point);
+        modelview_matrix = glm::mat4(1.0f);
+        glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
+        glDrawArrays(GL_POINTS, 0, 2);
+    }
+}
+
+void handle_mouse_location(GLFWwindow* window) {
+    if (key_state_mouse_location) {
+        float x, y;
+        print_abs_rel_cursor_pos(window, x, y);
+        key_state_mouse_location = false;
+    }
+}
 
 namespace modellingMode {
 
@@ -258,10 +313,12 @@ namespace modellingMode {
 void renderGL(GLFWwindow* window) {
     handle_io();
     handle_mouse_click(window);
+    handle_mouse_location(window);
     handle_depth();
     handle_fixed_rotation();
     handle_color();
     handle_entry_mode();
+    render_last_mouse_point();
     modelview_matrix = ortho_projection_matrix * translation_matrix * rotation_matrix;
     glBindVertexArray(vao);
     glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
