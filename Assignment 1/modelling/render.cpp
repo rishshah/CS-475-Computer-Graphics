@@ -13,7 +13,7 @@ bool left_click = false;
 bool key_state_mouse_location = false;
 
 
-std::vector<glm::vec3> mouse_point_position(2, glm::vec3(0.0f, 0.0f, 0.0f));
+std::vector<glm::vec3> mouse_point_position(2);
 std::vector<glm::vec3> mouse_point_color(2, glm::vec3(1.0f, 1.0f, 1.0f));
 GLuint vbo_point = 0;
 GLuint vao_point = 0;
@@ -147,7 +147,7 @@ void handle_depth() {
         z = 0;
     }
     if (key_state_translation[4]) {
-        if (!key_state_io[3])
+        if (!key_state_io[2])
             z += 1;
         else
             z += 0.1;
@@ -155,7 +155,7 @@ void handle_depth() {
         key_state_translation[4] = false;
     }
     else if (key_state_translation[5]) {
-        if (!key_state_io[3])
+        if (!key_state_io[2])
             z -= 1;
         else
             z -= 0.1;
@@ -279,6 +279,8 @@ void handle_mouse_click(GLFWwindow* window) {
     if (key_state_io[2] and left_click) {
         float x, y;
         print_abs_rel_cursor_pos(window, x, y);
+        mouse_point_position[0] = mouse_point_position[1];
+        mouse_point_position[1] = glm::vec3(0.0f, 0.0f, 0.0f);
         remove_point_from_buffer();
         left_click = false;
         printf("Point removed!\n");
