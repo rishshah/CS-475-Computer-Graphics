@@ -7,7 +7,7 @@ GLuint vbo = 0, vao = 0;
 
 Model m;
 
-bool mode_inspection = true;
+bool mode_inspection = false;
 
 GLuint uModelViewMatrix = 0;
 

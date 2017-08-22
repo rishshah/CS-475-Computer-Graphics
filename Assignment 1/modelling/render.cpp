@@ -64,7 +64,6 @@ void modify_configurations(Vertex v) {
         m.vertex_list.push_back(v);
         if(m.vertex_list.size()%3==0){
         	//m.num_of_triangles++;
-   			m.segregate_vertices();
    			initBuffersGL();
    	    	// create triangle
         }
@@ -74,7 +73,6 @@ void modify_configurations(Vertex v) {
         	m.vertex_list.push_back(v);
         	if(m.vertex_list.size()%3==0){
         		//m.num_of_triangles++;
-        		m.segregate_vertices();
         		initBuffersGL();
         		// create triangle
         	}
@@ -84,7 +82,6 @@ void modify_configurations(Vertex v) {
         	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
         	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
         	m.vertex_list.push_back(v);
-        	m.segregate_vertices();
         	initBuffersGL();
         }
     }
@@ -93,7 +90,6 @@ void modify_configurations(Vertex v) {
         	m.vertex_list.push_back(v);
         	if(m.vertex_list.size()%3==0){
         		//m.num_of_triangles++;
-        		m.segregate_vertices();
         		initBuffersGL();
         		// create triangle
         	}
@@ -103,7 +99,6 @@ void modify_configurations(Vertex v) {
         	m.vertex_list.push_back(m.vertex_list[(mode_indexes.rbegin()[0])*3]);
         	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
         	m.vertex_list.push_back(v);
-        	m.segregate_vertices();
         	initBuffersGL();
         }   
     }
@@ -138,13 +133,11 @@ void remove_point_from_buffer(void) {
 				if ( the_mode == 0 ) {
 					//m.num_of_triangles--;
 					m.vertex_list.pop_back();
-					m.segregate_vertices();
 					initBuffersGL();
 					break;
 				}
 				else if(m.vertex_list.size()/3==mode_indexes.rbegin()[0]+1){
 					m.vertex_list.pop_back();
-					m.segregate_vertices();
 					initBuffersGL();
 					break;	
 				}
@@ -154,7 +147,6 @@ void remove_point_from_buffer(void) {
 					m.vertex_list.pop_back();
 					m.vertex_list.pop_back();
 					m.vertex_list.pop_back();
-					m.segregate_vertices();
 					initBuffersGL();
 					break;	
 				}
@@ -321,7 +313,7 @@ void handle_io() {
         key_state_io[0] = false;
     }
     if (key_state_io[1]) {
-        m.load((char*)"./binary_models/cricket_bat.raw");
+        m.load((char*)"./binary_models/spectacles.raw");
         initBuffersGL();
         printf("Model loaded from cricket_bat.raw!\n");
         key_state_io[1] = false;
@@ -365,6 +357,7 @@ void handle_mouse_click(GLFWwindow* window) {
         print_abs_rel_cursor_pos(window, x, y);
         mouse_point_position[0] = mouse_point_position[1];
         mouse_point_position[1] = glm::vec3(0.0f, 0.0f, 0.0f);
+        draw_last_mouse_click();
         remove_point_from_buffer();
         left_click = false;
         printf("Point removed!\n");

@@ -30,13 +30,9 @@ public:
 
 	std::vector<Vertex> vertex_list;
 
-	std::vector<glm::vec3> position_ptr;
-	std::vector<glm::vec3> color_ptr;
-
 	glm::vec3 centroid;
 	glm::mat4 centroid_translation_matrix;
 
-	void update_centroid(glm::vec3 point);
 	void calc_centroid();
 	/**
 	 * @brief      {recalculate the vector containting all triangles data to be drawn directly}

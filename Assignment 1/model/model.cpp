@@ -1,14 +1,5 @@
 #include "model.hpp"
 
-void Model::segregate_vertices() {
-	position_ptr.clear();
-	color_ptr.clear();
-	for (int i = 0; i < vertex_list.size(); ++i) {
-		position_ptr.push_back(vertex_list[i].position);
-		color_ptr.push_back(vertex_list[i].color);
-	}
-}
-
 bool Model::load(char* filename) {
 	FILE *fp_input = fopen(filename, "r" );
 	if (fp_input ==  NULL) {
@@ -25,10 +16,8 @@ bool Model::load(char* filename) {
 	}
 
 	fclose(fp_input);
-	printf("NOV: %d\n", vertex_list.size());
 	calc_centroid();
-	segregate_vertices();
-
+	
 	return true;
 }
 
@@ -51,22 +40,12 @@ bool Model::save(char* filename) {
 void Model::assignBuffer(GLuint &vao, GLuint &vbo, GLuint &vPosition, GLuint &vColor) {
 	size_t size_points = vertex_list.size() * sizeof (glm::vec3);
 
-	glBufferData (GL_ARRAY_BUFFER, size_points * 2, NULL, GL_STATIC_DRAW);
-	glBufferSubData( GL_ARRAY_BUFFER, 0, size_points, &position_ptr[0] );
-	glBufferSubData( GL_ARRAY_BUFFER, size_points, size_points, &color_ptr[0] );
-
-	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
-	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(size_points) );
+	glBufferData (GL_ARRAY_BUFFER, size_points * 2, &vertex_list[0], GL_STATIC_DRAW);
+	
+	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
+	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
 }
 
-// void Model::update_centroid(glm::vec3 point) { // Number of vertices are updated before calling this
-// 	glm::vec3 total = (0.0f, 0.0f, 0.0f);	
-// 	for(int i = 0; i < vertex_list.size(); i++){
-// 		total+=vertex_list[i].position();
-// 	}	
-// 	centroid = total/vertex_list.size();
-// 	centroid_translation_matrix = glm::translate(glm::mat4(1.0f), -centroid);
-// }
 
 void Model::calc_centroid() {
 	centroid = glm::vec3(0.0f, 0.0f, 0.0f);
