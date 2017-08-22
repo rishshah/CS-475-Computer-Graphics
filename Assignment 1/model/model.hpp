@@ -28,11 +28,7 @@ public:
 	float green_value = 1.0;
 	float blue_value = 1.0;
 
-	int num_of_vertices = 0;
 	std::vector<Vertex> vertex_list;
-
-	int num_of_triangles = 0;
-	std::vector<int> configuration_list;
 
 	std::vector<glm::vec3> position_ptr;
 	std::vector<glm::vec3> color_ptr;
@@ -45,6 +41,7 @@ public:
 	/**
 	 * @brief      {recalculate the vector containting all triangles data to be drawn directly}
 	 */
+	void segregate_vertices();
 	void combine_configuration_and_vertices();
 	/**
 	* @brief      { load model from a file }

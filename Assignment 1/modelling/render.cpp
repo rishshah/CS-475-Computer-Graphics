@@ -55,65 +55,67 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
     printf("%.1f \t %.1f \t %.1f\n", x, y, z);
 }
 
-void common_stuff() {
-    m.num_of_triangles++;
-    m.configuration_list.resize(3 * m.num_of_triangles);
-    if ( mode != 2) {
-        m.configuration_list[3 * m.num_of_triangles - 3] = m.num_of_vertices - 3;
-    }
-    else {
-        m.configuration_list[3 * m.num_of_triangles - 3] = vertex_num_to_start;
-    }
-    m.configuration_list[3 * m.num_of_triangles - 2] = m.num_of_vertices - 2;
-    m.configuration_list[3 * m.num_of_triangles - 1] = m.num_of_vertices - 1;
-    m.combine_configuration_and_vertices();
-    initBuffersGL();
-}
+// void common_stuff() {
+//     m.num_of_triangles++;
+//     m.configuration_list.resize(3 * m.num_of_triangles);
+//     if ( mode != 2) {
+//         m.configuration_list[3 * m.num_of_triangles - 3] = m.num_of_vertices - 3;
+//     }
+//     else {
+//         m.configuration_list[3 * m.num_of_triangles - 3] = vertex_num_to_start;
+//     }
+//     m.configuration_list[3 * m.num_of_triangles - 2] = m.num_of_vertices - 2;
+//     m.configuration_list[3 * m.num_of_triangles - 1] = m.num_of_vertices - 1;
+//     m.combine_configuration_and_vertices();
+//     initBuffersGL();
+// }
 
-void modify_configurations() {
-    if (mode == 1) {
-        if (m.num_of_vertices - vertex_num_to_start >= 3) {
-            common_stuff();
-        }
-    }
-    else if (mode == 0) {
-        if ( (m.num_of_vertices - vertex_num_to_start) % 3 == 0 && m.num_of_vertices > vertex_num_to_start) {
-            common_stuff();
-        }
-    }
-    else if (mode == 2) {
-        if (m.num_of_vertices - vertex_num_to_start >= 3) {
-            common_stuff();
-        }
-    }
-    return;
-}
+// void modify_configurations() {
+//     if (mode == 1) {
+//         if (m.vertex_list.size() - vertex_num_to_start >= 3) {
+//             common_stuff();
+//         }
+//     }
+//     else if (mode == 0) {
+//         if ( (m.vertex_list.size() - vertex_num_to_start) % 3 == 0 && m.vertex_list.size() > vertex_num_to_start) {
+//             common_stuff();
+//         }
+//     }
+//     else if (mode == 2) {
+//         if (m.vertex_list.size() - vertex_num_to_start >= 3) {
+//             common_stuff();
+//         }
+//     }
+//     return;
+// }
 
 void add_point_to_buffer(float x, float y) {
-    m.num_of_vertices++;
-    m.vertex_list.resize(m.num_of_vertices);
-    m.vertex_list[m.num_of_vertices - 1].position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x, y, z, 1.0));
-    m.vertex_list[m.num_of_vertices - 1].color = glm::vec3(m.red_value, m.green_value, m.blue_value);
-    m.update_centroid(m.vertex_list[m.num_of_vertices - 1].position);
-    modify_configurations();
+    Vertex v;
+    v.position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x, y, z, 1.0));
+    v.color = glm::vec3(m.red_value, m.green_value, m.blue_value);
+    m.vertex_list.push_back(v);
+
+    m.update_centroid(m.vertex_list.back().position);
+    // modify_configurations();
 }
 
-void remove_point_from_buffer(void) {
-    if (m.num_of_vertices <= 0) { return ;}
-    m.num_of_vertices--;
-    m.vertex_list.resize(m.num_of_vertices);
-    int last_triangle = 0;
-    for (int h = 0; h < 3 * m.num_of_triangles; h++) {
-        if (m.configuration_list[h] == m.num_of_vertices) {
-            last_triangle = h / 3;
-            m.num_of_triangles = last_triangle;
-            m.configuration_list.resize(3 * m.num_of_triangles);
-            m.combine_configuration_and_vertices();
-            initBuffersGL();
-            break;
-        }
-    }
-}
+// void remove_point_from_buffer(void) {
+//     if (m.vertex_list.size() <= 0) {
+//         return;
+//     }
+//     m.vertex_list.resize(m.vertex_list - 1);
+//     int last_triangle = 0;
+//     for (int h = 0; h < m.vertex_list.size(); h++) {
+//         if (m.configuration_list[h] == m.num_of_vertices) {
+//             last_triangle = h / 3;
+//             m.num_of_triangles = last_triangle;
+//             m.configuration_list.resize(3 * m.num_of_triangles);
+//             m.combine_configuration_and_vertices();
+//             initBuffersGL();
+//             break;
+//         }
+//     }
+// }
 
 //-----------------------------------------------------------------
 
@@ -236,35 +238,35 @@ void handle_color() {
     }
 }
 
-void handle_entry_mode() {
-    if (key_state_entry[0]) {
-        printf("Entry Mode: GL_TRIANGLES\n");
-        mode = 0;
-        vertex_num_to_start = m.num_of_vertices;
-        key_state_entry[0] = false;
-    }
-    if (key_state_entry[1]) {
-        printf("Entry Mode: GL_STRIP\n");
-        mode = 1;
-        vertex_num_to_start = m.num_of_vertices;
-        key_state_entry[1] = false;
-    }
-    if (key_state_entry[2]) {
-        printf("Entry Mode: GL_FAN\n");
-        mode = 2;
-        vertex_num_to_start = m.num_of_vertices;
-        key_state_entry[2] = false;
-    }
-}
+// void handle_entry_mode() {
+//     if (key_state_entry[0]) {
+//         printf("Entry Mode: GL_TRIANGLES\n");
+//         mode = 0;
+//         vertex_num_to_start = m.num_of_vertices;
+//         key_state_entry[0] = false;
+//     }
+//     if (key_state_entry[1]) {
+//         printf("Entry Mode: GL_STRIP\n");
+//         mode = 1;
+//         vertex_num_to_start = m.num_of_vertices;
+//         key_state_entry[1] = false;
+//     }
+//     if (key_state_entry[2]) {
+//         printf("Entry Mode: GL_FAN\n");
+//         mode = 2;
+//         vertex_num_to_start = m.num_of_vertices;
+//         key_state_entry[2] = false;
+//     }
+// }
 
 void handle_io() {
     if (key_state_io[0]) {
-        m.save((char*)"./model/cricket_bat.raw");
+        m.save((char*)"./binary_models/saved_cricket_bat.raw");
         printf("Model saved in cricket_bat.raw!\n");
         key_state_io[0] = false;
     }
     if (key_state_io[1]) {
-        m.load((char*)"./model/cricket_bat.raw");
+        m.load((char*)"./binary_models/cricket_bat.raw");
         initBuffersGL();
         printf("Model loaded from cricket_bat.raw!\n");
         key_state_io[1] = false;
@@ -308,7 +310,7 @@ void handle_mouse_click(GLFWwindow* window) {
         print_abs_rel_cursor_pos(window, x, y);
         mouse_point_position[0] = mouse_point_position[1];
         mouse_point_position[1] = glm::vec3(0.0f, 0.0f, 0.0f);
-        remove_point_from_buffer();
+        // remove_point_from_buffer();
         left_click = false;
         printf("Point removed!\n");
     }
@@ -342,17 +344,17 @@ namespace modellingMode {
 void renderGL(GLFWwindow* window) {
     // Load and Save the model
     handle_io();
-    
+
     // Add/Delete Model and selecct entry mode
     handle_mouse_click(window);
-    handle_entry_mode();
-    
+    // handle_entry_mode();
+
     // Extra features
     handle_mouse_location(window);
     render_last_mouse_point();
     handle_depth();
     handle_color();
-    
+
     //Modelling mode translation and rotation
     handle_fixed_rotation();
     handle_fixed_translation();
@@ -361,7 +363,7 @@ void renderGL(GLFWwindow* window) {
     modelview_matrix = ortho_projection_matrix * translation_matrix * rotation_matrix * m.centroid_translation_matrix;
     glBindVertexArray(vao);
     glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
-    glDrawArrays(GL_TRIANGLES, 0, m.num_of_triangles * 3);
+    glDrawArrays(GL_TRIANGLES, 0, m.vertex_list.size());
 }
 };
 

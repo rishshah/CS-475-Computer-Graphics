@@ -76,6 +76,6 @@ void renderGL() {
     modelview_matrix = perspective_projection_matrix * camera_matrix * translation_matrix * rotation_matrix * m.centroid_translation_matrix;
     glBindVertexArray(vao);
     glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
-    glDrawArrays(GL_TRIANGLES, 0, m.num_of_triangles * 3);
+    glDrawArrays(GL_TRIANGLES, 0, m.vertex_list.size());
 }
 };
