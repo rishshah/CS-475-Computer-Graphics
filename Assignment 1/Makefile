@@ -19,8 +19,8 @@ MODEL_INC= ./model/model.hpp
 RENDER_SRC= ./inspection/render.cpp ./modelling/render.cpp
 RENDER_INC= ./inspection/render.hpp ./modelling/render.hpp
 
-GRID_SRC= ./model/grid.cpp
-GRID_INC= ./model/grid.hpp
+GRID_SRC= ./modelling/grid.cpp
+GRID_INC= ./modelling/grid.hpp
 
 CALLBACKS_SRC= ./callbacks/callbacks.cpp ./callbacks/inspection_callbacks.cpp ./callbacks/modelling_callbacks.cpp
 CALLBACKS_INC= ./callbacks/callbacks.hpp ./callbacks/inspection_callbacks.hpp ./callbacks/modelling_callbacks.hpp
@@ -33,6 +33,9 @@ all: $(BIN)
 
 $(BIN): $(SRCS) $(INCLUDES)
 	g++ -std=c++11 $(CPPFLAGS) $(SRCS) -o $(BIN) $(LDFLAGS) $(LIBS)
+
+report:  
+	doxygen config_file
 
 clean:
 	rm -f *~ *.o $(BIN)

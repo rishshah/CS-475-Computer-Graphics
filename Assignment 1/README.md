@@ -2,25 +2,29 @@
 
 ## Tasks
 
-- Make three models `( laptop, lighthouse, bat )` from the code
+- Make three models `( laptop, spectacles, bat )` from the code
 
 ***
+
 ### 1. Modelling Mode [M]
 
 - `[Left Click]` -> Add a point to Model
 - `[Shift Left Click]` -> Remove the last added point
-- `[K]` -> Save the model created in file.raw
-- `[L]` -> Load the model from file.raw
+- `[K]` -> Save the model created in saved_model.raw
+- `[L]` -> Load the model from model.raw
 - ensure features to get 3D coordinates
 
-#### Features to add points in Modelling Mode
+#### Extra Features in Modelling Mode
 - `[ Shift Left & {T,G,B} ]` to adjust color of points to add
--  Rotation by 90 degrees to change planes of drawing
+- `[ Inspection Controls ]` for rotation by 90 degrees to change planes of drawing
+- `[W,A,S,D]` for translation in modelling mode to draw in wider space 
+- `[R]` for recentering the model
 - `[ Shift Left & {Z,X} ]` for moving the plane of modelling by one unit
 - `[1,2,3]` for deciding entry mode of points that form triangles
-- `[Left-Ctrl]` for displaying current drawing position
+- `[Left-Ctrl]` for displaying current drawing mouse position
 -  White point markers for displaying last 2 drawing points
-
+-  Grid display and point snapping for easy drawing
+ 
 ***
 
 ### 2. Inspection Mode [I] 
@@ -45,28 +49,36 @@
 - Click Input
 - Giving features and drawing corresponding to this
 - Final Models
--- Spectacles created
--- Bat created
--- Laptop created
+	1. Spectacles created
+	2. Bat created
+	3. Laptop created
+
+***
 
 ### In Progress
 - Creating 2 structures
 
 ---
+
 ## Execution
 
 ### Compiling
 - `cd "Assignment 1"`
 - `make`
 
+***
+
 ### Testing
 - `./executable`
 
 ---
+
 ## HTML Report
-- `cd "Assignment 1"`
-- `doxygen config_file`
+- requires installed doxygen 
+- `make report`
 - `open in web-browser ./html/index.html`
+
+---
 
 ## Clean up
 - `make clean`

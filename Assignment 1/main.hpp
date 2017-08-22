@@ -1,4 +1,3 @@
-
 #ifndef _MAIN_HPP_
 #define _MAIN_HPP__
 
@@ -7,7 +6,7 @@
 
 #include "./framework/gl_framework.hpp"
 #include "./model/model.hpp"
-#include "./model/grid.hpp"
+#include "./modelling/grid.hpp"
 #include "./shader_utils/shader_util.hpp"
 
 #include "./callbacks/callbacks.hpp"

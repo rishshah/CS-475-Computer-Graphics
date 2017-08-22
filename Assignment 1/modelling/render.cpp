@@ -1,6 +1,8 @@
 #include "render.hpp"
 
-float ROT_90 = glm::half_pi<float>();
+const float ROT_90 = glm::half_pi<float>();
+const float FIXED_TRANS_DELTA = 0.1;
+
 float z = 0.0;
 int vertex_num_to_start = 0;
 int mode = 0;
@@ -9,12 +11,14 @@ int mode = 0;
 std::vector<bool> key_state_io(3, false);
 std::vector<bool> key_state_color(3, false);
 std::vector<bool> key_state_entry(3, false);
+
 bool left_click = false;
 bool key_state_mouse_location = false;
 
 
 std::vector<glm::vec3> mouse_point_position(2);
 std::vector<glm::vec3> mouse_point_color(2, glm::vec3(1.0f, 1.0f, 1.0f));
+
 GLuint vbo_point = 0;
 GLuint vao_point = 0;
 
@@ -90,9 +94,9 @@ void add_point_to_buffer(float x, float y) {
     m.vertex_list.resize(m.num_of_vertices);
     m.vertex_list[m.num_of_vertices - 1].position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x, y, z, 1.0));
     m.vertex_list[m.num_of_vertices - 1].color = glm::vec3(m.red_value, m.green_value, m.blue_value);
+    m.update_centroid(m.vertex_list[m.num_of_vertices - 1].position);
     modify_configurations();
 }
-
 
 void remove_point_from_buffer(void) {
     if (m.num_of_vertices <= 0) { return ;}
@@ -140,6 +144,29 @@ void handle_fixed_rotation() {
         rotation_matrix = glm::rotate(rotation_matrix, -ROT_90, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
         key_state_rotation[5] = false;
     }
+}
+
+void handle_fixed_translation() {
+    if (key_state_recenter) {
+        xpos = ypos = zpos = 0.0f;
+    }
+    else {
+        if (key_state_translation[0]) {
+            xpos -= FIXED_TRANS_DELTA;
+        }
+        else if (key_state_translation[1]) {
+            xpos += FIXED_TRANS_DELTA;
+        }
+
+        if (key_state_translation[2]) {
+            ypos += FIXED_TRANS_DELTA;
+        }
+        else if (key_state_translation[3]) {
+            ypos -= FIXED_TRANS_DELTA;
+        }
+    }
+
+    translation_matrix = glm::translate(glm::mat4(1.0f), m.centroid + glm::vec3(xpos, ypos, zpos));
 }
 
 void handle_depth() {
@@ -232,12 +259,12 @@ void handle_entry_mode() {
 
 void handle_io() {
     if (key_state_io[0]) {
-        m.save((char*)"./model/saved_model.raw");
+        m.save((char*)"./binary_models/saved_model.raw");
         printf("Model saved in saved_model.raw!\n");
         key_state_io[0] = false;
     }
     if (key_state_io[1]) {
-        m.load((char*)"./model/model.raw");
+        m.load((char*)"./binary_models/model.raw");
         initBuffersGL();
         printf("Model loaded from model.raw!\n");
         key_state_io[1] = false;
@@ -313,15 +340,25 @@ namespace modellingMode {
  * @param      window  The window
  */
 void renderGL(GLFWwindow* window) {
+    // Load and Save the model
     handle_io();
+    
+    // Add/Delete Model and selecct entry mode
     handle_mouse_click(window);
-    handle_mouse_location(window);
-    handle_depth();
-    handle_fixed_rotation();
-    handle_color();
     handle_entry_mode();
+    
+    // Extra features
+    handle_mouse_location(window);
     render_last_mouse_point();
-    modelview_matrix = ortho_projection_matrix * translation_matrix * rotation_matrix;
+    handle_depth();
+    handle_color();
+    
+    //Modelling mode translation and rotation
+    handle_fixed_rotation();
+    handle_fixed_translation();
+
+    // Render model in modelling mode
+    modelview_matrix = ortho_projection_matrix * translation_matrix * rotation_matrix * m.centroid_translation_matrix;
     glBindVertexArray(vao);
     glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
     glDrawArrays(GL_TRIANGLES, 0, m.num_of_triangles * 3);
