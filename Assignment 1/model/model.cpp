@@ -34,7 +34,7 @@ bool Model::load(char* filename) {
 	}
 
 	fclose(fp_input);
-
+	calc_centroid();
 	combine_configuration_and_vertices();
 	return true;
 }
@@ -72,4 +72,20 @@ void Model::assignBuffer(GLuint &vao, GLuint &vbo, GLuint &vPosition, GLuint &vC
 
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(size_points) );
+}
+
+void Model::update_centroid(glm::vec3 point) { // Number of vertices are updated before calling this
+	centroid *= (num_of_vertices - 1);
+	centroid += point ;
+	centroid /= num_of_vertices;
+	centroid_translation_matrix = glm::translate(glm::mat4(1.0f), -centroid);
+}
+
+void Model::calc_centroid() {
+	centroid = glm::vec3(0.0f, 0.0f, 0.0f);
+	for (int i = 0; i < num_of_vertices; ++i) {
+		centroid += vertex_list[i].position;
+	}
+	centroid /= num_of_vertices;
+	centroid_translation_matrix = glm::translate(glm::mat4(1.0f), -centroid);	
 }

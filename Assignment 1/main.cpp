@@ -14,7 +14,7 @@ GLuint uModelViewMatrix = 0;
 glm::mat4 modelview_matrix = glm::mat4(1.0f);
 glm::mat4 perspective_projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 100.0f);
 glm::mat4 ortho_projection_matrix = glm::ortho(-2.0, 2.0, -2.0, 2.0, -100.0, 100.0);
-glm::mat4 camera_matrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+glm::mat4 camera_matrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

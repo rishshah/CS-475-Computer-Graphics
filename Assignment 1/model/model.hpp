@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "../../glm/vec4.hpp"
 #include "../../glm/vec3.hpp"
+#include "../../glm/mat4x4.hpp"
+#include "../../glm/gtc/matrix_transform.hpp"
 #include "../framework/gl_framework.hpp"
 
 
@@ -34,6 +36,12 @@ public:
 
 	std::vector<glm::vec3> position_ptr;
 	std::vector<glm::vec3> color_ptr;
+
+	glm::vec3 centroid;
+	glm::mat4 centroid_translation_matrix;
+
+	void update_centroid(glm::vec3 point);
+	void calc_centroid();
 	/**
 	 * @brief      {recalculate the vector containting all triangles data to be drawn directly}
 	 */
