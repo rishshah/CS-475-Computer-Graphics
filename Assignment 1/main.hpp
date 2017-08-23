@@ -27,6 +27,8 @@
  */
 extern GLuint shaderProgram;  
 extern GLuint vbo, vao;
+extern std::vector<int> prevmodes;
+extern std::vector<int> mode_indexes;
 
 /**
  * { CONST Shared variables}

@@ -1,6 +1,8 @@
 #include "model.hpp"
 
 void Model::segregate_vertices() {
+	position_ptr.clear();
+	color_ptr.clear();
 	for (int i = 0; i < vertex_list.size(); ++i) {
 		position_ptr.push_back(vertex_list[i].position);
 		color_ptr.push_back(vertex_list[i].color);
@@ -57,18 +59,21 @@ void Model::assignBuffer(GLuint &vao, GLuint &vbo, GLuint &vPosition, GLuint &vC
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(size_points) );
 }
 
-void Model::update_centroid(glm::vec3 point) { // Number of vertices are updated before calling this
-	centroid *= (vertex_list.size() - 1);
-	centroid += point ;
-	centroid /= vertex_list.size();
-	centroid_translation_matrix = glm::translate(glm::mat4(1.0f), -centroid);
-}
+// void Model::update_centroid(glm::vec3 point) { // Number of vertices are updated before calling this
+// 	glm::vec3 total = (0.0f, 0.0f, 0.0f);	
+// 	for(int i = 0; i < vertex_list.size(); i++){
+// 		total+=vertex_list[i].position();
+// 	}	
+// 	centroid = total/vertex_list.size();
+// 	centroid_translation_matrix = glm::translate(glm::mat4(1.0f), -centroid);
+// }
 
 void Model::calc_centroid() {
 	centroid = glm::vec3(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < vertex_list.size(); ++i) {
 		centroid += vertex_list[i].position;
 	}
-	centroid /= vertex_list.size();
+	if(vertex_list.size()!=0)
+		centroid /= vertex_list.size();
 	centroid_translation_matrix = glm::translate(glm::mat4(1.0f), -centroid);
 }
