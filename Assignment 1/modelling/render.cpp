@@ -12,8 +12,8 @@ int mode = 0;
 std::vector<bool> key_state_io(3, false);
 std::vector<bool> key_state_color(6, false);
 std::vector<bool> key_state_entry(3, false);
-std::vector<int> prevmodes(1,0);
-std::vector<int> mode_indexes(1,0);
+std::vector<int> prevmodes(1, 0);
+std::vector<int> mode_indexes(1, 0);
 
 bool left_click = false;
 bool key_state_mouse_location = false;
@@ -55,54 +55,54 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
     y = -int((y_pos - yht) * 100 / yht + 0.5) / 50.0 ;
     x = round(x * 10) / 10.0;
     y = round(y * 10) / 10.0;
-    //printf("Relative Position on screen: %.1f \t %.1f \t %.1f\n", x, y, z);
+    // printf("Relative Position on screen: %.1f \t %.1f \t %.1f\n", x, y, z);
 }
 
 void modify_configurations(Vertex v) {
-    if(prevmodes.rbegin()[0]!=mode){
+    if (prevmodes.rbegin()[0] != mode) {
         prevmodes.push_back(mode);
-        mode_indexes.push_back(m.vertex_list.size()/3);        
+        mode_indexes.push_back(m.vertex_list.size() / 3);
     }
     if (mode == 0) {
         m.vertex_list.push_back(v);
-        if(m.vertex_list.size()%3==0){
-   			initBuffersGL();
+        if (m.vertex_list.size() % 3 == 0) {
+            initBuffersGL();
         }
     }
     else if (mode == 1) {
-        if(mode_indexes.rbegin()[0]==m.vertex_list.size()/3){
-        	m.vertex_list.push_back(v);
-        	if(m.vertex_list.size()%3==0){
-        		initBuffersGL();
-        	}
+        if (mode_indexes.rbegin()[0] == m.vertex_list.size() / 3) {
+            m.vertex_list.push_back(v);
+            if (m.vertex_list.size() % 3 == 0) {
+                initBuffersGL();
+            }
         }
-        else{
-        	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
-        	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
-        	m.vertex_list.push_back(v);
-        	initBuffersGL();
+        else {
+            m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
+            m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
+            m.vertex_list.push_back(v);
+            initBuffersGL();
         }
     }
     else if (mode == 2) {
-        if(mode_indexes.rbegin()[0]==m.vertex_list.size()/3){
+        if (mode_indexes.rbegin()[0] == m.vertex_list.size() / 3) {
             m.vertex_list.push_back(v);
-        	if(m.vertex_list.size()%3==0){
-        		initBuffersGL();
-        	}
+            if (m.vertex_list.size() % 3 == 0) {
+                initBuffersGL();
+            }
         }
-        else{
-        	m.vertex_list.push_back(m.vertex_list[(mode_indexes.rbegin()[0])*3]);
-        	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
-        	m.vertex_list.push_back(v);
-        	initBuffersGL();
-        }   
+        else {
+            m.vertex_list.push_back(m.vertex_list[(mode_indexes.rbegin()[0]) * 3]);
+            m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
+            m.vertex_list.push_back(v);
+            initBuffersGL();
+        }
     }
     return;
 }
 
 void add_point_to_buffer(float x, float y) {
     Vertex v;
-    v.position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x-xpos, y -ypos, z- zpos, 1.0));
+    v.position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x - xpos, y - ypos, z - zpos, 1.0));
     printf("Real position on screen: %.1f \t %.1f \t %.1f\n", v.position.x, v.position.y, v.position.z);
     v.color = glm::vec3(m.red_value, m.green_value, m.blue_value);
     modify_configurations(v);
@@ -110,50 +110,50 @@ void add_point_to_buffer(float x, float y) {
 }
 
 void remove_point_from_buffer(void) {
-	
-	//std::cout << m.vertex_list.size() << prevmodes.size() << mode_indexes.size() << "\n";
-	if(m.vertex_list.empty()){
-    	return;
+
+    //std::cout << m.vertex_list.size() << prevmodes.size() << mode_indexes.size() << "\n";
+    if (m.vertex_list.empty()) {
+        return;
     }
-    if(m.vertex_list.size()%3!=0){
-    	m.vertex_list.pop_back();	
+    if (m.vertex_list.size() % 3 != 0) {
+        m.vertex_list.pop_back();
     }
-    else{
-    	int the_mode;
-    	while(1){
-    		the_mode = prevmodes.rbegin()[0];
-			if(m.vertex_list.size()/3 > mode_indexes.rbegin()[0]){
-				if ( the_mode == 0 ) {
-					m.vertex_list.pop_back();
-					initBuffersGL();
+    else {
+        int the_mode;
+        while (1) {
+            the_mode = prevmodes.rbegin()[0];
+            if (m.vertex_list.size() / 3 > mode_indexes.rbegin()[0]) {
+                if ( the_mode == 0 ) {
+                    m.vertex_list.pop_back();
+                    initBuffersGL();
                     break;
-				}
-				else if(m.vertex_list.size()/3==mode_indexes.rbegin()[0]+1){
-					m.vertex_list.pop_back();
-					initBuffersGL();
-					break;	
-				}
-				else
-				{
-					m.vertex_list.pop_back();
-					m.vertex_list.pop_back();
-					m.vertex_list.pop_back();
-					initBuffersGL();
-					break;	
-				}
-			}
-			else{
-				if ( prevmodes.size() == 1){
+                }
+                else if (m.vertex_list.size() / 3 == mode_indexes.rbegin()[0] + 1) {
+                    m.vertex_list.pop_back();
+                    initBuffersGL();
+                    break;
+                }
+                else
+                {
+                    m.vertex_list.pop_back();
+                    m.vertex_list.pop_back();
+                    m.vertex_list.pop_back();
+                    initBuffersGL();
+                    break;
+                }
+            }
+            else {
+                if ( prevmodes.size() == 1) {
                     break;
                 }
                 mode_indexes.pop_back();
-				prevmodes.pop_back();
-				continue;
-			}
-    	}
+                prevmodes.pop_back();
+                continue;
+            }
+        }
     }
 }
-    
+
 
 //-----------------------------------------------------------------
 
@@ -227,43 +227,43 @@ void handle_depth() {
 }
 
 void handle_color() {
-    
+
     if ( key_state_color[0] ) {
         if (key_state_io[2])
             m.red_value += 0.1 ;
-        else 
+        else
             m.red_value += 0.5 ;
-        key_state_color[0] = false;    
-        
+        key_state_color[0] = false;
+
         if (m.red_value >= 1.0)
             m.red_value = 1.0;
-    
+
         printf("Red value is %f \n", m.red_value);
 
     }
-    
+
     else if ( key_state_color[1] ) {
         if (key_state_io[2])
             m.green_value += 0.1 ;
-        else 
+        else
             m.green_value += 0.5 ;
-        key_state_color[1] = false;    
-        
+        key_state_color[1] = false;
+
         if (m.green_value >= 1.0)
             m.green_value = 1.0;
-        
+
         printf("Green value is %f \n", m.green_value);
     }
-    
+
     else if ( key_state_color[2] ) {
         if (key_state_io[2])
             m.blue_value += 0.1 ;
-        else 
+        else
             m.blue_value += 0.5 ;
         key_state_color[2] = false;
 
         if (m.blue_value >= 1.0)
-            m.blue_value = 1.0;    
+            m.blue_value = 1.0;
 
         printf("Blue value is %f \n", m.blue_value);
     }
@@ -271,13 +271,13 @@ void handle_color() {
     else if ( key_state_color[3] ) {
         if (key_state_io[2])
             m.red_value -= 0.1 ;
-        else 
+        else
             m.red_value -= 0.5 ;
-        key_state_color[3] = false;    
-        
+        key_state_color[3] = false;
+
         if (m.red_value <= 0.0)
             m.red_value = 0.0;
-        
+
         printf("Red value is %f \n", m.red_value);
 
     }
@@ -285,51 +285,51 @@ void handle_color() {
     else if ( key_state_color[4] ) {
         if (key_state_io[2])
             m.green_value -= 0.1 ;
-        else 
+        else
             m.green_value -= 0.5 ;
-        key_state_color[4] = false;   
+        key_state_color[4] = false;
 
         if (m.green_value <= 0.0)
-            m.green_value = 0.0; 
-        
+            m.green_value = 0.0;
+
         printf("Green value is %f \n", m.green_value);
     }
 
     else if ( key_state_color[5] ) {
         if (key_state_io[2])
             m.blue_value -= 0.1 ;
-        else 
+        else
             m.blue_value -= 0.5 ;
-        key_state_color[5] = false;    
-        
+        key_state_color[5] = false;
+
         if (m.blue_value <= 0.0)
             m.blue_value = 0.0;
-    
+
         printf("Blue value is %f \n", m.blue_value);
     }
 
-    
+
 }
 
 void handle_entry_mode() {
     if (key_state_entry[0]) {
         printf("Entry Mode: GL_TRIANGLES\n");
         mode = 0;
-        mode_indexes.push_back(m.vertex_list.size()/3);
+        mode_indexes.push_back(m.vertex_list.size() / 3);
         prevmodes.push_back(0);
         key_state_entry[0] = false;
     }
     if (key_state_entry[1]) {
         printf("Entry Mode: GL_STRIP\n");
         mode = 1;
-        mode_indexes.push_back(m.vertex_list.size()/3);
+        mode_indexes.push_back(m.vertex_list.size() / 3);
         prevmodes.push_back(1);
         key_state_entry[1] = false;
     }
     if (key_state_entry[2]) {
         printf("Entry Mode: GL_FAN\n");
         mode = 2;
-        mode_indexes.push_back(m.vertex_list.size()/3);
+        mode_indexes.push_back(m.vertex_list.size() / 3);
         prevmodes.push_back(2);
         key_state_entry[2] = false;
     }
@@ -409,6 +409,9 @@ void handle_mouse_location(GLFWwindow* window) {
     if (key_state_mouse_location) {
         float x, y;
         print_abs_rel_cursor_pos(window, x, y);
+        Vertex v;
+        v.position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x - xpos, y - ypos, z - zpos, 1.0));
+        printf("Real position on screen: %.1f \t %.1f \t %.1f\n", v.position.x, v.position.y, v.position.z);
         key_state_mouse_location = false;
     }
 }
