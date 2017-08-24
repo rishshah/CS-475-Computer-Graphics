@@ -1,6 +1,7 @@
 #include "model.hpp"
 
-bool Model::load(char* filename) {
+bool Model::load(std::string filenamex) {
+	const char* filename = filenamex.c_str();
 	FILE *fp_input = fopen(filename, "r" );
 	if (fp_input ==  NULL) {
 		printf("Error opening file %s\n", filename);
@@ -21,7 +22,8 @@ bool Model::load(char* filename) {
 	return true;
 }
 
-bool Model::save(char* filename) {
+bool Model::save(std::string filenamex) {
+	const char* filename = filenamex.c_str();
 	FILE *fp_output = fopen(filename, "w");
 	if (fp_output ==  NULL) {
 		printf("Error creating file %s\n", filename);

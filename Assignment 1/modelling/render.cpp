@@ -1,7 +1,8 @@
 #include "render.hpp"
-
 const float ROT_90 = glm::half_pi<float>();
 const float FIXED_TRANS_DELTA = 0.1;
+const std::string the_save_model_file = "save_model.raw";
+const std::string the_load_model_file = "model.raw";
 
 float z = 0.0;
 int vertex_num_to_start = 0;
@@ -9,12 +10,10 @@ int mode = 0;
 
 //extern variables
 std::vector<bool> key_state_io(3, false);
-std::vector<bool> key_state_color(3, false);
+std::vector<bool> key_state_color(6, false);
 std::vector<bool> key_state_entry(3, false);
 std::vector<int> prevmodes(1,0);
 std::vector<int> mode_indexes(1,0);
-// std::prevmodes.resize(0);
-// std::mode_indexes.resize(0);
 
 bool left_click = false;
 bool key_state_mouse_location = false;
@@ -45,18 +44,18 @@ void initBuffersGL() {
 }
 
 void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
+    double x_pos, y_pos;
+    glfwGetCursorPos(window, &x_pos, &y_pos);
     int width, height;
     // std::cout << xpos << " " << ypos << "\n";
     glfwGetWindowSize(window, &width, &height);
     float xwid = width / 2.0;
     float yht = height / 2.0;
-    x = int((xpos - xwid) * 100 / xwid + 0.5) / 50.0 ;
-    y = -int((ypos - yht) * 100 / yht + 0.5) / 50.0 ;
+    x = int((x_pos - xwid) * 100 / xwid + 0.5) / 50.0 ;
+    y = -int((y_pos - yht) * 100 / yht + 0.5) / 50.0 ;
     x = round(x * 10) / 10.0;
     y = round(y * 10) / 10.0;
-    printf("%.1f \t %.1f \t %.1f\n", x, y, z);
+    //printf("Relative Position on screen: %.1f \t %.1f \t %.1f\n", x, y, z);
 }
 
 void modify_configurations(Vertex v) {
@@ -67,22 +66,17 @@ void modify_configurations(Vertex v) {
     if (mode == 0) {
         m.vertex_list.push_back(v);
         if(m.vertex_list.size()%3==0){
-        	//m.num_of_triangles++;
    			initBuffersGL();
-   	    	// create triangle
         }
     }
     else if (mode == 1) {
         if(mode_indexes.rbegin()[0]==m.vertex_list.size()/3){
         	m.vertex_list.push_back(v);
         	if(m.vertex_list.size()%3==0){
-        		//m.num_of_triangles++;
         		initBuffersGL();
-        		// create triangle
         	}
         }
         else{
-        	//m.num_of_triangles++;
         	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
         	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
         	m.vertex_list.push_back(v);
@@ -90,18 +84,13 @@ void modify_configurations(Vertex v) {
         }
     }
     else if (mode == 2) {
-     	//std::cout << "yeah\n" ;
         if(mode_indexes.rbegin()[0]==m.vertex_list.size()/3){
-        	//std::cout << "yay\n" ;
             m.vertex_list.push_back(v);
         	if(m.vertex_list.size()%3==0){
         		initBuffersGL();
-        		// create triangle
         	}
         }
         else{
-        	//std::cout << "no\n" ;
-            //m.num_of_triangles++;
         	m.vertex_list.push_back(m.vertex_list[(mode_indexes.rbegin()[0])*3]);
         	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
         	m.vertex_list.push_back(v);
@@ -114,6 +103,7 @@ void modify_configurations(Vertex v) {
 void add_point_to_buffer(float x, float y) {
     Vertex v;
     v.position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x-xpos, y -ypos, z- zpos, 1.0));
+    printf("Real position on screen: %.1f \t %.1f \t %.1f\n", v.position.x, v.position.y, v.position.z);
     v.color = glm::vec3(m.red_value, m.green_value, m.blue_value);
     modify_configurations(v);
     m.calc_centroid();
@@ -121,13 +111,10 @@ void add_point_to_buffer(float x, float y) {
 
 void remove_point_from_buffer(void) {
 	
-	std::cout << m.vertex_list.size() << prevmodes.size() << mode_indexes.size() << "\n";
+	//std::cout << m.vertex_list.size() << prevmodes.size() << mode_indexes.size() << "\n";
 	if(m.vertex_list.empty()){
     	return;
     }
-    // if(prevmodes.empty()){
-    // 	return;
-    // }
     if(m.vertex_list.size()%3!=0){
     	m.vertex_list.pop_back();	
     }
@@ -137,7 +124,6 @@ void remove_point_from_buffer(void) {
     		the_mode = prevmodes.rbegin()[0];
 			if(m.vertex_list.size()/3 > mode_indexes.rbegin()[0]){
 				if ( the_mode == 0 ) {
-					//m.num_of_triangles--;
 					m.vertex_list.pop_back();
 					initBuffersGL();
                     break;
@@ -149,7 +135,6 @@ void remove_point_from_buffer(void) {
 				}
 				else
 				{
-					//m.num_of_triangles--;
 					m.vertex_list.pop_back();
 					m.vertex_list.pop_back();
 					m.vertex_list.pop_back();
@@ -242,48 +227,88 @@ void handle_depth() {
 }
 
 void handle_color() {
+    
     if ( key_state_color[0] ) {
-        if (key_state_io[2]) {
-            if (m.red_value >= 0.09) {
-                m.red_value -= 0.1;
-            }
-        }
-        else {
-            if (m.red_value <= 0.91) {
-                m.red_value += 0.1;
-            }
-        }
-        key_state_color[0] = false;
+        if (key_state_io[2])
+            m.red_value += 0.1 ;
+        else 
+            m.red_value += 0.5 ;
+        key_state_color[0] = false;    
+        
+        if (m.red_value >= 1.0)
+            m.red_value = 1.0;
+    
         printf("Red value is %f \n", m.red_value);
+
     }
-    if ( key_state_color[1] ) {
-        if (key_state_io[2]) {
-            if (m.green_value >= 0.09) {
-                m.green_value -= 0.1;
-            }
-        }
-        else {
-            if (m.green_value <= 0.91) {
-                m.green_value += 0.1;
-            }
-        }
-        key_state_color[1] = false;
+    
+    else if ( key_state_color[1] ) {
+        if (key_state_io[2])
+            m.green_value += 0.1 ;
+        else 
+            m.green_value += 0.5 ;
+        key_state_color[1] = false;    
+        
+        if (m.green_value >= 1.0)
+            m.green_value = 1.0;
+        
         printf("Green value is %f \n", m.green_value);
     }
-    if ( key_state_color[2] ) {
-        if (key_state_io[2]) {
-            if (m.blue_value >= 0.09) {
-                m.blue_value -= 0.1;
-            }
-        }
-        else {
-            if (m.blue_value <= 0.91) {
-                m.blue_value += 0.1;
-            }
-        }
+    
+    else if ( key_state_color[2] ) {
+        if (key_state_io[2])
+            m.blue_value += 0.1 ;
+        else 
+            m.blue_value += 0.5 ;
         key_state_color[2] = false;
+
+        if (m.blue_value >= 1.0)
+            m.blue_value = 1.0;    
+
         printf("Blue value is %f \n", m.blue_value);
     }
+
+    else if ( key_state_color[3] ) {
+        if (key_state_io[2])
+            m.red_value -= 0.1 ;
+        else 
+            m.red_value -= 0.5 ;
+        key_state_color[3] = false;    
+        
+        if (m.red_value <= 0.0)
+            m.red_value = 0.0;
+        
+        printf("Red value is %f \n", m.red_value);
+
+    }
+
+    else if ( key_state_color[4] ) {
+        if (key_state_io[2])
+            m.green_value -= 0.1 ;
+        else 
+            m.green_value -= 0.5 ;
+        key_state_color[4] = false;   
+
+        if (m.green_value <= 0.0)
+            m.green_value = 0.0; 
+        
+        printf("Green value is %f \n", m.green_value);
+    }
+
+    else if ( key_state_color[5] ) {
+        if (key_state_io[2])
+            m.blue_value -= 0.1 ;
+        else 
+            m.blue_value -= 0.5 ;
+        key_state_color[5] = false;    
+        
+        if (m.blue_value <= 0.0)
+            m.blue_value = 0.0;
+    
+        printf("Blue value is %f \n", m.blue_value);
+    }
+
+    
 }
 
 void handle_entry_mode() {
@@ -312,14 +337,16 @@ void handle_entry_mode() {
 
 void handle_io() {
     if (key_state_io[0]) {
-        m.save((char*)"./model/do_it_cricket_bat.raw");
-        printf("Model saved in cricket_bat.raw!\n");
+        const char* fs = the_save_model_file.c_str();
+        m.save("./binary_models/" + the_save_model_file);
+        printf("Model saved in %s\n", fs );
         key_state_io[0] = false;
     }
     if (key_state_io[1]) {
-        m.load((char*)"./binary_models/spectacles.raw");
+        const char* fl = the_load_model_file.c_str();
+        m.load("./binary_models/" + the_load_model_file);
         initBuffersGL();
-        printf("Model loaded from cricket_bat.raw!\n");
+        printf("Model loaded from %s\n", fl);
         key_state_io[1] = false;
     }
 }

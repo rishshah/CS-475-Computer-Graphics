@@ -46,7 +46,7 @@ public:
 	*
 	* @return     { true if successfully loaded }
 	*/
-	bool load(char* filename);
+	bool load(std::string filenamex);
 	/**
 	* @brief      { save model to a file }
 	*
@@ -54,7 +54,7 @@ public:
 	*
 	* @return     { true if successfully saved }
 	*/
-	bool save(char* filename);
+	bool save(std::string filenamex);
 	/**
 	* @brief      { assign model buffer to given vbo and vaos and accordingly
 	*             adjust how the values will be interpreted by vertex shader}

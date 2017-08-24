@@ -1,5 +1,4 @@
 *.o
 .fuse*
-*.raw
 ./executable
 ./html/*

@@ -49,10 +49,10 @@ void io_callback(int key, int action) {
  * @param[in]  action  The action (release or press)
  */
 void color_callback(int key, int action) {    
-    if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
         key_state_color[0] = true;
     }
-    else if (key == GLFW_KEY_T && action == GLFW_RELEASE) {
+    else if (key == GLFW_KEY_R && action == GLFW_RELEASE) {
         key_state_color[0] = false;
     }
     
@@ -68,6 +68,27 @@ void color_callback(int key, int action) {
     }
     else if (key == GLFW_KEY_B && action == GLFW_RELEASE) {
         key_state_color[2] = false;
+    }
+    
+    else if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+        key_state_color[3] = true;
+    }
+    else if (key == GLFW_KEY_T && action == GLFW_RELEASE) {
+        key_state_color[3] = false;
+    }
+    
+    else if (key == GLFW_KEY_H && action == GLFW_PRESS) {
+        key_state_color[4] = true;
+    }
+    else if (key == GLFW_KEY_H && action == GLFW_RELEASE) {
+        key_state_color[4] = false;
+    }
+    
+    else if (key == GLFW_KEY_N && action == GLFW_PRESS) {
+        key_state_color[5] = true;
+    }
+    else if (key == GLFW_KEY_N && action == GLFW_RELEASE) {
+        key_state_color[5] = false;
     }
 }
 
