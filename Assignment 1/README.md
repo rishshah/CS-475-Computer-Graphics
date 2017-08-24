@@ -8,18 +8,18 @@
 
 ### 1. Modelling Mode [M]
 
-- `[Left Click]` -> Add a point to Model
-- `[Shift Left Click]` -> Remove the last added point
-- `[K]` -> Save the model created in "saved_model.raw"
-- `[L]` -> Load the model from "model.raw"
+- `[ Left Click ]` -> Add a point to Model
+- `[ Shift Left Click ]` -> Remove the last added point
+- `[ K ]` -> Save the model created in "saved_model.raw"
+- `[ L ]` -> Load the model from "model.raw"
 
 #### Extra Features in Modelling Mode
 - `[ Shift Left & {R,G,B} and {T,H,N} ]` to adjust color of points to add
 - `[ Inspection Controls ]` for rotation by 90 degrees to change planes of drawing
-- `[W,A,S,D]` for translation in modelling mode to draw in wider space 
+- `[ W,A,S,D ]` for translation in modelling mode to draw in wider space 
 - `[ Shift Left & {Z,X} ]` for moving the plane of modelling by one unit in viewing axis
-- `[1,2,3]` for deciding entry mode of points that form triangles
-- `[Left-Ctrl]` for displaying current drawing mouse position
+- `[ 1,2,3 ]` for deciding entry mode of points that form triangles
+- `[ Left-Ctrl ]` for displaying current drawing mouse position
 -  Colored point markers for displaying last 2 drawing points
 -  Grid display and point snapping for easy drawing
  
@@ -28,11 +28,11 @@
 ### 2. Inspection Mode [I] 
 
 - All rotations about centroid
-- `[Up/Down]` -> rotate about X axis 
-- `[Left/Right]` -> rotate about Y axis
-- `[PgUp/PgDown]` -> rotate about Z axis
-- `[R]` -> move the origin to centroid of model(?)
-- `[W,S,A,D,Z,X]` -> key should allow translation along +ve and -ve Y,X and Z axis respectively
+- `[ Up/Down ]` -> rotate about X axis 
+- `[ Left/Right ]` -> rotate about Y axis
+- `[ PgUp/PgDown ]` -> rotate about Z axis
+- `[ R ]` -> move the origin to centroid of model(?)
+- `[ W,S,A,D,Z,X ]` -> key should allow translation along +ve and -ve Y,X and Z axis respectively
 
 ---
 
@@ -46,15 +46,10 @@
 - Managed data strcuture for efficient implementation of modelling part
 - Click Input
 - Giving features and drawing corresponding to this
-- Final Models
+- Final Models and debugging
 	1. Spectacles created
 	2. Bat created
 	3. Umbrella created
-
-***
-
-### In Progress
-- Creating 2 structures
 
 ---
 
