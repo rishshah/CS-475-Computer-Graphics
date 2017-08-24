@@ -9,6 +9,7 @@ int vertex_num_to_start = 0;
 int mode = 0;
 
 //extern variables
+
 std::vector<bool> key_state_io(3, false);
 std::vector<bool> key_state_color(6, false);
 std::vector<bool> key_state_entry(3, false);
