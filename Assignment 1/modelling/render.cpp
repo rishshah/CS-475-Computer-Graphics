@@ -60,6 +60,10 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
 }
 
 void modify_configurations(Vertex v) {
+    if(prevmodes.rbegin()[0]!=mode){
+        prevmodes.push_back(mode);
+        mode_indexes.push_back(m.vertex_list.size()/3);        
+    }
     if (mode == 0) {
         m.vertex_list.push_back(v);
         if(m.vertex_list.size()%3==0){
@@ -89,17 +93,21 @@ void modify_configurations(Vertex v) {
         }
     }
     else if (mode == 2) {
-     	if(mode_indexes.rbegin()[0]==m.vertex_list.size()/3){
-        	m.vertex_list.push_back(v);
+     	//std::cout << "yeah\n" ;
+        if(mode_indexes.rbegin()[0]==m.vertex_list.size()/3){
+        	//std::cout << "yay\n" ;
+            m.vertex_list.push_back(v);
         	if(m.vertex_list.size()%3==0){
-        		//m.num_of_triangles++;
+        		//std::cout << "oh\n" ;
+                //m.num_of_triangles++;
         		m.segregate_vertices();
         		initBuffersGL();
         		// create triangle
         	}
         }
         else{
-        	//m.num_of_triangles++;
+        	//std::cout << "no\n" ;
+            //m.num_of_triangles++;
         	m.vertex_list.push_back(m.vertex_list[(mode_indexes.rbegin()[0])*3]);
         	m.vertex_list.push_back(m.vertex_list.rbegin()[1]);
         	m.vertex_list.push_back(v);
@@ -112,7 +120,7 @@ void modify_configurations(Vertex v) {
 
 void add_point_to_buffer(float x, float y) {
     Vertex v;
-    v.position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x, y, z, 1.0));
+    v.position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x-xpos, y -ypos, z- zpos, 1.0));
     v.color = glm::vec3(m.red_value, m.green_value, m.blue_value);
     modify_configurations(v);
     m.calc_centroid();
@@ -124,9 +132,9 @@ void remove_point_from_buffer(void) {
 	if(m.vertex_list.empty()){
     	return;
     }
-    if(prevmodes.empty()){
-    	return;
-    }
+    // if(prevmodes.empty()){
+    // 	return;
+    // }
     if(m.vertex_list.size()%3!=0){
     	m.vertex_list.pop_back();	
     }
@@ -140,7 +148,7 @@ void remove_point_from_buffer(void) {
 					m.vertex_list.pop_back();
 					m.segregate_vertices();
 					initBuffersGL();
-					break;
+                    break;
 				}
 				else if(m.vertex_list.size()/3==mode_indexes.rbegin()[0]+1){
 					m.vertex_list.pop_back();
@@ -160,7 +168,10 @@ void remove_point_from_buffer(void) {
 				}
 			}
 			else{
-				mode_indexes.pop_back();
+				if ( prevmodes.size() == 1){
+                    break;
+                }
+                mode_indexes.pop_back();
 				prevmodes.pop_back();
 				continue;
 			}
@@ -201,26 +212,21 @@ void handle_fixed_rotation() {
 }
 
 void handle_fixed_translation() {
-    if (key_state_recenter) {
-        xpos = ypos = zpos = 0.0f;
+    if (key_state_translation[0]) {
+        xpos -= FIXED_TRANS_DELTA;
     }
-    else {
-        if (key_state_translation[0]) {
-            xpos -= FIXED_TRANS_DELTA;
-        }
-        else if (key_state_translation[1]) {
-            xpos += FIXED_TRANS_DELTA;
-        }
-
-        if (key_state_translation[2]) {
-            ypos += FIXED_TRANS_DELTA;
-        }
-        else if (key_state_translation[3]) {
-            ypos -= FIXED_TRANS_DELTA;
-        }
+    else if (key_state_translation[1]) {
+        xpos += FIXED_TRANS_DELTA;
     }
 
-    translation_matrix = glm::translate(glm::mat4(1.0f), m.centroid + glm::vec3(xpos, ypos, zpos));
+    if (key_state_translation[2]) {
+        ypos += FIXED_TRANS_DELTA;
+    }
+    else if (key_state_translation[3]) {
+        ypos -= FIXED_TRANS_DELTA;
+    }
+
+    translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
 }
 
 void handle_depth() {
@@ -316,12 +322,12 @@ void handle_entry_mode() {
 
 void handle_io() {
     if (key_state_io[0]) {
-        m.save((char*)"./binary_models/saved_cricket_bat.raw");
+        m.save((char*)"./model/do_it_cricket_bat.raw");
         printf("Model saved in cricket_bat.raw!\n");
         key_state_io[0] = false;
     }
     if (key_state_io[1]) {
-        m.load((char*)"./binary_models/cricket_bat.raw");
+        m.load((char*)"./model/sir_cricket_bat.raw");
         initBuffersGL();
         printf("Model loaded from cricket_bat.raw!\n");
         key_state_io[1] = false;
@@ -415,7 +421,7 @@ void renderGL(GLFWwindow* window) {
     handle_fixed_translation();
 
     // Render model in modelling mode
-    modelview_matrix = ortho_projection_matrix * translation_matrix * rotation_matrix * m.centroid_translation_matrix;
+    modelview_matrix = ortho_projection_matrix * translation_matrix * rotation_matrix;
     glBindVertexArray(vao);
     glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
     glDrawArrays(GL_TRIANGLES, 0, m.vertex_list.size());
