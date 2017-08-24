@@ -8,14 +8,14 @@ GLuint vao_grid;
 namespace modellingMode {
 
 void initgrid() {
-    for (float x = -1; x < 1.01; x += 0.05) {
+    for (float x = -1; x < 1.01; x += 0.1) {
         grid_points_position.push_back(glm::vec3(x, 1.0f, 0.0f));
         grid_points_position.push_back(glm::vec3(x, -1.0f, 0.0f));
 
         grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
         grid_points_color.push_back(glm::vec3(0.2f, 0.2f, 0.2f));
     }
-    for (float y = -1; y < 1.01; y += 0.05) {
+    for (float y = -1; y < 1.01; y += 0.1) {
         grid_points_position.push_back(glm::vec3(1.0f, y, 0.0f));
         grid_points_position.push_back(glm::vec3(-1.0f, y, 0.0f));
 
