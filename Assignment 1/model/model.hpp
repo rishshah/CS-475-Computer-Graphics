@@ -7,7 +7,8 @@
 #include "../../glm/gtc/matrix_transform.hpp"
 #include "../framework/gl_framework.hpp"
 
-
+extern std::vector<int> prevmodes;
+extern std::vector<int> mode_indexes;
 /**
  * @brief      Class for storing vertex attributes.
  */

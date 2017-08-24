@@ -19,6 +19,8 @@ bool Model::load(std::string filenamex) {
 	fclose(fp_input);
 	calc_centroid();
 	
+	// mode_indexes[0] = vertex_list.size()/3;
+
 	return true;
 }
 
