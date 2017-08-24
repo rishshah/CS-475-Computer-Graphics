@@ -4,13 +4,18 @@
 /**
  * @brief      Loads the model stored in model.raw by default in  X Y Z R G B format
  */
-bool Model::load(std::string filenamex) {
-	const char* filename = filenamex.c_str();
-	FILE *fp_input = fopen(filename, "r" );
+bool Model::load() {
+	std::string filename;
+	printf("Enter the filename\n");
+	std::cin >> filename;
+	FILE *fp_input = fopen(("./binary_models/" + filename).c_str(), "r" );
 	if (fp_input ==  NULL) {
-		printf("Error opening file %s\n", filename);
+		printf("Error opening file %s\n", filename.c_str());
 		return false;
 	}
+
+	
+	vertex_list.resize(0);
 
 	float vx, vy, vz, cx, cy, cz;
 	while(fscanf (fp_input, "%f %f %f %f %f %f", &vx, &vy, &vz, &cx, &cy, &cz) != EOF){
@@ -22,9 +27,6 @@ bool Model::load(std::string filenamex) {
 
 	fclose(fp_input);
 	calc_centroid();
-	
-	// mode_indexes[0] = vertex_list.size()/3;
-
 	return true;
 }
 
@@ -32,11 +34,13 @@ bool Model::load(std::string filenamex) {
 /**
  * @brief 		Saves the model in filename saved_model.raw by default in  X Y Z R G B format    
  */
-bool Model::save(std::string filenamex) {
-	const char* filename = filenamex.c_str();
-	FILE *fp_output = fopen(filename, "w");
+bool Model::save() {
+	std::string filename;
+	printf("Enter the filename\n");
+	std::cin >> filename;
+	FILE *fp_output = fopen(("./binary_models/" + filename).c_str(), "w");
 	if (fp_output ==  NULL) {
-		printf("Error creating file %s\n", filename);
+		printf("Error creating file %s\n", filename.c_str());
 		return false;
 	}
 

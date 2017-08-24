@@ -4,10 +4,6 @@
 const float ROT_90 = glm::half_pi<float>();
 const float FIXED_TRANS_DELTA = 0.1;
 
-// Loading and saving from files
-const std::string the_save_model_file = "saved_model.raw";
-const std::string the_load_model_file = "model.raw";
-
 // For handling distance in out of plane direction
 float z = 0.0;
 
@@ -421,15 +417,13 @@ void handle_entry_mode() {
  */
 void handle_io() {
     if (key_state_io[0]) {
-        const char* fs = the_save_model_file.c_str();
-        if (m.save("./binary_models/" + the_save_model_file))
-            printf("Model saved in %s\n", fs );
+        if (m.save())
+            printf("Model saved!");
         key_state_io[0] = false;
     }
     if (key_state_io[1]) {
-        const char* fl = the_load_model_file.c_str();
-        if (m.load("./binary_models/" + the_load_model_file))
-            printf("Model loaded from %s\n", fl);
+        if (m.load())
+            printf("Model loaded!");
         initBuffersGL();
         key_state_io[1] = false;
     }

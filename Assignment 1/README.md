@@ -10,8 +10,8 @@
 
 - `[ Left Click ]` -> Add a point to Model
 - `[ Shift Left Click ]` -> Remove the last added point
-- `[ K ]` -> Save the model created in "saved_model.raw"
-- `[ L ]` -> Load the model from "model.raw"
+- `[ K ]` -> Save the model
+- `[ L ]` -> Load the model
 - Note to load a different model change `line number 9` in `"./modelling/render.cpp"` appropriately
 
 #### Extra Features in Modelling Mode

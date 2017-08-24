@@ -37,21 +37,17 @@ public:
 	void segregate_vertices();
 	void combine_configuration_and_vertices();
 	/**
-	* @brief     load model from a file 
-	*
-	* @param      filename  The filename to load from
-	*
+	* @brief     load model from a file
+	* 
 	* @return      true if successfully loaded 
 	*/
-	bool load(std::string filenamex);
+	bool load();
 	/**
 	* @brief     save model to a file 
 	*
-	* @param      filename  The filename to save the model into
-	*
 	* @return      true if successfully saved 
 	*/
-	bool save(std::string filenamex);
+	bool save();
 	/**
 	* @brief       assign model buffer to given vbo and vaos and accordingly
 	*             adjust how the values will be interpreted by vertex shader
