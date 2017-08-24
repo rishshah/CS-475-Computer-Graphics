@@ -15,7 +15,10 @@ bool key_state_recenter = false;
 
 GLfloat xpos = 0.0, ypos = 0.0, zpos = 0.0;
 
-//-----------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+/// @brief      In inspection mode, whenever up, down, left, right, Pg Up, Pg Dn is pressed, this function calculates the change on the rotation matrix and updates it. 
+///
 void handle_rotation() {
     if (key_state_rotation[0]) {
         rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
@@ -39,6 +42,10 @@ void handle_rotation() {
     }
 }
 
+
+/**
+ * @brief      In modelling mode, whenever W, A, S, D is pressed, this function calculates the change on the translation matrix in x, y direction. On pressinng Z, X it changes the matrix in the z direction.        
+ */
 void handle_translation() {
     if (key_state_recenter) {
         xpos = ypos = zpos = 0.0f;

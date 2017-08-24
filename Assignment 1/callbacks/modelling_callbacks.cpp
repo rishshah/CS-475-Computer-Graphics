@@ -40,9 +40,12 @@ void io_callback(int key, int action) {
 /**
  * @brief      { Update(Set/Reset) global shared varible key_state_color according to
  *             the key used. 
- *             0 - T |
+ *             0 - R |
  *             1 - G |
- *             2 - B 
+ *             2 - B |
+ *             3 - T |
+ *             4 - H |
+ *             5 - N
  *             }
  *
  * @param[in]  key     The key pressed
@@ -159,6 +162,3 @@ void mouse_callback(int button, int action) {
 }
 
 };
-
-
-
