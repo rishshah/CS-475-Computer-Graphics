@@ -2,7 +2,7 @@
 
 ## Tasks
 
-- Make three models `( umbrella, spectacles, cricket_bat )` from the code
+- Make three models `( umbrella, spectacles, cricket_bat )` in the designed modelling mode
 
 ***
 
@@ -12,6 +12,7 @@
 - `[ Shift Left Click ]` -> Remove the last added point
 - `[ K ]` -> Save the model created in "saved_model.raw"
 - `[ L ]` -> Load the model from "model.raw"
+- Note to load a different model change `line number 9` in `"./modelling/render.cpp"` appropriately
 
 #### Extra Features in Modelling Mode
 - `[ Shift Left & {R,G,B} and {T,H,N} ]` to adjust color of points to add
@@ -69,9 +70,10 @@
 ## HTML Report
 - requires installed doxygen 
 - `make report`
-- `open in web-browser ./html/index.html`
+- `open in web-browser "./screenshot_page/index.html"`
 
 ---
 
 ## Clean up
 - `make clean`
+	

@@ -6,7 +6,7 @@ const float FIXED_TRANS_DELTA = 0.1;
 
 // Loading and saving from files
 const std::string the_save_model_file = "saved_model.raw";
-const std::string the_load_model_file = "spectacles.raw";
+const std::string the_load_model_file = "cricket_bat.raw";
 
 // For handling distance in out of plane direction
 float z = 0.0;
