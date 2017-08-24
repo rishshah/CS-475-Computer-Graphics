@@ -2,7 +2,7 @@
 
 ## Tasks
 
-- Make three models `( laptop, spectacles, bat )` from the code
+- Make three models `( umbrella, spectacles, cricket_bat )` from the code
 
 ***
 
@@ -10,19 +10,17 @@
 
 - `[Left Click]` -> Add a point to Model
 - `[Shift Left Click]` -> Remove the last added point
-- `[K]` -> Save the model created in saved_model.raw
-- `[L]` -> Load the model from model.raw
-- ensure features to get 3D coordinates
+- `[K]` -> Save the model created in "saved_model.raw"
+- `[L]` -> Load the model from "model.raw"
 
 #### Extra Features in Modelling Mode
-- `[ Shift Left & {T,G,B} ]` to adjust color of points to add
+- `[ Shift Left & {R,G,B} and {T,H,N} ]` to adjust color of points to add
 - `[ Inspection Controls ]` for rotation by 90 degrees to change planes of drawing
 - `[W,A,S,D]` for translation in modelling mode to draw in wider space 
-- `[R]` for recentering the model
-- `[ Shift Left & {Z,X} ]` for moving the plane of modelling by one unit
+- `[ Shift Left & {Z,X} ]` for moving the plane of modelling by one unit in viewing axis
 - `[1,2,3]` for deciding entry mode of points that form triangles
 - `[Left-Ctrl]` for displaying current drawing mouse position
--  White point markers for displaying last 2 drawing points
+-  Colored point markers for displaying last 2 drawing points
 -  Grid display and point snapping for easy drawing
  
 ***
@@ -51,7 +49,7 @@
 - Final Models
 	1. Spectacles created
 	2. Bat created
-	3. Laptop created
+	3. Umbrella created
 
 ***
 

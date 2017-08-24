@@ -24,10 +24,6 @@ public:
 class Model {
 public:
 
-	float red_value = 1.0;
-	float green_value = 1.0;
-	float blue_value = 1.0;
-
 	std::vector<Vertex> vertex_list;
 
 	glm::vec3 centroid;
