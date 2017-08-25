@@ -206,9 +206,6 @@ void handle_fixed_translation() {
 }
 
 void handle_depth() {
-    if (key_state_recenter == true) {
-        z = 0;
-    }
     if (key_state_translation[4]) {
         if (!key_state_io[2])
             z += 1;

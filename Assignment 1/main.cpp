@@ -18,7 +18,7 @@ glm::mat4 camera_matrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0
 
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     if (mode_inspection)
         inspectMode::renderGL();
     else{
