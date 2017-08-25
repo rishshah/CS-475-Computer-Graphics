@@ -1,5 +1,9 @@
 #include "model.hpp"
 
+
+/**
+ * @brief      Loads the model stored in model.raw by default in  X Y Z R G B format
+ */
 bool Model::load(std::string filenamex) {
 	const char* filename = filenamex.c_str();
 	FILE *fp_input = fopen(filename, "r" );
@@ -24,6 +28,10 @@ bool Model::load(std::string filenamex) {
 	return true;
 }
 
+
+/**
+ * @brief 		Saves the model in filename saved_model.raw by default in  X Y Z R G B format    
+ */
 bool Model::save(std::string filenamex) {
 	const char* filename = filenamex.c_str();
 	FILE *fp_output = fopen(filename, "w");
@@ -41,6 +49,16 @@ bool Model::save(std::string filenamex) {
 	return true;
 }
 
+
+/**
+ * @brief      Assigns vertex list to the vertex buffer object and corresponding shader file attributes.
+ *
+ * @param      vao        The vao
+ * @param      vbo        The vbo
+ * @param      vPosition  The vertex_list positions
+ * @param      vColor     The vertex_list colors
+ */
+
 void Model::assignBuffer(GLuint &vao, GLuint &vbo, GLuint &vPosition, GLuint &vColor) {
 	size_t size_points = vertex_list.size() * sizeof (glm::vec3);
 
@@ -51,6 +69,9 @@ void Model::assignBuffer(GLuint &vao, GLuint &vbo, GLuint &vPosition, GLuint &vC
 }
 
 
+/**
+ * @brief      Calculates the centroid.
+ */
 void Model::calc_centroid() {
 	centroid = glm::vec3(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < vertex_list.size(); ++i) {

@@ -6,7 +6,7 @@ const float FIXED_TRANS_DELTA = 0.1;
 
 // Loading and saving from files
 const std::string the_save_model_file = "saved_model.raw";
-const std::string the_load_model_file = "spectacles.raw";
+const std::string the_load_model_file = "model.raw";
 
 // For handling distance in out of plane direction
 float z = 0.0;
@@ -14,6 +14,7 @@ float z = 0.0;
 // For handling modes of entry
 int vertex_num_to_start = 0;
 int mode = 0;
+
 std::vector<int> prevmodes(1, 0);
 std::vector<int> mode_indexes(1, 0);
 
@@ -38,6 +39,10 @@ bool key_state_mouse_location = false;
 
 //-----------------------------------------------------------------
 
+
+/**
+ * @brief      Generate and assign vertex buffer objects and vertex array objects for the model according to vertex_list
+ */
 void initBuffersGL() {
     glGenBuffers (1, &vbo);
     glBindBuffer (GL_ARRAY_BUFFER, vbo);
@@ -54,6 +59,14 @@ void initBuffersGL() {
     m.assignBuffer(vao, vbo, vPosition, vColor);
 }
 
+
+/**
+ * @brief      This function is called when a mouse click occurs. It gives the x-coordinate and y-coordinate, in relative terms to the window size.
+ *
+ * @param      window  The window from which we will get cursor position
+ * @param      x       The x-coordinate on the screen in the range -2,2 which is passed by reference and set in this function
+ * @param      y       The y-coordinate on the screen in the range -2,2 which is passed by reference and set in this function
+ */
 void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
     double x_pos, y_pos;
     glfwGetCursorPos(window, &x_pos, &y_pos);
@@ -69,6 +82,12 @@ void print_abs_rel_cursor_pos(GLFWwindow* window, float &x, float &y) {
     y = round(y * 10) / 10.0;
 }
 
+
+/**
+ * @brief      This function is used to determine how to add points to vertex list of model based on triangle mode, strip mode or fan mode
+ *
+ * @param[in]  v     Latest vertex created by user on mouse click
+ */
 void modify_configurations(Vertex v) {
     if (prevmodes.rbegin()[0] != mode) {
         prevmodes.push_back(mode);
@@ -111,6 +130,15 @@ void modify_configurations(Vertex v) {
     return;
 }
 
+
+/**
+ * @brief      Based on window relative x & y coordinates obtained from print_abs_rel_cursor_pos(), the translation matrix & the rotation matrix,
+ * This function calculates the actual 3d position of the latest vertex to be added to buffer. Then calls modify_configuration() which adds vertex to vertex_list.
+ *  
+ *
+ * @param[in]  x     The x-coordinate obtained from print_rel_abs_pos()
+ * @param[in]  y     The y-coordinate obtained from print_rel_abs_pos()
+ */
 void add_point_to_buffer(float x, float y) {
     Vertex v;
     v.position = glm::vec3( glm::transpose(rotation_matrix) * glm::vec4(x - xpos, y - ypos, z - zpos, 1.0));
@@ -120,6 +148,10 @@ void add_point_to_buffer(float x, float y) {
     m.calc_centroid();
 }
 
+
+/**
+ * @brief      Based on previous modes of drawing triangles, this function carefully removes the previously added point.
+ */
 void remove_point_from_buffer(void) {
     if (m.vertex_list.empty()) {
         return;
@@ -163,6 +195,10 @@ void remove_point_from_buffer(void) {
     }
 }
 
+
+/**
+ * @brief      Similar to initBuffersGL, but for displaying last 2 mouse points
+ */
 void draw_last_mouse_click() {
     glGenBuffers (1, &vbo_point);
     glBindBuffer (GL_ARRAY_BUFFER, vbo_point);
@@ -186,6 +222,9 @@ void draw_last_mouse_click() {
 
 //-----------------------------------------------------------------
 
+/**
+ * @brief      In modelling mode, whenever up, down, left, right, Pg Up, Pg Dn is pressed, this function calculates the change on the rotation matrix and updates it. 
+ */
 void handle_fixed_rotation() {
     if (key_state_rotation[0]) {
         rotation_matrix = glm::rotate(rotation_matrix, -ROT_90, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
@@ -215,6 +254,10 @@ void handle_fixed_rotation() {
     }
 }
 
+
+/**
+ * @brief      In modelling mode, whenever W, A, S, D is pressed, this function calculates the change on the translation matrix and updates it.       
+ */
 void handle_fixed_translation() {
     if (key_state_translation[0]) {
         xpos -= FIXED_TRANS_DELTA;
@@ -233,6 +276,10 @@ void handle_fixed_translation() {
     translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
 }
 
+
+/**
+ * @brief      Handles the 3rd dimension. Updates the z coordinate when z or x is pressed with or without left shift.
+ */
 void handle_depth() {
     if (key_state_translation[4]) {
         if (!key_state_io[2])
@@ -252,6 +299,11 @@ void handle_depth() {
     }
 }
 
+
+/**
+ * @brief      Handles Color changes for the next vertex to be drawn. For increase & decrease in R, G, B values by 0.5, use the keys (R,T) ; (G,H) ; (B,N) respectively. The range for the color values is from (0,1). Press left shift along with the previous keys to alter the values by 0.1 instead of 0.5 
+ *               
+ */
 void handle_color() {
     if ( key_state_color[0] ) {
         if (key_state_io[2])
@@ -334,6 +386,11 @@ void handle_color() {
     }
 }
 
+
+/**
+ * @brief      Press 1, 2, 3 to switch to Triangle mode, Strip mode, Fan mode respectively. 
+ */
+
 void handle_entry_mode() {
     if (key_state_entry[0]) {
         printf("Entry Mode: GL_TRIANGLES\n");
@@ -358,6 +415,10 @@ void handle_entry_mode() {
     }
 }
 
+
+/**
+ * @brief      Function to detect Key press on K for Saving model to saved_model.raw, L for loading model from model.raw
+ */
 void handle_io() {
     if (key_state_io[0]) {
         const char* fs = the_save_model_file.c_str();
@@ -374,6 +435,12 @@ void handle_io() {
     }
 }
 
+
+/**
+ * @brief      Handle mouse Click. Call function to add or remove points based on whether left shift was pressed.
+ *
+ * @param      window  The window
+ */
 void handle_mouse_click(GLFWwindow* window) {
     if (left_click && !key_state_io[2]) {
         float x, y;
@@ -414,6 +481,12 @@ void handle_mouse_click(GLFWwindow* window) {
     }
 }
 
+
+/**
+ * @brief      When ctrl is pressed, display the x,y,z coordinates of curreny location of mouse. 
+ *
+ * @param      window  The window
+ */
 void handle_mouse_location(GLFWwindow* window) {
     if (key_state_mouse_location) {
         float x, y;
@@ -427,6 +500,10 @@ void handle_mouse_location(GLFWwindow* window) {
 
 //-----------------------------------------------------------------
 
+
+/**
+ * @brief     Ensure when object is translated or rotated, the object showing last mouse click also moves. 
+ */
 void render_last_mouse_point() {
     if (vao_point != 0) {
         glPointSize(4.0f);

@@ -3,14 +3,14 @@
 namespace inspectMode {
 
 /**
- * @brief      { Update(Set/Reset) global shared varible key_state_rotation according to
+ * @brief      Update(Set/Reset) global shared varible key_state_rotation according to
  *             the key used. 
  *             0 - Up   |
  *             1 - Down     |
  *             2 - Left     |
  *             3 - Right    |
  *             4 - PageUp   |
- *             5 - PageDown }
+ *             5 - PageDown
  *
  * @param[in]  key     The key pressed
  * @param[in]  action  The action (release or press)
@@ -73,14 +73,14 @@ void rotation_callback(int key, int action) {
 }
 
 /**
- * @brief      { Update(Set/Reset) global shared varible key_state_translation according to
+ * @brief      Update(Set/Reset) global shared varible key_state_translation according to
  *             the key used. 
  *             0 - A    |
  *             1 - D    |
  *             2 - W    |
  *             3 - S    |
  *             4 - Z    |
- *             5 - X }
+ *             5 - X 
  *
  * @param[in]  key     The key pressed
  * @param[in]  action  The action (release or press)
@@ -142,9 +142,9 @@ void translation_callback(int key, int action) {
 }
 
 /**
- * @brief      { Update(Set/Reset) global shared varible key_state_recenter according to
+ * @brief      Update(Set/Reset) global shared varible key_state_recenter according to
  *             usage of key R. 
- *             }
+ *          
  *
  * @param[in]  key     The key pressed
  * @param[in]  action  The action (release or press)
