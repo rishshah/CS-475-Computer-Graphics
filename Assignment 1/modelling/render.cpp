@@ -517,7 +517,7 @@ void render_last_mouse_point() {
 namespace modellingMode {
 
 /**
- * @brief      { render model in modelling mode }
+ * @brief      render model in modelling mode
  *
  * @param      window  The window
  */

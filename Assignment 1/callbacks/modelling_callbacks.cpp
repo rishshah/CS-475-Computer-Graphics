@@ -3,12 +3,12 @@
 namespace modellingMode {
 
 /**
- * @brief      { Update(Set/Reset) global shared varible key_state_io according to
+ * @brief      Update(Set/Reset) global shared varible key_state_io according to
  *             the key used. 
  *             0 - K |
  *             1 - L |
  *             2 - Left Shift  
- *             }
+ *             
  *
  * @param[in]  key     The key pressed
  * @param[in]  action  The action (release or press)
@@ -38,7 +38,7 @@ void io_callback(int key, int action) {
 
 
 /**
- * @brief      { Update(Set/Reset) global shared varible key_state_color according to
+ * @brief       Update(Set/Reset) global shared varible key_state_color according to
  *             the key used. 
  *             0 - R |
  *             1 - G |
@@ -46,7 +46,7 @@ void io_callback(int key, int action) {
  *             3 - T |
  *             4 - H |
  *             5 - N
- *             }
+ *             
  *
  * @param[in]  key     The key pressed
  * @param[in]  action  The action (release or press)
@@ -96,12 +96,12 @@ void color_callback(int key, int action) {
 }
 
 /**
- * @brief      { Update(Set/Reset) global shared varible key_state_entry according to
+ * @brief      Update(Set/Reset) global shared varible key_state_entry according to
  *             the key used. 
  *             0 - Num 1 | 
  *             1 - Num 2 |
  *             2 - Num 3 
- *             }
+ *             
  *
  * @param[in]  key     The key pressed
  * @param[in]  action  The action (release or press)
@@ -130,8 +130,8 @@ void entry_mode_callback(int key, int action) {
 }
 
 /**
- * @brief      { Update(Set/Reset) global shared varible key_state_mouse_location
- *             according to the GLFW_KEY_LEFT_CONTROL  key used. }
+ * @brief      Update(Set/Reset) global shared varible key_state_mouse_location
+ *             according to the GLFW_KEY_LEFT_CONTROL  key used.
  *
  * @param[in]  key     The key pressed
  * @param[in]  action  The action (release or press)
@@ -146,8 +146,8 @@ void  mouse_locate_callback(int key, int action) {
 }
 
 /**
- * @brief      { Update(Set/Reset) global shared varible left_click if button is
- *             clicked or released}
+ * @brief      Update(Set/Reset) global shared varible left_click if button is
+ *             clicked or released
  *
  * @param[in]  button  The button clicked
  * @param[in]  action  The action (release or press)

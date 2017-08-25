@@ -23,20 +23,20 @@
 #include "../glm/gtc/type_ptr.hpp"
 
 /**
- * { One buffer and array object shared accross many files}
+ *  One buffer and array object shared accross many files
  */
 extern GLuint shaderProgram;  
 extern GLuint vbo, vao;
 
 /**
- * { CONST Shared variables}
+ *  CONST Shared variables
  */
 extern glm::mat4 perspective_projection_matrix;
 extern glm::mat4 ortho_projection_matrix;
 extern glm::mat4 camera_matrix;
 
 /**
- * { modleling matrices shared}
+ *  modleling matrices shared
  */
 extern glm::mat4 rotation_matrix;
 extern glm::mat4 translation_matrix;
@@ -46,12 +46,12 @@ extern glm::mat4 modelview_matrix;
 extern GLuint uModelViewMatrix;
 
 /**
- * {One model currently drawn shred across all files}
+ * One model currently drawn shred across all files
  */
 extern Model m;
 
 /**
- * @brief      { calls render functions according to the current mode }
+ * @brief      calls render functions according to the current mode 
  *
  * @param      window  The window object
  */
