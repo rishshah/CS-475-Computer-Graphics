@@ -4,9 +4,7 @@
 
 - Create a scene using models in assignment 1 and show modelling-viewing pipeline stages.
 
-***
-
-### 1. Keyboard callbacks [M]
+### Keyboard callbacks [M]
 
 - `[1]` -> WCS to VCS
 - `[2]` -> VCS to CCS
@@ -24,8 +22,6 @@
 - All 4 matrices have to be created
 - Clipping algorithm in CCS to be made
 
-***
-
 ### Done
 - File structure created
 - Scene file parsed
@@ -39,10 +35,11 @@
 - `cd "Assignment 2"`
 - `make`
 
-***
-
 ### Testing
 - `./executable`
+
+### Clean up
+- `make clean`
 
 ---
 
@@ -52,9 +49,6 @@
 - `open in web-browser "./screenshot_page/index.html"`
 
 ---
-
-## Clean up
-- `make clean`
 
 ## Refrences
 - HTML Report: `https://codyhouse.co/demo/expandable-image-gallery/index.html`
