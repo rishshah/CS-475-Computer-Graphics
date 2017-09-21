@@ -77,7 +77,7 @@
 ## Clean up
 - `make clean`
 
-## Refremces
+## Refrences
 - HTML Report: `https://codyhouse.co/demo/expandable-image-gallery/index.html`
 - Callbacks: `http://www.glfw.org/docs/latest/group__keys.html`
 - Tutorials: `https://github.com/paragchaudhuri/cs475-tutorials`

@@ -1,4 +1,0 @@
-*.o
-.fuse*
-./executable
-./html/*

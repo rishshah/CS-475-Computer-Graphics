@@ -1,0 +1,5 @@
+./**/*.o
+*fuse*
+./*/executable
+./*/html/*
+./*/binary_models/*
