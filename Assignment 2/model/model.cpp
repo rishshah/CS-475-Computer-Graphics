@@ -1,5 +1,16 @@
 #include "model.hpp"
 
+GLFWwindow* window;
+
+void printmat4(glm::mat4 Awv){
+	printf("\n");
+	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+	printf("\n");
+	return;
+}
 
 /**
  * @brief      Loads the model stored in model.raw by default in  X Y Z R G B format
@@ -126,4 +137,55 @@ void Scene::draw() {
 
 		glDrawArrays(GL_TRIANGLES, 0, scene.model_list[i].m.vertex_list.size());
 	}
+}
+
+void Scene::toVCS() {
+
+	glm::vec3 n = -(cam.look_at - cam.up)/glm::length(cam.look_at - cam.up);
+	printf("%f, %f, %f \n", n.x, n.y, n.z);
+	glm::vec3 u = glm::cross(cam.up, n)/glm::length(glm::cross(cam.up, n));
+	printf("%f, %f, %f \n", u.x, u.y, u.z);
+	glm::vec3 v = glm::cross(n,u);
+
+	glm::vec4 row1 = glm::vec4(u,(-1.0 * glm::dot(u, cam.eye_position)));
+	glm::vec4 row2 = glm::vec4(v,(-1.0 * glm::dot(v, cam.eye_position)));
+	glm::vec4 row3 = glm::vec4(n,(-1.0 * glm::dot(n, cam.eye_position)));
+	glm::vec4 row4 = glm::vec4(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
+
+	glm::mat4 Awv = glm::transpose(glm::mat4(row1, row2, row3, row4));
+
+	printmat4(Awv);
+
+	for (int i = 0; i < 3; ++i) {
+		model_list[i].transformation_mtx = Awv * model_list[i].transformation_mtx; 
+	}
+}
+
+void Scene::toCCS(){
+
+	glm::mat4 sh = glm::mat4(1.0f);
+	sh[2][0] = (cam.R + cam.L)/ (2.0*cam.N);
+	sh[2][1] = (cam.T + cam.B)/ (2.0*cam.N);
+	
+	glm::mat4 sc = glm::mat4(1.0f);
+	sc[0][0] = (2.0*cam.N)/(cam.R - cam.L);
+	sc[1][1] = (2.0*cam.N)/(cam.T - cam.B);
+	
+	glm::mat4 Nm = glm::mat4(1.0f);
+	Nm[2][2] = -(cam.F + cam.N)/(cam.F - cam.N);
+	Nm[2][3] = -1.0f;
+	Nm[3][2] = -(2.0*cam.F*cam.N)/(cam.F - cam.N);
+	Nm[3][3] = 0.0f;
+	
+	glm::mat4 totaltransform = Nm*sc*sh;
+
+	printmat4(totaltransform);
+}
+
+void Scene::toNDCS(){
+
+}
+
+void Scene::toDCS(){
+
 }

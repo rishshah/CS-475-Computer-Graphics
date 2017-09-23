@@ -9,15 +9,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	
 	else if (key == GLFW_KEY_1 and action == GLFW_PRESS) {
 		printf("1 pressed\n");
+		scene.toVCS();
 	}
 	else if (key == GLFW_KEY_2 and action == GLFW_PRESS) {
 		printf("2 pressed\n");
+		scene.toCCS();
 	}
 	else if (key == GLFW_KEY_3 and action == GLFW_PRESS) {
 		printf("3 pressed\n");
+		scene.toNDCS();
 	}
 	else if (key == GLFW_KEY_4 and action == GLFW_PRESS) {
 		printf("4 pressed\n");
+		scene.toDCS();
 	}
 }
 };

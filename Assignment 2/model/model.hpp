@@ -7,6 +7,8 @@
 #include "../../glm/gtc/matrix_transform.hpp"
 #include "../framework/gl_framework.hpp"
 
+extern GLFWwindow* window;
+
 /**
  * @brief      Class for storing vertex attributes.
  */
@@ -101,6 +103,14 @@ public:
 	bool load();
 
 	void draw();
+
+	void toVCS();
+
+	void toCCS();
+
+	void toNDCS();
+
+	void toDCS();
 };
 
 #include "../main.hpp"

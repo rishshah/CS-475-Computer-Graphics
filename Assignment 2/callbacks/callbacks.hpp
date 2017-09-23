@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <vector>
 #include <iostream>
-
+#include "../model/model.hpp"
 
 #include "../../glm/vec4.hpp"
 
