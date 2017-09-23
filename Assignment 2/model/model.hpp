@@ -97,6 +97,8 @@ public:
 	GLuint vao = 0;	
 	GLuint vPosition, vColor, uModelViewMatrix;
 
+	glm::mat4 dummy_matrix = glm::mat4(1.0f);
+
 	/**
 	 * @brief      load scene from a file
 	 *
@@ -104,7 +106,7 @@ public:
 	 */
 	bool load();
 
-	void draw(glm::mat4 ortho_projection_matrix);
+	void draw(glm::mat4 ortho_projection_matrix, glm::mat4 trans_rot);
 
 	void toVCS();
 

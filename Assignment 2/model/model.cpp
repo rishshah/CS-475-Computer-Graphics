@@ -122,14 +122,14 @@ bool Scene::load() {
 	return true;
 }
 
-void Scene::draw(glm::mat4 ortho_projection_matrix) {
+void Scene::draw(glm::mat4 ortho_projection_matrix, glm::mat4 trans_rot) {
 	glBindVertexArray(vao);
 
 	for (int i = 0; i < 3; ++i) {
-		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, ortho_projection_matrix * model_list[i].transformation_mtx);
+		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, ortho_projection_matrix * dummy_matrix * trans_rot * model_list[i].transformation_mtx);
 	}
 
-	cam.draw(ortho_projection_matrix);
+	cam.draw(ortho_projection_matrix * dummy_matrix * trans_rot);
 }
 
 Vertex::Vertex(){
@@ -234,11 +234,7 @@ void Scene::toVCS() {
 
 	glm::mat4 Awv = glm::transpose(glm::mat4(row1, row2, row3, row4));
 
-	printmat4(Awv);
-
-	for (int i = 0; i < 3; ++i) {
-		model_list[i].transformation_mtx = Awv * model_list[i].transformation_mtx; 
-	}
+	dummy_matrix = Awv;
 }
 
 void Scene::toCCS(){

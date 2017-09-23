@@ -5,7 +5,7 @@
 GLuint shaderProgram = 0;
 Scene scene;
 
-glm::mat4 ortho_projection_matrix = glm::ortho(-2.0, 2.0, -2.0, 2.0, -100.0, 100.0);
+glm::mat4 ortho_projection_matrix = glm::ortho(-4.0, 4.0, -4.0, 4.0, -100.0, 100.0);
 
 // Translation  and Rotation Parameters
 const GLfloat TRANS_DELTA = 0.04;
@@ -88,7 +88,7 @@ void renderGL(GLFWwindow* window) {
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     handle_translation();
     handle_rotation();
-    scene.draw(ortho_projection_matrix * translation_matrix * rotation_matrix);
+    scene.draw(ortho_projection_matrix, translation_matrix * rotation_matrix);
 }
 
 
