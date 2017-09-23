@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 
+#include "../model/model.hpp"
 #include "../../glm/vec4.hpp"
 
 extern std::vector<bool> key_state_translation;
