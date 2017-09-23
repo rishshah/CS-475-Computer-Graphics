@@ -7,14 +7,88 @@ Scene scene;
 
 glm::mat4 ortho_projection_matrix = glm::ortho(-2.0, 2.0, -2.0, 2.0, -100.0, 100.0);
 
+// Translation  and Rotation Parameters
+const GLfloat TRANS_DELTA = 0.04;
+const GLfloat ROT_DELTA = 0.04;
+
+const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+const glm::vec4 Z_UNIT = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+
+//extern variables
+glm::mat4 rotation_matrix = glm::mat4(1.0f);
+glm::mat4 translation_matrix = glm::mat4(1.0f);
+
+std::vector<bool> key_state_translation(6, false);
+std::vector<bool> key_state_rotation(6, false);
+
+bool key_state_recenter = false;
+
+GLfloat xpos = 0.0, ypos = 0.0, zpos = 0.0;
+
+void handle_rotation() {
+    if (key_state_rotation[0]) {
+        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
+    }
+    else if (key_state_rotation[1]) {
+        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
+    }
+
+    if (key_state_rotation[2]) {
+        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
+    }
+    else if (key_state_rotation[3]) {
+        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
+    }
+
+    if (key_state_rotation[4]) {
+        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
+    }
+    else if (key_state_rotation[5]) {
+        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
+    }
+}
+
+void handle_translation() {
+    if (key_state_recenter) {
+        xpos = ypos = zpos = 0.0f;
+    }
+    else {
+        if (key_state_translation[0]) {
+            xpos -= TRANS_DELTA;
+        }
+        else if (key_state_translation[1]) {
+            xpos += TRANS_DELTA;
+        }
+
+        if (key_state_translation[2]) {
+            ypos += TRANS_DELTA;
+        }
+        else if (key_state_translation[3]) {
+            ypos -= TRANS_DELTA;
+        }
+
+        if (key_state_translation[4]) {
+            zpos += TRANS_DELTA;
+        }
+        else if (key_state_translation[5]) {
+            zpos -= TRANS_DELTA;
+        }
+    }
+
+    translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
+}
+
+
 /**
  * @brief      The render function which in turn calls the inspection mode render or modelling mode render depending on the current mode
  */
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-
-    scene.draw();
+    handle_translation();
+    handle_rotation();
+    scene.draw(ortho_projection_matrix * translation_matrix * rotation_matrix);
 }
 
 

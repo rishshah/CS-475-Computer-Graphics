@@ -1,6 +1,4 @@
 #include "model.hpp"
-
-
 /**
  * @brief      Loads the model stored in model.raw by default in  X Y Z R G B format
  */
@@ -29,11 +27,8 @@ bool Model::load(char* filename) {
 /**
  * @brief      Assigns vertex list to the vertex buffer object and corresponding
  *             shader file attributes.
- *
- * @param      vPosition  The vertex_list positions
- * @param      vColor     The vertex_list colors
  */
-void Model::assignBuffer(GLuint &vPosition, GLuint &vColor) {
+void Model::assignBuffer() {
 	size_t size_points = vertex_list.size() * sizeof (glm::vec3);
 
 	glGenBuffers(1, &vbo);
@@ -79,7 +74,7 @@ bool Scene::load() {
 
 		WorldModel worldModel;
 		worldModel.m.load(model_filename);
-		worldModel.m.assignBuffer(vPosition, vColor);
+		worldModel.m.assignBuffer();
 
 		float a, b, c;
 		fscanf (fp_input, "%f %f %f", &a, &b, &c);
@@ -108,22 +103,105 @@ bool Scene::load() {
 	fscanf (fp_input, "%f %f %f %f", &cam.L, &cam.R, &cam.T, &cam.B);
 	fscanf (fp_input, "%f %f", &cam.N, &cam.F);
 
+	cam.create_frustum();
+
 	fclose(fp_input);
 	return true;
 }
 
-void Scene::draw() {
+void Scene::draw(glm::mat4 ortho_projection_matrix) {
 	glBindVertexArray(vao);
 
 	for (int i = 0; i < 3; ++i) {
-
-		glBindBuffer(GL_ARRAY_BUFFER, model_list[i].m.vbo);
-		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
-		glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
-
-		modelview_matrix = model_list[i].transformation_mtx;
-		glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
-
-		glDrawArrays(GL_TRIANGLES, 0, scene.model_list[i].m.vertex_list.size());
+		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, ortho_projection_matrix * model_list[i].transformation_mtx);
 	}
+
+	cam.draw(ortho_projection_matrix);
+}
+
+Vertex::Vertex(){
+	position = glm::vec3(0.0f, 0.0f, 0.0f);
+	color = glm::vec3(0.0f, 0.0f, 0.0f);
+}
+Vertex::Vertex(glm::vec3 p, glm::vec3 c){
+	position = p;
+	color = c;
+}
+
+void WorldCamera::create_frustum(){
+	glm::vec3 cyan = glm::vec3(0.0f, 1.0f, 1.0f);
+	glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);
+	glm::vec3 magenta = glm::vec3(1.0f, 0.0f, 1.0f);
+	float fL = F*L/N, fR = F*R/N, fT = F*T/N, fB = F*B/N;
+	
+	frustum.vertex_list.resize(0);
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
+		
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
+
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
+
+	eye.vertex_list.resize(0);
+	eye.vertex_list.push_back(Vertex(glm::vec3(0.0f, 0.0f, 0.0f), red));
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
+
+	vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
+	glEnableVertexAttribArray( vPosition );
+
+	vColor = glGetAttribLocation( shaderProgram, "vColor" );
+	glEnableVertexAttribArray( vColor );
+
+	frustum.assignBuffer();
+	eye.assignBuffer();	
+}
+
+void WorldCamera::draw(glm::mat4 ortho_projection_matrix){
+	glBindVertexArray(vao);
+
+	frustum.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, ortho_projection_matrix);
+	glPointSize(4.0f);
+	eye.draw(vPosition, vColor, uModelViewMatrix, GL_POINTS, ortho_projection_matrix);
+}
+
+void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 modelview_matrix){
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
+	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
+	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
+
+	glDrawArrays(mode, 0, vertex_list.size());
 }

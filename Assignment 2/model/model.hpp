@@ -12,6 +12,8 @@
  */
 class Vertex {
 public:
+	Vertex();
+	Vertex(glm::vec3 p, glm::vec3 c);
 	glm::vec3 position;
 	glm::vec3 color;
 };
@@ -22,7 +24,6 @@ public:
  */
 class Model {
 public:
-
 	std::vector<Vertex> vertex_list;
 	GLuint vbo;
 	/**
@@ -35,13 +36,10 @@ public:
 	/**
 	 * @brief      assign model buffer to vbo and accordingly adjust how the
 	 *             values will be interpreted by vertex shader
-	 *
-	 * @param      vPosition  The varible pointing to location of vertex
-	 *                        position in shader
-	 * @param      vColor     The varible pointing to location of vertex color
-	 *                        in shader
 	 */
-	void assignBuffer(GLuint &vPosition, GLuint &vColor);
+	void assignBuffer();
+
+	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 modelview_matrix);
 };
 
 
@@ -76,6 +74,13 @@ public:
 	glm::vec3 up;
 
 	float L, R, T, B, N, F;
+
+	GLuint vao;
+	GLuint vPosition, vColor, uModelViewMatrix;
+	Model frustum, eye;
+	
+	void create_frustum();
+	void draw(glm::mat4 ortho_projection_matrix);
 };
 
 /**
@@ -87,12 +92,9 @@ public:
 	std::vector<WorldModel> model_list;
 	WorldCamera cam;
 	
-	GLuint vao = 0;
-	GLuint uModelViewMatrix = 0;
-	GLuint vPosition, vColor;
+	GLuint vao = 0;	
+	GLuint vPosition, vColor, uModelViewMatrix;
 
-	glm::mat4 modelview_matrix;
-	
 	/**
 	 * @brief      load scene from a file
 	 *
@@ -100,7 +102,7 @@ public:
 	 */
 	bool load();
 
-	void draw();
+	void draw(glm::mat4 ortho_projection_matrix);
 };
 
 #include "../main.hpp"
