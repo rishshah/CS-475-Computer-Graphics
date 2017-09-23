@@ -165,19 +165,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	else if (key == GLFW_KEY_1 and action == GLFW_PRESS) {
 		printf("1 pressed\n");
-		scene.toVCS();
+		scene.dummy_matrix = scene.A_wcs_vcs;
 	}
 	else if (key == GLFW_KEY_2 and action == GLFW_PRESS) {
 		printf("2 pressed\n");
-		scene.toCCS();
+		scene.dummy_matrix = scene.A_vcs_ccs * scene.A_wcs_vcs;
 	}
 	else if (key == GLFW_KEY_3 and action == GLFW_PRESS) {
 		printf("3 pressed\n");
-		scene.toNDCS();
+		scene.dummy_matrix = scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
 	}
 	else if (key == GLFW_KEY_4 and action == GLFW_PRESS) {
 		printf("4 pressed\n");
-		scene.toDCS();
+		scene.dummy_matrix = scene.A_ndcs_dcs * scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
 	}
 	// Inspection callbacks
 	else if ( key == GLFW_KEY_UP or key == GLFW_KEY_DOWN or

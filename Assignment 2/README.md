@@ -10,6 +10,9 @@
 - `[2]` -> VCS to CCS
 - `[3]` -> CCS to NDCS
 - `[4]` -> NDCS to DCS
+- `[ Up/Down ]` -> rotate about X axis 
+- `[ Left/Right ]` -> rotate about Y axis
+- `[ PgUp/PgDown ]` -> rotate about Z axis
 - `[ W,S,A,D,Z,X ]` -> key should allow translation along +ve and -ve Y,X and Z axis respectively
 
 ---
@@ -18,14 +21,15 @@
 
 ### ToDo
 - Callbacks need to be added 
-- Camera setup needed in basic viewing
 - All 4 matrices have to be created
 - Clipping algorithm in CCS to be made
 
 ### Done
-- File structure created
-- Scene file parsed
+- File structure
+- Scene file parsing
 - Basic viewing complete
+- WCS view
+- Callbacks for translation and rotation 
 
 ---
 

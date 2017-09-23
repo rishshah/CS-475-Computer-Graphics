@@ -82,7 +82,7 @@ public:
 	Model frustum, eye;
 	
 	void create_frustum();
-	void draw(glm::mat4 ortho_projection_matrix);
+	void draw(glm::mat4 transformation_mtx);
 };
 
 /**
@@ -98,7 +98,11 @@ public:
 	GLuint vPosition, vColor, uModelViewMatrix;
 
 	glm::mat4 dummy_matrix = glm::mat4(1.0f);
-
+	
+	glm::mat4 A_wcs_vcs;
+	glm::mat4 A_vcs_ccs;
+	glm::mat4 A_ccs_ndcs;
+	glm::mat4 A_ndcs_dcs;
 	/**
 	 * @brief      load scene from a file
 	 *
@@ -106,15 +110,15 @@ public:
 	 */
 	bool load();
 
-	void draw(glm::mat4 ortho_projection_matrix, glm::mat4 trans_rot);
+	void draw(glm::mat4 transformation_mtx);
 
-	void toVCS();
+	void calc_WCS_VCS();
 
-	void toCCS();
+	void calc_VCS_CCS();
 
-	void toNDCS();
+	void calc_CCS_NDCS();
 
-	void toDCS();
+	void calc_NDCS_DCS();
 };
 
 #include "../main.hpp"

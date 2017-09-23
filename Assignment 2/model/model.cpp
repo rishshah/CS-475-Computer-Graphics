@@ -1,20 +1,28 @@
 #include "model.hpp"
 
-GLFWwindow* window;
-
-void printmat4(glm::mat4 Awv){
+void printmat4(glm::mat4 Awv) {
 	printf("\n");
 	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
 	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
 	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
 	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
 	printf("\n");
-	return;
 }
 
-/**
- * @brief      Loads the model stored in model.raw by default in  X Y Z R G B format
- */
+
+
+Vertex::Vertex() {
+	position = glm::vec3(0.0f, 0.0f, 0.0f);
+	color = glm::vec3(0.0f, 0.0f, 0.0f);
+}
+Vertex::Vertex(glm::vec3 p, glm::vec3 c) {
+	position = p;
+	color = c;
+}
+
+
+
+
 bool Model::load(char* filename) {
 	FILE *fp_input = fopen(filename, "r" );
 	if (fp_input ==  NULL) {
@@ -37,10 +45,6 @@ bool Model::load(char* filename) {
 	return true;
 }
 
-/**
- * @brief      Assigns vertex list to the vertex buffer object and corresponding
- *             shader file attributes.
- */
 void Model::assignBuffer() {
 	size_t size_points = vertex_list.size() * sizeof (glm::vec3);
 
@@ -48,6 +52,18 @@ void Model::assignBuffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData (GL_ARRAY_BUFFER, size_points * 2, &vertex_list[0], GL_STATIC_DRAW);
 }
+
+void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 modelview_matrix) {
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
+	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
+	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
+
+	glDrawArrays(mode, 0, vertex_list.size());
+}
+
+
+
 
 void WorldModel::calc_modelling_transformation() {
 	glm::mat4 scaled_mtx = glm::scale(glm::mat4(1.0f), scale_vec);
@@ -60,6 +76,81 @@ void WorldModel::calc_modelling_transformation() {
 
 	transformation_mtx = translation_mtx * rotation_mtx * scaled_mtx;
 }
+
+
+
+
+void WorldCamera::create_frustum() {
+	glm::vec3 cyan = glm::vec3(0.0f, 1.0f, 1.0f);
+	glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);
+	glm::vec3 magenta = glm::vec3(1.0f, 0.0f, 1.0f);
+	float fL = F * L / N, fR = F * R / N, fT = F * T / N, fB = F * B / N;
+
+	frustum.vertex_list.resize(0);
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
+
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), magenta));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
+
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
+	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
+
+	eye.vertex_list.resize(0);
+	eye.vertex_list.push_back(Vertex(glm::vec3(0.0f, 0.0f, 0.0f), red));
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
+
+	vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
+	glEnableVertexAttribArray( vPosition );
+
+	vColor = glGetAttribLocation( shaderProgram, "vColor" );
+	glEnableVertexAttribArray( vColor );
+
+	frustum.assignBuffer();
+	eye.assignBuffer();
+}
+
+void WorldCamera::draw(glm::mat4 transformation_mtx) {
+	glBindVertexArray(vao);
+
+	frustum.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx);
+	glPointSize(4.0f);
+	eye.draw(vPosition, vColor, uModelViewMatrix, GL_POINTS, transformation_mtx);
+}
+
+
+
 
 bool Scene::load() {
 	FILE *fp_input = fopen("./binary_models/myscene.scn", "r" );
@@ -117,151 +208,58 @@ bool Scene::load() {
 	fscanf (fp_input, "%f %f", &cam.N, &cam.F);
 
 	cam.create_frustum();
+	
+	calc_WCS_VCS();
+	calc_VCS_CCS();
+	calc_CCS_NDCS();
+	calc_NDCS_DCS();
 
 	fclose(fp_input);
 	return true;
 }
 
-void Scene::draw(glm::mat4 ortho_projection_matrix, glm::mat4 trans_rot) {
+void Scene::draw(glm::mat4 transformation_mtx) {
 	glBindVertexArray(vao);
 
-	for (int i = 0; i < 3; ++i) {
-		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, ortho_projection_matrix * dummy_matrix * trans_rot * model_list[i].transformation_mtx);
-	}
-
-	cam.draw(ortho_projection_matrix * dummy_matrix * trans_rot);
-}
-
-Vertex::Vertex(){
-	position = glm::vec3(0.0f, 0.0f, 0.0f);
-	color = glm::vec3(0.0f, 0.0f, 0.0f);
-}
-Vertex::Vertex(glm::vec3 p, glm::vec3 c){
-	position = p;
-	color = c;
-}
-
-void WorldCamera::create_frustum(){
-	glm::vec3 cyan = glm::vec3(0.0f, 1.0f, 1.0f);
-	glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);
-	glm::vec3 magenta = glm::vec3(1.0f, 0.0f, 1.0f);
-	float fL = F*L/N, fR = F*R/N, fT = F*T/N, fB = F*B/N;
+	for (int i = 0; i < 3; ++i)
+		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, transformation_mtx * dummy_matrix * model_list[i].transformation_mtx);	
 	
-	frustum.vertex_list.resize(0);
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
-		
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
-
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
-
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fT, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fL, fB, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
-
-	eye.vertex_list.resize(0);
-	eye.vertex_list.push_back(Vertex(glm::vec3(0.0f, 0.0f, 0.0f), red));
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
-
-	vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
-	glEnableVertexAttribArray( vPosition );
-
-	vColor = glGetAttribLocation( shaderProgram, "vColor" );
-	glEnableVertexAttribArray( vColor );
-
-	frustum.assignBuffer();
-	eye.assignBuffer();	
+	cam.draw(transformation_mtx * dummy_matrix * glm::inverse(A_wcs_vcs));
 }
 
-void WorldCamera::draw(glm::mat4 ortho_projection_matrix){
-	glBindVertexArray(vao);
+void Scene::calc_WCS_VCS() {
+	glm::vec3 n = -(cam.look_at)/ glm::length(cam.look_at);
+	glm::vec3 u = glm::cross(cam.up, n) / glm::length(glm::cross(cam.up, n));
+	glm::vec3 v = glm::cross(n, u);
 
-	frustum.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, ortho_projection_matrix);
-	glPointSize(4.0f);
-	eye.draw(vPosition, vColor, uModelViewMatrix, GL_POINTS, ortho_projection_matrix);
-}
-
-void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 modelview_matrix){
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
-	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
-	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
-
-	glDrawArrays(mode, 0, vertex_list.size());
-}
-
-void Scene::toVCS() {
-
-	glm::vec3 n = -(cam.look_at - cam.up)/glm::length(cam.look_at - cam.up);
-	printf("%f, %f, %f \n", n.x, n.y, n.z);
-	glm::vec3 u = glm::cross(cam.up, n)/glm::length(glm::cross(cam.up, n));
-	printf("%f, %f, %f \n", u.x, u.y, u.z);
-	glm::vec3 v = glm::cross(n,u);
-
-	glm::vec4 row1 = glm::vec4(u,(-1.0 * glm::dot(u, cam.eye_position)));
-	glm::vec4 row2 = glm::vec4(v,(-1.0 * glm::dot(v, cam.eye_position)));
-	glm::vec4 row3 = glm::vec4(n,(-1.0 * glm::dot(n, cam.eye_position)));
+	glm::vec4 row1 = glm::vec4(u, -cam.eye_position.x);
+	glm::vec4 row2 = glm::vec4(v, -cam.eye_position.y);
+	glm::vec4 row3 = glm::vec4(n, -cam.eye_position.z);
 	glm::vec4 row4 = glm::vec4(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 
-	glm::mat4 Awv = glm::transpose(glm::mat4(row1, row2, row3, row4));
-
-	dummy_matrix = Awv;
+ 	A_wcs_vcs = glm::transpose(glm::mat4(row1, row2, row3, row4));
 }
 
-void Scene::toCCS(){
-
+void Scene::calc_VCS_CCS() {
 	glm::mat4 sh = glm::mat4(1.0f);
-	sh[2][0] = (cam.R + cam.L)/ (2.0*cam.N);
-	sh[2][1] = (cam.T + cam.B)/ (2.0*cam.N);
-	
+	sh[2][0] = (cam.R + cam.L) / (2.0 * cam.N);
+	sh[2][1] = (cam.T + cam.B) / (2.0 * cam.N);
+
 	glm::mat4 sc = glm::mat4(1.0f);
-	sc[0][0] = (2.0*cam.N)/(cam.R - cam.L);
-	sc[1][1] = (2.0*cam.N)/(cam.T - cam.B);
-	
+	sc[0][0] = (2.0 * cam.N) / (cam.R - cam.L);
+	sc[1][1] = (2.0 * cam.N) / (cam.T - cam.B);
+
 	glm::mat4 Nm = glm::mat4(1.0f);
-	Nm[2][2] = -(cam.F + cam.N)/(cam.F - cam.N);
+	Nm[2][2] = -(cam.F + cam.N) / (cam.F - cam.N);
 	Nm[2][3] = -1.0f;
-	Nm[3][2] = -(2.0*cam.F*cam.N)/(cam.F - cam.N);
+	Nm[3][2] = -(2.0 * cam.F * cam.N) / (cam.F - cam.N);
 	Nm[3][3] = 0.0f;
-	
-	glm::mat4 totaltransform = Nm*sc*sh;
 
-	printmat4(totaltransform);
+	A_vcs_ccs = Nm * sc * sh;
 }
 
-void Scene::toNDCS(){
-
+void Scene::calc_CCS_NDCS() {
 }
 
-void Scene::toDCS(){
-
+void Scene::calc_NDCS_DCS() {
 }
