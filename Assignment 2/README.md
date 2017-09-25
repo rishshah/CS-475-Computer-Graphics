@@ -20,15 +20,20 @@
 ## Status
 
 ### ToDo
-- Callbacks need to be added 
-- All 4 matrices have to be created
+- coordinate axes
+- VCS changes coordinate instead of moving camera
+- Camera never changed ( except from use of keyboard callbacks)
+- Flattening in CCS
+- Zoom mode Z,X
+- NDCS perspective manual division
+- DCS has no z coordinate ( camera here has to be changed)
+
 - Clipping algorithm in CCS to be made
 
 ### Done
 - File structure
 - Scene file parsing
 - Basic viewing complete
-- WCS view
 - Callbacks for translation and rotation 
 
 ---
