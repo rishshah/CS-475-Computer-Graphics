@@ -65,9 +65,12 @@ class Axes {
 public:
 
 	Model m;
+	glm::mat4 dummy_matrix = glm::mat4(1.0f);
 
 	GLuint vao = 0;
 	GLuint vPosition, vColor, uModelViewMatrix;
+
+
 
 	void create_axes();
 	void draw(glm::mat4 transformation_mtx);
@@ -85,11 +88,17 @@ public:
 	GLuint vPosition, vColor, uModelViewMatrix;
 
 	glm::mat4 dummy_matrix = glm::mat4(1.0f);
-
-	glm::mat4 A_wcs_vcs;
-	glm::mat4 A_vcs_ccs;
-	glm::mat4 A_ccs_ndcs;
-	glm::mat4 A_ndcs_dcs;
+	glm::mat4 frustum_dummy_matrix = glm::mat4(1.0f);
+	glm::mat4 reverse_vcs = glm::mat4(1.0f);
+	glm::mat4 A_wcs_vcs = glm::mat4(1.0f);
+	glm::mat4 A_vcs_ccs = glm::mat4(1.0f);
+	glm::mat4 A_ccs_ndcs = glm::mat4(1.0f);
+	glm::mat4 A_ndcs_dcs = glm::mat4(1.0f);
+	/**
+	 * @brief      load scene from a file
+	 *
+	 * @return     true if successfully loaded
+	 */
 
 	glm::vec3 center;
 	void calc_center();

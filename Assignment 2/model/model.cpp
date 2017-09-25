@@ -19,7 +19,6 @@ Vertex::Vertex(glm::vec3 p, glm::vec3 c) {
 	position = p;
 	color = c;
 }
-////////////////////////////////
 
 
 bool Model::load(char* filename) {
@@ -146,13 +145,13 @@ void WorldCamera::draw(glm::mat4 transformation_mtx) {
 	eye.draw(vPosition, vColor, uModelViewMatrix, GL_POINTS, transformation_mtx);
 }
 
-void Scene::calc_center() { 
-	center = glm::vec3(dummy_matrix * glm::vec4((cam.L+cam.R)/2, (cam.T+cam.B)/2, -(cam.N+cam.F)/2, 1.0f));
+void Scene::calc_center() {
+	center = glm::vec3(dummy_matrix * glm::vec4((cam.L + cam.R) / 2, (cam.T + cam.B) / 2, -(cam.N + cam.F) / 2, 1.0f));
 }
 ////////////////////////////////
 
 
-void Axes::create_axes(){
+void Axes::create_axes() {
 	glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);  //x
 	glm::vec3 green = glm::vec3(0.0f, 1.0f, 0.0f); //y
 	glm::vec3 blue = glm::vec3(0.0f, 0.0f, 1.0f); //z
@@ -186,10 +185,9 @@ void Axes::create_axes(){
 
 void Axes::draw(glm::mat4 transformation_mtx) {
 	glBindVertexArray(vao);
-	m.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx);
+	m.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx * dummy_matrix);
 }
 ////////////////////////////////
-
 
 bool Scene::load() {
 	FILE *fp_input = fopen("./binary_models/myscene.scn", "r" );
@@ -268,12 +266,25 @@ void Scene::draw(glm::mat4 third_person_transform) {
 	glBindVertexArray(vao);
 
 	for (int i = 0; i < 3; ++i)
-		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, 
-			third_person_transform * dummy_matrix * model_list[i].transformation_mtx);
+		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, third_person_transform
+		                     * dummy_matrix * model_list[i].transformation_mtx);
 
-	cam.draw(third_person_transform * dummy_matrix * glm::inverse(A_wcs_vcs));
+	cam.draw(third_person_transform * dummy_matrix * reverse_vcs);
 	axes.draw(third_person_transform);
 }
+
+// Proof of Column Major - Press 1
+// glm::vec4 trial = glm::vec4(glm::vec3(1.0f,1.0f,1.0f),1.0f);
+// glm::mat4 trial2 = glm::mat4(1.0f);
+// trial2[3][0] = 2;
+// trial2[3][1] = 3;
+// trial2[3][2] = 4;
+// trial2[0][3] = 5;
+// trial2[1][3] = 6;
+// trial2[2][3] = 7;
+// glm::vec4 output = glm::vec4(trial2 * trial);
+// printf("%f, %f, %f \n", output[0], output[1], output[2]);
+
 
 void Scene::calc_WCS_VCS() {
 	glm::vec3 n = -(cam.look_at) / glm::length(cam.look_at);
@@ -286,6 +297,9 @@ void Scene::calc_WCS_VCS() {
 	glm::vec4 row4 = glm::vec4(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 
 	A_wcs_vcs = glm::transpose(glm::mat4(row1, row2, row3, row4));
+	reverse_vcs = glm::inverse(A_wcs_vcs);
+	glm::mat4 pliden = glm::mat4(A_wcs_vcs * reverse_vcs) ;
+	printmat4(pliden);
 }
 
 void Scene::calc_VCS_CCS() {
