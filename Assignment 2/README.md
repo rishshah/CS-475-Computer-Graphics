@@ -20,10 +20,8 @@
 ## Status
 
 ### ToDo
-- VCS changes coordinate instead of moving camera
 - Camera never changed ( except from use of keyboard callbacks)
 - Flattening in CCS
-- Zoom mode Z,X
 - NDCS perspective manual division
 - DCS has no z coordinate ( camera here has to be changed)
 
@@ -35,6 +33,8 @@
 - Basic viewing complete
 - Callbacks for translation and rotation 
 - coordinate axes
+- VCS changes coordinate instead of moving camera
+- Zoom mode Z,X
 
 ---
 

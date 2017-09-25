@@ -146,7 +146,7 @@ void WorldCamera::draw(glm::mat4 transformation_mtx) {
 }
 
 void Scene::calc_center() {
-	center = glm::vec3(dummy_matrix * glm::vec4((cam.L + cam.R) / 2, (cam.T + cam.B) / 2, -(cam.N + cam.F) / 2, 1.0f));
+	center = glm::vec3(axes.dummy_matrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 ////////////////////////////////
 
