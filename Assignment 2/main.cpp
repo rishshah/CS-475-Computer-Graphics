@@ -7,6 +7,9 @@ Scene scene;
 
 glm::mat4 ortho_projection_matrix = glm::ortho(-20.0, 20.0, -20.0, 20.0, -100.0, 100.0);
 
+//Scene center
+glm::vec3 center;
+
 // Translation  and Rotation Parameters
 const GLfloat TRANS_DELTA = 0.04;
 const GLfloat ROT_DELTA = 0.04;
@@ -88,7 +91,8 @@ void renderGL(GLFWwindow* window) {
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     handle_translation();
     handle_rotation();
-    scene.draw(ortho_projection_matrix * translation_matrix * rotation_matrix);
+    scene.draw(ortho_projection_matrix * glm::translate(glm::mat4(1.0f), scene.center)
+               * translation_matrix * rotation_matrix  * glm::translate(glm::mat4(1.0f), -scene.center));
 }
 
 
@@ -160,7 +164,7 @@ int main() {
     shaderProgram = base::CreateProgramGL(shaderList);
     glUseProgram( shaderProgram );
 
-    if(!scene.load())
+    if (!scene.load())
         return 0;
 
     while (glfwWindowShouldClose(window) == 0) {

@@ -145,12 +145,16 @@ void WorldCamera::draw(glm::mat4 transformation_mtx) {
 	glPointSize(4.0f);
 	eye.draw(vPosition, vColor, uModelViewMatrix, GL_POINTS, transformation_mtx);
 }
+
+void Scene::calc_center() { 
+	center = glm::vec3(dummy_matrix * glm::vec4((cam.L+cam.R)/2, (cam.T+cam.B)/2, -(cam.N+cam.F)/2, 1.0f));
+}
 ////////////////////////////////
 
 
 void Axes::create_axes(){
 	glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);  //x
-	glm::vec3 green = glm::vec3(0.0f, 1.0f, 0.0f); //y 
+	glm::vec3 green = glm::vec3(0.0f, 1.0f, 0.0f); //y
 	glm::vec3 blue = glm::vec3(0.0f, 0.0f, 1.0f); //z
 
 	float length = 3;
@@ -165,7 +169,7 @@ void Axes::create_axes(){
 
 	m.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), blue));
 	m.vertex_list.push_back(Vertex(glm::vec3(0, 0, length), blue));
-	
+
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
@@ -177,10 +181,10 @@ void Axes::create_axes(){
 	vColor = glGetAttribLocation( shaderProgram, "vColor" );
 	glEnableVertexAttribArray( vColor );
 
-	m.assignBuffer();	
+	m.assignBuffer();
 }
 
-void Axes::draw(glm::mat4 transformation_mtx){
+void Axes::draw(glm::mat4 transformation_mtx) {
 	glBindVertexArray(vao);
 	m.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx);
 }
@@ -244,6 +248,7 @@ bool Scene::load() {
 
 	cam.create_frustum();
 	axes.create_axes();
+	calc_center();
 
 	calc_WCS_VCS();
 	calc_VCS_CCS();
@@ -254,18 +259,24 @@ bool Scene::load() {
 	return true;
 }
 
-void Scene::draw(glm::mat4 transformation_mtx) {
+// apply third person to everything
+// apply inverse A_wcs_vcs to frustum only
+// apply model tranform to those 3 models
+// apply dummy to  frustum, and models
+void Scene::draw(glm::mat4 third_person_transform) {
+
 	glBindVertexArray(vao);
 
 	for (int i = 0; i < 3; ++i)
-		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, transformation_mtx * dummy_matrix * model_list[i].transformation_mtx);	
-	
-	cam.draw(transformation_mtx * dummy_matrix * glm::inverse(A_wcs_vcs));
-	axes.draw(transformation_mtx);
+		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, 
+			third_person_transform * dummy_matrix * model_list[i].transformation_mtx);
+
+	cam.draw(third_person_transform * dummy_matrix * glm::inverse(A_wcs_vcs));
+	axes.draw(third_person_transform);
 }
 
 void Scene::calc_WCS_VCS() {
-	glm::vec3 n = -(cam.look_at)/ glm::length(cam.look_at);
+	glm::vec3 n = -(cam.look_at) / glm::length(cam.look_at);
 	glm::vec3 u = glm::cross(cam.up, n) / glm::length(glm::cross(cam.up, n));
 	glm::vec3 v = glm::cross(n, u);
 
@@ -274,7 +285,7 @@ void Scene::calc_WCS_VCS() {
 	glm::vec4 row3 = glm::vec4(n, -cam.eye_position.z);
 	glm::vec4 row4 = glm::vec4(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 
- 	A_wcs_vcs = glm::transpose(glm::mat4(row1, row2, row3, row4));
+	A_wcs_vcs = glm::transpose(glm::mat4(row1, row2, row3, row4));
 }
 
 void Scene::calc_VCS_CCS() {

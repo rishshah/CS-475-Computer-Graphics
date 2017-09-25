@@ -20,7 +20,6 @@
 ## Status
 
 ### ToDo
-- coordinate axes
 - VCS changes coordinate instead of moving camera
 - Camera never changed ( except from use of keyboard callbacks)
 - Flattening in CCS
@@ -35,6 +34,7 @@
 - Scene file parsing
 - Basic viewing complete
 - Callbacks for translation and rotation 
+- coordinate axes
 
 ---
 
