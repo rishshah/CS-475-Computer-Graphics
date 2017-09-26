@@ -100,6 +100,9 @@ public:
 	 * @return     true if successfully loaded
 	 */
 
+	glm::vec3 center;
+	void calc_center();
+
 	bool load();
 
 	void draw(glm::mat4 transformation_mtx);

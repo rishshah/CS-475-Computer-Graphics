@@ -19,7 +19,7 @@
 extern GLuint shaderProgram;
 extern Scene scene;
 extern glm::mat4 rotation_matrix;
-extern glm::mat4 translation_matrix;
+extern float xp;
 
 
 //-------------------------------------------------------------------------

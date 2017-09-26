@@ -6,13 +6,13 @@ GLuint shaderProgram = 0;
 Scene scene;
 
 float xp = 20.0f;
-float xn = -20.0f;
-float yp = 20.0f;
-float yneg = -20.0f;
 float zp = 100.0f;
 float zn = -100.0f;
 
 glm::mat4 ortho_projection_matrix = glm::ortho(-20.0, 20.0, -20.0, 20.0, -100.0, 100.0);
+
+//Scene center
+glm::vec3 center;
 
 // Translation  and Rotation Parameters
 const float TRANS_DELTA = 0.04;
@@ -77,17 +77,11 @@ void handle_translation() {
 
         if (key_state_translation[4]) {
             //zpos += TRANS_DELTA;
-            xn += TRANS_DELTA ;
-            yneg += TRANS_DELTA ;
             xp -= TRANS_DELTA ;
-            yp -= TRANS_DELTA ;
         }
         else if (key_state_translation[5]) {
             //zpos -= TRANS_DELTA;
-            xn -= TRANS_DELTA ;
-            yneg -= TRANS_DELTA ;
             xp += TRANS_DELTA ;
-            yp += TRANS_DELTA ;
         }
     }
 
@@ -100,11 +94,12 @@ void handle_translation() {
  */
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    ortho_projection_matrix = glm::ortho(xn, xp, yneg, yp, zn, zp);
+    ortho_projection_matrix = glm::ortho(-1.0f*xp, xp, -1.0f*xp, xp, zn, zp);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     handle_translation();
     handle_rotation();
-    scene.draw(ortho_projection_matrix * translation_matrix * rotation_matrix);
+    scene.draw(ortho_projection_matrix * glm::translate(glm::mat4(1.0f), scene.center)
+               * translation_matrix * rotation_matrix  * glm::translate(glm::mat4(1.0f), -scene.center));
 }
 
 
@@ -176,7 +171,7 @@ int main() {
     shaderProgram = base::CreateProgramGL(shaderList);
     glUseProgram( shaderProgram );
 
-    if(!scene.load())
+    if (!scene.load())
         return 0;
 
     while (glfwWindowShouldClose(window) == 0) {
