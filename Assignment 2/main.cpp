@@ -5,11 +5,18 @@
 GLuint shaderProgram = 0;
 Scene scene;
 
+float xp = 20.0f;
+float xn = -20.0f;
+float yp = 20.0f;
+float yneg = -20.0f;
+float zp = 100.0f;
+float zn = -100.0f;
+
 glm::mat4 ortho_projection_matrix = glm::ortho(-20.0, 20.0, -20.0, 20.0, -100.0, 100.0);
 
 // Translation  and Rotation Parameters
-const GLfloat TRANS_DELTA = 0.04;
-const GLfloat ROT_DELTA = 0.04;
+const float TRANS_DELTA = 0.04;
+const float ROT_DELTA = 0.04;
 
 const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -24,7 +31,7 @@ std::vector<bool> key_state_rotation(6, false);
 
 bool key_state_recenter = false;
 
-GLfloat xpos = 0.0, ypos = 0.0, zpos = 0.0;
+float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 
 void handle_rotation() {
     if (key_state_rotation[0]) {
@@ -69,10 +76,18 @@ void handle_translation() {
         }
 
         if (key_state_translation[4]) {
-            zpos += TRANS_DELTA;
+            //zpos += TRANS_DELTA;
+            xn += TRANS_DELTA ;
+            yneg += TRANS_DELTA ;
+            xp -= TRANS_DELTA ;
+            yp -= TRANS_DELTA ;
         }
         else if (key_state_translation[5]) {
-            zpos -= TRANS_DELTA;
+            //zpos -= TRANS_DELTA;
+            xn -= TRANS_DELTA ;
+            yneg -= TRANS_DELTA ;
+            xp += TRANS_DELTA ;
+            yp += TRANS_DELTA ;
         }
     }
 
@@ -85,6 +100,7 @@ void handle_translation() {
  */
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    ortho_projection_matrix = glm::ortho(xn, xp, yneg, yp, zn, zp);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     handle_translation();
     handle_rotation();
