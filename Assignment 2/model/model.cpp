@@ -8,7 +8,7 @@ void printmat4(glm::mat4 Awv) {
 	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
 	printf("\n");
 }
-
+////////////////////////////////
 
 
 Vertex::Vertex() {
@@ -59,8 +59,7 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenu
 
 	glDrawArrays(mode, 0, vertex_list.size());
 }
-
-
+////////////////////////////////
 
 
 void WorldModel::calc_modelling_transformation() {
@@ -74,8 +73,7 @@ void WorldModel::calc_modelling_transformation() {
 
 	transformation_mtx = translation_mtx * rotation_mtx * scaled_mtx;
 }
-
-
+////////////////////////////////
 
 
 void WorldCamera::create_frustum() {
@@ -146,7 +144,46 @@ void WorldCamera::draw(glm::mat4 transformation_mtx) {
 	glPointSize(4.0f);
 	eye.draw(vPosition, vColor, uModelViewMatrix, GL_POINTS, transformation_mtx);
 }
+////////////////////////////////
 
+
+void Axes::create_axes(){
+	glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);  //x
+	glm::vec3 green = glm::vec3(0.0f, 1.0f, 0.0f); //y 
+	glm::vec3 blue = glm::vec3(0.0f, 0.0f, 1.0f); //z
+
+	float length = 3;
+
+	m.vertex_list.resize(0);
+
+	m.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), red));
+	m.vertex_list.push_back(Vertex(glm::vec3(length, 0, 0), red));
+
+	m.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), green));
+	m.vertex_list.push_back(Vertex(glm::vec3(0, length, 0), green));
+
+	m.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), blue));
+	m.vertex_list.push_back(Vertex(glm::vec3(0, 0, length), blue));
+	
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
+
+	vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
+	glEnableVertexAttribArray( vPosition );
+
+	vColor = glGetAttribLocation( shaderProgram, "vColor" );
+	glEnableVertexAttribArray( vColor );
+
+	m.assignBuffer();	
+}
+
+void Axes::draw(glm::mat4 transformation_mtx){
+	glBindVertexArray(vao);
+	m.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx);
+}
+////////////////////////////////
 
 bool Scene::load() {
 	FILE *fp_input = fopen("./binary_models/myscene.scn", "r" );
@@ -204,7 +241,8 @@ bool Scene::load() {
 	fscanf (fp_input, "%f %f", &cam.N, &cam.F);
 
 	cam.create_frustum();
-	
+	axes.create_axes();
+
 	calc_WCS_VCS();
 	calc_VCS_CCS();
 	calc_CCS_NDCS();
@@ -224,6 +262,7 @@ void Scene::draw(glm::mat4 transformation_mtx) {
 
 
 	cam.draw(transformation_mtx * dummy_matrix * glm::inverse(A_wcs_vcs));
+	axes.draw(transformation_mtx);
 }
 	
 	// Proof of Column Major - Press 1

@@ -1,5 +1,6 @@
 #ifndef _MODEL_HPP_
 #define _MODEL_HPP_
+
 #include <stdio.h>
 #include "../../glm/vec4.hpp"
 #include "../../glm/vec3.hpp"
@@ -7,11 +8,7 @@
 #include "../../glm/gtc/matrix_transform.hpp"
 #include "../framework/gl_framework.hpp"
 
-extern GLFWwindow* window;
 
-/**
- * @brief      Class for storing vertex attributes.
- */
 class Vertex {
 public:
 	Vertex();
@@ -21,33 +18,19 @@ public:
 };
 
 
-/**
- * @brief      Class for storing model data.
- */
 class Model {
 public:
 	std::vector<Vertex> vertex_list;
 	GLuint vbo;
-	/**
-	 * @brief      load model from a file
-	 *
-	 * @return     true if successfully loaded
-	 */
+
 	bool load(char* filename);
 
-	/**
-	 * @brief      assign model buffer to vbo and accordingly adjust how the
-	 *             values will be interpreted by vertex shader
-	 */
 	void assignBuffer();
 
 	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 modelview_matrix);
 };
 
 
-/**
- * @brief      Class for storing model attributes in the world
- */
 class WorldModel {
 public:
 	Model m;
@@ -57,18 +40,11 @@ public:
 	glm::vec3 position_vec;
 
 	glm::mat4 transformation_mtx;
-	/**
-	 * @brief      Use position, scale and rotation to get modelling
-	 *             transformation.
-	 *
-	 * @return     The modelling transformation matrix in homogemous space.
-	 */
+
 	void calc_modelling_transformation();
 };
 
-/**
- * @brief      Class for camera data.
- */
+
 class WorldCamera {
 public:
 	glm::vec3 eye_position;
@@ -80,21 +56,32 @@ public:
 	GLuint vao;
 	GLuint vPosition, vColor, uModelViewMatrix;
 	Model frustum, eye;
-	
+
 	void create_frustum();
 	void draw(glm::mat4 transformation_mtx);
 };
 
-/**
- * @brief      Class for storing scene data.
- */
+class Axes {
+public:
+
+	Model m;
+
+	GLuint vao = 0;
+	GLuint vPosition, vColor, uModelViewMatrix;
+
+	void create_axes();
+	void draw(glm::mat4 transformation_mtx);
+};
+
+
 class Scene {
 public:
 
 	std::vector<WorldModel> model_list;
 	WorldCamera cam;
-	
-	GLuint vao = 0;	
+	Axes axes;
+
+	GLuint vao = 0;
 	GLuint vPosition, vColor, uModelViewMatrix;
 
 	glm::mat4 dummy_matrix = glm::mat4(1.0f);
@@ -109,6 +96,7 @@ public:
 	 *
 	 * @return     true if successfully loaded
 	 */
+
 	bool load();
 
 	void draw(glm::mat4 transformation_mtx);
