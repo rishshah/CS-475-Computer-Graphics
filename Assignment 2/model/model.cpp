@@ -181,7 +181,7 @@ void Axes::create_axes(){
 
 void Axes::draw(glm::mat4 transformation_mtx){
 	glBindVertexArray(vao);
-	m.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx);
+	m.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx * dummy_matrix);
 }
 ////////////////////////////////
 
@@ -255,13 +255,12 @@ bool Scene::load() {
 void Scene::draw(glm::mat4 transformation_mtx) {
 	glBindVertexArray(vao);
 
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 3; ++i)
 		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, transformation_mtx * dummy_matrix * model_list[i].transformation_mtx);	
 	
-	model_list[2].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, transformation_mtx * frustum_dummy_matrix * model_list[2].transformation_mtx);
+	//model_list[2].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, transformation_mtx * frustum_dummy_matrix * model_list[2].transformation_mtx);
 
-
-	cam.draw(transformation_mtx * dummy_matrix * glm::inverse(A_wcs_vcs));
+	cam.draw(transformation_mtx * dummy_matrix * reverse_vcs);
 	axes.draw(transformation_mtx);
 }
 	

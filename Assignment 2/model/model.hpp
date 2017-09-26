@@ -65,9 +65,12 @@ class Axes {
 public:
 
 	Model m;
+	glm::mat4 dummy_matrix = glm::mat4(1.0f);
 
 	GLuint vao = 0;
 	GLuint vPosition, vColor, uModelViewMatrix;
+
+
 
 	void create_axes();
 	void draw(glm::mat4 transformation_mtx);
