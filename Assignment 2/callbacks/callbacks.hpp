@@ -9,6 +9,7 @@
 
 #include "../model/model.hpp"
 #include "../../glm/vec4.hpp"
+#include "../main.hpp"
 
 extern std::vector<bool> key_state_translation;
 //X     0 -> A      1 -> D
@@ -27,6 +28,7 @@ namespace base {
 	void recenter_callback(int key, int action);
 	void translation_callback(int key, int action);
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void handle_dcs();
 };
 
 #endif

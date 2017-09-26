@@ -71,6 +71,12 @@ void rotation_callback(int key, int action) {
 	}
 }
 
+
+void handle_dcs(){
+    rotation_matrix = glm::mat4(1.0f);
+}
+
+
 /**
  * @brief      Update(Set/Reset) global shared varible key_state_translation according to
  *             the key used.
@@ -180,6 +186,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	else if (key == GLFW_KEY_4 and action == GLFW_PRESS) {
 		printf("4 pressed\n");
 		scene.dummy_matrix = scene.A_ndcs_dcs * scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
+		scene.axes.dummy_matrix = scene.A_ndcs_dcs ;
+		handle_dcs();
 	}
 	// Inspection callbacks
 	else if ( key == GLFW_KEY_UP or key == GLFW_KEY_DOWN or

@@ -316,4 +316,8 @@ void Scene::calc_CCS_NDCS() {
 }
 
 void Scene::calc_NDCS_DCS() {
+	A_ndcs_dcs[2][2] = -0.01;
+	A_ndcs_dcs[3][2] = -1.0;
+	A_ndcs_dcs[1][1] = 10.0;
+	A_ndcs_dcs[0][0] = 10.0;
 }
