@@ -1,26 +1,32 @@
 #include "model.hpp"
 
-void printmat4(glm::mat4 Awv) {
-	printf("\n");
-	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
-	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
-	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
-	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
-	printf("\n");
-}
-////////////////////////////////
-
-
+/**
+ * @brief      Constructs the default vertex.
+ */
 Vertex::Vertex() {
 	position = glm::vec3(0.0f, 0.0f, 0.0f);
 	color = glm::vec3(0.0f, 0.0f, 0.0f);
 }
+
+/**
+ * @brief      Constructs the vertex given position and color.
+ *
+ * @param[in]  p     position vec3
+ * @param[in]  c     color vec3
+ */
 Vertex::Vertex(glm::vec3 p, glm::vec3 c) {
 	position = p;
 	color = c;
 }
 
 
+/**
+ * @brief      Load model from a .raw file  and store its vertex data
+ *
+ * @param      filename the .raw file that contains the model
+ *
+ * @return     true iff file loaded successfully
+ */
 bool Model::load(char* filename) {
 	FILE *fp_input = fopen(filename, "r" );
 	if (fp_input ==  NULL) {
@@ -43,6 +49,9 @@ bool Model::load(char* filename) {
 	return true;
 }
 
+/**
+ * @brief      fill the vbo for the model
+ */
 void Model::assignBuffer() {
 	size_t size_points = vertex_list.size() * sizeof (glm::vec3);
 
@@ -51,17 +60,31 @@ void Model::assignBuffer() {
 	glBufferData (GL_ARRAY_BUFFER, size_points * 2, &vertex_list[0], GL_STATIC_DRAW);
 }
 
-void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 modelview_matrix) {
+/**
+ * @brief      draw model on screen
+ *
+ * @param[in]  vPosition         location of position input in vertex shader
+ * @param[in]  vColor            location of color input in vertex shader
+ * @param[in]  uModelViewMatrix  location of transformation matrix input in vertex shader
+ * @param[in]  uNDCS             location of input int uNDCS(to decide whether to manually divide or not) in vertex shader
+ * @param[in]  mode              The mode of drawing the model (GL_TRIANGLES, GL_LINES, GL_POINT)
+ * @param[in]  modelview_matrix  The modelview matrix to be substituted at location uModelViewMatrix
+ * @param[in]  ndcs_divide       The ndcs int to be substituted at location uNDCS
+ */
+void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLuint uNDCS, GLenum mode, glm::mat4 modelview_matrix, int ndcs_divide) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
 	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(modelview_matrix));
-
+	glUniform1i(uNDCS, ndcs_divide);
 	glDrawArrays(mode, 0, vertex_list.size());
 }
 ////////////////////////////////
 
 
+/**
+ * @brief      Calculates the modelling transformation (transformation_mtx) to place models in the world.
+ */
 void WorldModel::calc_modelling_transformation() {
 	glm::mat4 scaled_mtx = glm::scale(glm::mat4(1.0f), scale_vec);
 
@@ -76,6 +99,9 @@ void WorldModel::calc_modelling_transformation() {
 ////////////////////////////////
 
 
+/**
+ * @brief      Creates frustum, eye, and projectors models approriately.
+ */
 void WorldCamera::create_frustum() {
 	glm::vec3 cyan = glm::vec3(0.0f, 1.0f, 1.0f);
 	glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -92,14 +118,6 @@ void WorldCamera::create_frustum() {
 	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), cyan));
 	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
 
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), magenta));
-	frustum.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
 
 	frustum.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), cyan));
 	frustum.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), cyan));
@@ -119,6 +137,16 @@ void WorldCamera::create_frustum() {
 	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fB, -F), cyan));
 	frustum.vertex_list.push_back(Vertex(glm::vec3(fR, fT, -F), cyan));
 
+	middle.vertex_list.resize(0);
+	middle.vertex_list.push_back(Vertex(glm::vec3(R, T, -N), magenta));
+	middle.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	middle.vertex_list.push_back(Vertex(glm::vec3(L, T, -N), magenta));
+	middle.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	middle.vertex_list.push_back(Vertex(glm::vec3(L, B, -N), magenta));
+	middle.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	middle.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), magenta));
+	middle.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
+	
 	eye.vertex_list.resize(0);
 	eye.vertex_list.push_back(Vertex(glm::vec3(0.0f, 0.0f, 0.0f), red));
 
@@ -126,6 +154,7 @@ void WorldCamera::create_frustum() {
 	glBindVertexArray(vao);
 
 	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
+	uNDCS = glGetUniformLocation( shaderProgram, "uNDCS");
 
 	vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
 	glEnableVertexAttribArray( vPosition );
@@ -134,23 +163,40 @@ void WorldCamera::create_frustum() {
 	glEnableVertexAttribArray( vColor );
 
 	frustum.assignBuffer();
+	middle.assignBuffer();
 	eye.assignBuffer();
+
+	display_eye = 1;
 }
 
+/**
+ * @brief      Draw the camera ( eye, frustum, projectors) on the screen
+ *
+ * @param[in]  transformation_mtx  The transformation mtx to be given as input to shader for this draw call
+ */
 void WorldCamera::draw(glm::mat4 transformation_mtx) {
 	glBindVertexArray(vao);
 
-	frustum.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx);
+	frustum.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_LINES, transformation_mtx, 0);
 	glPointSize(4.0f);
-	eye.draw(vPosition, vColor, uModelViewMatrix, GL_POINTS, transformation_mtx);
+	if(display_eye == 1){
+		middle.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_LINES, transformation_mtx, 0);
+		eye.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_POINTS, transformation_mtx, 0);
+	}
 }
 
+/**
+ * @brief      Calculates the view center ( for easy rotation by key presses).
+ */
 void Scene::calc_center() {
 	center = glm::vec3(axes.dummy_matrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 ////////////////////////////////
 
 
+/**
+ * @brief      Creates WCC axes model.
+ */
 void Axes::create_axes() {
 	glm::vec3 red = glm::vec3(1.0f, 0.0f, 0.0f);  //x
 	glm::vec3 green = glm::vec3(0.0f, 1.0f, 0.0f); //y
@@ -173,6 +219,7 @@ void Axes::create_axes() {
 	glBindVertexArray(vao);
 
 	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
+	uNDCS = glGetUniformLocation( shaderProgram, "uNDCS");
 
 	vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
 	glEnableVertexAttribArray( vPosition );
@@ -183,12 +230,22 @@ void Axes::create_axes() {
 	m.assignBuffer();
 }
 
+/**
+ * @brief      draw the WWC axes model on the screen
+ *
+ * @param[in]  transformation_mtx  The transformation mtx to be used as input to this draw call
+ */
 void Axes::draw(glm::mat4 transformation_mtx) {
 	glBindVertexArray(vao);
-	m.draw(vPosition, vColor, uModelViewMatrix, GL_LINES, transformation_mtx * dummy_matrix);
+	m.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_LINES, transformation_mtx * dummy_matrix, 0);
 }
 ////////////////////////////////
 
+/**
+ * @brief      Parse scene (.scn) file and load all the elements present in the scene
+ *
+ * @return     true iff successfully loaded the file ./binary_models/myscene.scn
+ */
 bool Scene::load() {
 	FILE *fp_input = fopen("./binary_models/myscene.scn", "r" );
 	if (fp_input ==  NULL) {
@@ -200,6 +257,7 @@ bool Scene::load() {
 	glBindVertexArray(vao);
 
 	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
+	uNDCS = glGetUniformLocation( shaderProgram, "uNDCS");
 
 	vPosition = glGetAttribLocation( shaderProgram, "vPosition" );
 	glEnableVertexAttribArray( vPosition );
@@ -257,35 +315,26 @@ bool Scene::load() {
 	return true;
 }
 
-// apply third person to everything
-// apply inverse A_wcs_vcs to frustum only
-// apply model tranform to those 3 models
-// apply dummy to  frustum, and models
+/**
+ * @brief      draw all contents of the screen
+ *
+ * @param[in]  third_person_transform  the third person transformation matrix to be used 
+ */
 void Scene::draw(glm::mat4 third_person_transform) {
 
 	glBindVertexArray(vao);
 
 	for (int i = 0; i < 3; ++i)
-		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, third_person_transform
-		                     * dummy_matrix * model_list[i].transformation_mtx);
+		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_TRIANGLES, third_person_transform
+		                     * dummy_matrix * model_list[i].transformation_mtx, ndcs_divide);
 
 	cam.draw(third_person_transform * dummy_matrix * reverse_vcs);
 	axes.draw(third_person_transform);
 }
 
-// Proof of Column Major - Press 1
-// glm::vec4 trial = glm::vec4(glm::vec3(1.0f,1.0f,1.0f),1.0f);
-// glm::mat4 trial2 = glm::mat4(1.0f);
-// trial2[3][0] = 2;
-// trial2[3][1] = 3;
-// trial2[3][2] = 4;
-// trial2[0][3] = 5;
-// trial2[1][3] = 6;
-// trial2[2][3] = 7;
-// glm::vec4 output = glm::vec4(trial2 * trial);
-// printf("%f, %f, %f \n", output[0], output[1], output[2]);
-
-
+/**
+ * @brief      Calculates the A_wcs_vcs matrix from eye_position, lookat and up vectors.
+ */
 void Scene::calc_WCS_VCS() {
 	glm::vec3 n = -(cam.look_at) / glm::length(cam.look_at);
 	glm::vec3 u = glm::cross(cam.up, n) / glm::length(glm::cross(cam.up, n));
@@ -299,9 +348,11 @@ void Scene::calc_WCS_VCS() {
 	A_wcs_vcs = glm::transpose(glm::mat4(row1, row2, row3, row4));
 	reverse_vcs = glm::inverse(A_wcs_vcs);
 	glm::mat4 pliden = glm::mat4(A_wcs_vcs * reverse_vcs) ;
-	printmat4(pliden);
 }
 
+/**
+ * @brief      Calculates the A_vcs_ccs matrix from L,R,T,B,N,F values.
+ */
 void Scene::calc_VCS_CCS() {
 	glm::mat4 sh = glm::mat4(1.0f);
 	sh[2][0] = (cam.R + cam.L) / (2.0 * cam.N);
@@ -320,9 +371,19 @@ void Scene::calc_VCS_CCS() {
 	A_vcs_ccs = Nm * sc * sh;
 }
 
+/**
+ * @brief      Set matrix in shader (which in future will be used for manual CCS -> NDCS transform.
+ */
 void Scene::calc_CCS_NDCS() {
+	GLuint uScene = glGetUniformLocation( shaderProgram, "uScene");
+	glUniformMatrix4fv(uScene, 1, GL_FALSE, glm::value_ptr(A_wcs_vcs));
 }
 
+/**
+ * @brief      Calculates the A_ndcs_dcs matrix for projection from NDCS to DCS.
+ *             Also z coordinate maps to 0.01 for correct culling and lateral
+ *             inversion is taken care of
+ */
 void Scene::calc_NDCS_DCS() {
 	A_ndcs_dcs[2][2] = -0.01;
 	A_ndcs_dcs[3][2] = -1.0;

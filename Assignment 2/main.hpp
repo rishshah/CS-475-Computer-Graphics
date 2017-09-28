@@ -16,6 +16,7 @@
 #include "../glm/gtc/matrix_transform.hpp"
 #include "../glm/gtc/type_ptr.hpp"
 
+
 extern GLuint shaderProgram;
 extern Scene scene;
 extern glm::mat4 rotation_matrix;

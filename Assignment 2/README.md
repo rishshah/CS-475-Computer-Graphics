@@ -20,21 +20,20 @@
 ## Status
 
 ### ToDo
-- Camera never changed ( except from use of keyboard callbacks)
-- Flattening in CCS
-- NDCS perspective manual division
-- DCS has no z coordinate ( camera here has to be changed)
-
 - Clipping algorithm in CCS to be made
 
-### Done
+### Timeline
 - File structure
 - Scene file parsing
 - Basic viewing complete
 - Callbacks for translation and rotation 
 - coordinate axes
 - VCS changes coordinate instead of moving camera
+- Camera never changed ( except from use of keyboard callbacks)
 - Zoom mode Z,X
+- DCS has no z coordinate ( camera here has to be changed) {Doubt Occlusion Culling???}
+- CCS {Doubt Left-Right inversion}
+- NDCS perspective manual division 
 
 ---
 

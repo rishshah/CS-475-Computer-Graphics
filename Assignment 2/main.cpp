@@ -1,18 +1,14 @@
 #include "main.hpp"
 #include <vector>
 
-//extern variables
-GLuint shaderProgram = 0;
-Scene scene;
-
+// Third Person view matrix related parameters;
 float xp = 20.0f;
 float zp = 100.0f;
 float zn = -100.0f;
 
-glm::mat4 ortho_projection_matrix = glm::ortho(-20.0, 20.0, -20.0, 20.0, -100.0, 100.0);
-
 //Scene center
 glm::vec3 center;
+
 
 // Translation  and Rotation Parameters
 const float TRANS_DELTA = 0.04;
@@ -22,17 +18,26 @@ const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 const glm::vec4 Z_UNIT = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
-//extern variables
-glm::mat4 rotation_matrix = glm::mat4(1.0f);
+float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 glm::mat4 translation_matrix = glm::mat4(1.0f);
+
+//Externed variables defined here
+GLuint shaderProgram = 0;
+Scene scene;
+
+glm::mat4 rotation_matrix = glm::mat4(1.0f);
 
 std::vector<bool> key_state_translation(6, false);
 std::vector<bool> key_state_rotation(6, false);
-
 bool key_state_recenter = false;
 
-float xpos = 0.0, ypos = 0.0, zpos = 0.0;
+//-----------------------------------------------
 
+
+/**
+ * @brief      Adjust rotation matrix according to key_state_rotation shared
+ *             variable
+ */
 void handle_rotation() {
     if (key_state_rotation[0]) {
         rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
@@ -56,6 +61,10 @@ void handle_rotation() {
     }
 }
 
+/**
+ * @brief      Adjust translation matrix according to key_state_recenter and
+ *             key_state_translation shared variables
+ */
 void handle_translation() {
     if (key_state_recenter) {
         xpos = ypos = zpos = 0.0f;
@@ -90,11 +99,11 @@ void handle_translation() {
 
 
 /**
- * @brief      The render function which in turn calls the inspection mode render or modelling mode render depending on the current mode
+ * @brief      Display everything and handle third-person-view matrix callbacks continuously
  */
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    ortho_projection_matrix = glm::ortho(-1.0f*xp, xp, -1.0f*xp, xp, zn, zp);
+    glm::mat4 ortho_projection_matrix = glm::ortho(-1.0f*xp, xp, -1.0f*xp, xp, zn, zp);
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     handle_translation();
     handle_rotation();
@@ -173,6 +182,7 @@ int main() {
 
     if (!scene.load())
         return 0;
+    printf("Scene Loaded...\nWCS view...\n");
 
     while (glfwWindowShouldClose(window) == 0) {
 

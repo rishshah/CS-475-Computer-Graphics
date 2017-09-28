@@ -71,12 +71,14 @@ void rotation_callback(int key, int action) {
 	}
 }
 
-
+/**
+ * @brief      Do some third person cam changes for viewing DCS 
+ */
 void handle_dcs(){
     rotation_matrix = glm::mat4(1.0f);
     xp = 20.0f;
+    key_state_recenter = true;
 }
-
 
 /**
  * @brief      Update(Set/Reset) global shared varible key_state_translation according to
@@ -165,37 +167,48 @@ void recenter_callback(int key, int action) {
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	//!Close the window if the ESC key was pressed
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 
+	// Modelling Viewing Pipeline callbacks
 	else if (key == GLFW_KEY_1 and action == GLFW_PRESS) {
-		printf("1 pressed\n");
+		printf("VCS view...\n");
 		scene.dummy_matrix = scene.reverse_vcs * scene.A_wcs_vcs;
+		scene.ndcs_divide = 0;
+		scene.cam.display_eye = 1;
 		scene.axes.dummy_matrix = scene.reverse_vcs ;
 		scene.calc_center();
 	}
 	else if (key == GLFW_KEY_2 and action == GLFW_PRESS) {
-		printf("2 pressed\n");
+		printf("CCS view....\n");
 		scene.dummy_matrix = scene.reverse_vcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
+		scene.ndcs_divide = 0;
+		scene.cam.display_eye = 1;
 		scene.axes.dummy_matrix = scene.reverse_vcs ;
 		scene.calc_center();
 	}
 	else if (key == GLFW_KEY_3 and action == GLFW_PRESS) {
-		printf("3 pressed\n");
+		printf("NDCS view...\n");
 		scene.dummy_matrix = scene.reverse_vcs * scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
+		scene.ndcs_divide = 1;
+		scene.cam.display_eye = 1;
 		scene.axes.dummy_matrix = scene.reverse_vcs ;
 		scene.calc_center();
 	}
 	else if (key == GLFW_KEY_4 and action == GLFW_PRESS) {
-		printf("4 pressed\n");
+		printf("DCS view...\n");
 		scene.dummy_matrix = scene.A_ndcs_dcs * scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
 		scene.axes.dummy_matrix = scene.A_ndcs_dcs ;
+		scene.ndcs_divide = 1;
+		scene.cam.display_eye = 0;
 		handle_dcs();
 		scene.calc_center();
 	}
-	// Inspection callbacks
+	else if(key == GLFW_KEY_4 and action == GLFW_RELEASE)
+		key_state_recenter = false;
+	
+	// Third Person View Callbacks
 	else if ( key == GLFW_KEY_UP or key == GLFW_KEY_DOWN or
 	          key == GLFW_KEY_LEFT or key == GLFW_KEY_RIGHT or
 	          key == GLFW_KEY_PAGE_UP or key == GLFW_KEY_PAGE_DOWN) {
@@ -213,4 +226,5 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		translation_callback(key, action);
 	}
 }
+
 };
