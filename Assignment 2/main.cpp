@@ -3,16 +3,16 @@
 
 // Third Person view matrix related parameters;
 float xp = 20.0f;
-float zp = 100.0f;
-float zn = -100.0f;
+float zp = 1000.0f;
+float zn = -1000.0f;
 
 //Scene center
 glm::vec3 center;
 
 
 // Translation  and Rotation Parameters
-const float TRANS_DELTA = 0.04;
-const float ROT_DELTA = 0.04;
+const float TRANS_DELTA = 0.1;
+const float ROT_DELTA = 0.05;
 
 const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);

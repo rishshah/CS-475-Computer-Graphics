@@ -1,5 +1,14 @@
 #include "model.hpp"
 
+void printmat4(glm::mat4 Awv) {
+	printf("\n");
+	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+	printf("\n");
+}
+
 /**
  * @brief      Constructs the default vertex.
  */
@@ -79,8 +88,55 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLuin
 	glUniform1i(uNDCS, ndcs_divide);
 	glDrawArrays(mode, 0, vertex_list.size());
 }
-////////////////////////////////
+bool is_inside(Vertex v1, float edge, bool is_less_in, bool is_edge_x_based) {
+	if (is_edge_x_based) {
+		if (is_less_in) {
+			return v1.position.x <= edge;
+		}
+		else {
+			return v1.position.x >= edge;
+		}
+	}
+	else {
+		if (is_less_in) {
+			return v1.position.y <= edge;
+		}
+		else {
+			return v1.position.y >= edge;
+		}
+	}
 
+}
+bool clip_triangle(Vertex v1, Vertex v2, Vertex v3, float edge, bool is_less_in , bool is_edge_x_based) {
+	bool is_v1_in = is_inside(v1, edge, is_less_in, is_edge_x_based);
+	bool is_v2_in = is_inside(v2, edge, is_less_in, is_edge_x_based);
+	bool is_v3_in = is_inside(v3, edge, is_less_in, is_edge_x_based);
+
+	if (is_v1_in or is_v2_in or is_v2_in)
+		return true;
+	return false;
+		
+}
+
+Model Model::clip(glm::mat4 transformation_mtx, float edge, bool is_less_in , bool is_edge_x_based) {
+	Model clipped_model;
+	clipped_model.vertex_list.resize(0);
+	for (int i = 0; i < vertex_list.size(); i += 3) {
+		if(clip_triangle(	Vertex(glm::vec3(transformation_mtx * glm::vec4(vertex_list[i].position, 1.0f)), vertex_list[i].color) ,
+		                Vertex(glm::vec3(transformation_mtx * glm::vec4(vertex_list[i + 1].position, 1.0f)), vertex_list[i + 1].color),
+		                Vertex(glm::vec3(transformation_mtx * glm::vec4(vertex_list[i + 2].position, 1.0f)), vertex_list[i + 2].color),
+		                edge, is_less_in, is_edge_x_based))
+		{
+			clipped_model.vertex_list.push_back(vertex_list[i]);
+			clipped_model.vertex_list.push_back(vertex_list[i+1]);
+			clipped_model.vertex_list.push_back(vertex_list[i+2]);
+		}
+	}
+	clipped_model.assignBuffer();
+	return clipped_model;
+}
+
+////////////////////////////////
 
 /**
  * @brief      Calculates the modelling transformation (transformation_mtx) to place models in the world.
@@ -88,13 +144,14 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLuin
 void WorldModel::calc_modelling_transformation() {
 	glm::mat4 scaled_mtx = glm::scale(glm::mat4(1.0f), scale_vec);
 
-	glm::mat4 rotation_mtx = glm::rotate( glm::mat4(1.0f), rotation_vec.x, glm::vec3(1.0f, 0.0f, 0.0f));
-	rotation_mtx = glm::rotate( rotation_mtx, rotation_vec.y, glm::vec3(0.0f, 1.0f, 0.0f));
-	rotation_mtx = glm::rotate( rotation_mtx, rotation_vec.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
+	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.z), glm::vec3(0.0f, 0.0f, 1.0f));
 	glm::mat4 translation_mtx = glm::translate(glm::mat4(1.0f), position_vec);
 
-	transformation_mtx = translation_mtx * rotation_mtx * scaled_mtx;
+	transformation_mtx = translation_mtx * rotation_mtx_z * rotation_mtx_y * rotation_mtx_x * scaled_mtx;
+
+	printf("XXX\n");
 }
 ////////////////////////////////
 
@@ -146,7 +203,7 @@ void WorldCamera::create_frustum() {
 	middle.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
 	middle.vertex_list.push_back(Vertex(glm::vec3(R, B, -N), magenta));
 	middle.vertex_list.push_back(Vertex(glm::vec3(0, 0, 0), magenta));
-	
+
 	eye.vertex_list.resize(0);
 	eye.vertex_list.push_back(Vertex(glm::vec3(0.0f, 0.0f, 0.0f), red));
 
@@ -179,7 +236,7 @@ void WorldCamera::draw(glm::mat4 transformation_mtx) {
 
 	frustum.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_LINES, transformation_mtx, 0);
 	glPointSize(4.0f);
-	if(display_eye == 1){
+	if (display_eye == 1) {
 		middle.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_LINES, transformation_mtx, 0);
 		eye.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_POINTS, transformation_mtx, 0);
 	}
@@ -291,6 +348,7 @@ bool Scene::load() {
 
 	float a, b, c;
 	fscanf (fp_input, "%f %f %f", &a, &b, &c);
+	printf("%f %f %f %f %f %f", cam.L, cam.R, cam.T, cam.B, cam.N, cam.F);
 	cam.eye_position = glm::vec3(a, b, c);
 
 	fscanf (fp_input, "%f %f %f", &a, &b, &c);
@@ -311,6 +369,25 @@ bool Scene::load() {
 	calc_CCS_NDCS();
 	calc_NDCS_DCS();
 
+	glm::mat4 ortho_projection_matrix = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, -100.0f, 100.0f);
+	glm::mat4 temp = scene.A_ndcs_dcs * scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
+	
+	glm::vec4 LB = temp * glm::vec4(cam.frustum.vertex_list[4].position,1.0f);
+	printf("LB %f %f %f \n", LB.x/LB.w, LB.y/LB.w, LB.z/LB.w);
+	glm::vec4 RB = temp * glm::vec4(cam.frustum.vertex_list[6].position,1.0f);
+	printf("RB %f %f %f ", RB.x/RB.w, RB.y/RB.w, RB.z/RB.w);
+	
+	glm::vec4 TL = temp * glm::vec4(cam.frustum.vertex_list[2].position,1.0f);
+	printf("TL %f %f %f \n", TL.x/TL.w, TL.y/TL.w, TL.z/TL.w);
+	glm::vec4 TR = temp * glm::vec4(cam.frustum.vertex_list[0].position,1.0f);
+	printf("TR %f %f %f ", TR.x/TR.w, TR.y/TR.w, TR.z/TR.w);
+	
+
+	clipped_model_list.resize(3);
+	for (int i = 0; i < 3; ++i) {
+		clipped_model_list[i].m = model_list[i].m.clip(temp * model_list[i].transformation_mtx, -10	, false, false);
+		clipped_model_list[i].transformation_mtx = glm::mat4(1.0f);
+	}
 	fclose(fp_input);
 	return true;
 }
@@ -318,16 +395,22 @@ bool Scene::load() {
 /**
  * @brief      draw all contents of the screen
  *
- * @param[in]  third_person_transform  the third person transformation matrix to be used 
+ * @param[in]  third_person_transform  the third person transformation matrix to be used
  */
 void Scene::draw(glm::mat4 third_person_transform) {
 
 	glBindVertexArray(vao);
+	if (should_clip) {
+		for (int i = 0; i < 3; ++i)
+			clipped_model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_TRIANGLES, third_person_transform
+			                     * dummy_matrix * model_list[i].transformation_mtx, ndcs_divide);
 
-	for (int i = 0; i < 3; ++i)
-		model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_TRIANGLES, third_person_transform
-		                     * dummy_matrix * model_list[i].transformation_mtx, ndcs_divide);
-
+	}
+	else {
+		for (int i = 0; i < 3; ++i)
+			model_list[i].m.draw(vPosition, vColor, uModelViewMatrix, uNDCS, GL_TRIANGLES, third_person_transform
+			                     * dummy_matrix * model_list[i].transformation_mtx, ndcs_divide);
+	}
 	cam.draw(third_person_transform * dummy_matrix * reverse_vcs);
 	axes.draw(third_person_transform);
 }
@@ -340,14 +423,21 @@ void Scene::calc_WCS_VCS() {
 	glm::vec3 u = glm::cross(cam.up, n) / glm::length(glm::cross(cam.up, n));
 	glm::vec3 v = glm::cross(n, u);
 
-	glm::vec4 row1 = glm::vec4(u, -cam.eye_position.x);
-	glm::vec4 row2 = glm::vec4(v, -cam.eye_position.y);
-	glm::vec4 row3 = glm::vec4(n, -cam.eye_position.z);
+	glm::vec4 row1 = glm::vec4(u, 0.0f);
+	glm::vec4 row2 = glm::vec4(v, 0.0f);
+	glm::vec4 row3 = glm::vec4(n, 0.0f);
 	glm::vec4 row4 = glm::vec4(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
-
-	A_wcs_vcs = glm::transpose(glm::mat4(row1, row2, row3, row4));
-	reverse_vcs = glm::inverse(A_wcs_vcs);
-	glm::mat4 pliden = glm::mat4(A_wcs_vcs * reverse_vcs) ;
+	glm::mat4 A_wcs_vcs_rot = glm::transpose(glm::mat4(row1, row2, row3, row4));
+	
+	row1 = glm::vec4(1.0f,0.0f,0.0f, -cam.eye_position.x);
+	row2 = glm::vec4(0.0f,1.0f,0.0f, -cam.eye_position.y);
+	row3 = glm::vec4(0.0f,0.0f,1.0f, -cam.eye_position.z);
+	glm::mat4 A_wcs_vcs_trans =  glm::transpose(glm::mat4(row1, row2, row3, row4));
+	
+	A_wcs_vcs = A_wcs_vcs_rot * A_wcs_vcs_trans;
+	reverse_vcs = glm::inverse(A_wcs_vcs_trans) * glm::inverse(A_wcs_vcs_rot);
+	printmat4(A_wcs_vcs);
+	printmat4(reverse_vcs);
 }
 
 /**
@@ -385,8 +475,30 @@ void Scene::calc_CCS_NDCS() {
  *             inversion is taken care of
  */
 void Scene::calc_NDCS_DCS() {
+	
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans[3][0] = cam.eye_position.x;
+	trans[3][1] = cam.eye_position.y;
+	trans[3][2] = cam.eye_position.z;
+
 	A_ndcs_dcs[2][2] = -0.01;
 	A_ndcs_dcs[3][2] = -1.0;
 	A_ndcs_dcs[1][1] = 10.0;
 	A_ndcs_dcs[0][0] = 10.0;
+
+	// glm::vec3 n = -(cam.look_at) / glm::length(cam.look_at);
+	// glm::vec3 u = glm::cross(cam.up, n) / glm::length(glm::cross(cam.up, n));
+	// glm::vec3 v = glm::cross(n, u);
+
+
+	// glm::vec4 row1 = glm::vec4(u, 0.0f);
+	// glm::vec4 row2 = glm::vec4(v, 0.0f);
+	// glm::vec4 row3 = glm::vec4(n, 0.0f);
+	// glm::vec4 row4 = glm::vec4(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
+	// glm::mat4 A_wcs_vcs_rot = glm::transpose(glm::mat4(row1, row2, row3, row4));
+	
+
+	// A_ndcs_dcs =  A_wcs_vcs_rot * A_ndcs_dcs * glm::inverse(A_wcs_vcs_rot) * trans;
+	
+	A_ndcs_dcs = A_ndcs_dcs;
 }

@@ -35,6 +35,7 @@ public:
 
 	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix,
 	          GLuint uNDCS, GLenum mode, glm::mat4 modelview_matrix, int ndcs_divide);
+	Model clip(glm::mat4 transformation_mtx, float edge, bool is_less_in , bool is_edge_x_based);
 };
 
 
@@ -103,8 +104,11 @@ class Scene {
 public:
 
 	std::vector<WorldModel> model_list;
+	std::vector<WorldModel> clipped_model_list;
 	WorldCamera cam;
 	Axes axes;
+
+	int should_clip = 0;
 
 	GLuint vao = 0;
 	GLuint vPosition, vColor, uModelViewMatrix;
