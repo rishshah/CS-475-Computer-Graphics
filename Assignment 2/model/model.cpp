@@ -17,6 +17,15 @@ Vertex::Vertex(glm::vec3 p, glm::vec3 c) {
 	color = c;
 }
 
+void printmat4(glm::mat4 Awv) {
+	printf("\n");
+	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+	printf("\n");
+}
+
 
 //--------------------------------------------------------------
 
@@ -87,13 +96,13 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLuin
  * @param[in]  v1               The v 1
  * @param[in]  edge             The edge
  * @param[in]  is_less_in       Indicates if less in
- * @param[in]  is_edge_x_based  Indicates if edge x based
+ * @param[in]  edge_xyz  Indicates edge plane direction	
  *
  * @return     1 if inside, 0 otherwise.
  */
-int is_inside(Vertex v1, float edge, bool is_less_in, bool is_edge_x_based) {
+int is_inside(Vertex v1, float edge, bool is_less_in, int edge_xyz) {
 	bool ans = false;
-	if (is_edge_x_based) {
+	if (edge_xyz == 1) {
 		if (is_less_in) {
 			ans = v1.position.x <= edge;
 		}
@@ -101,12 +110,20 @@ int is_inside(Vertex v1, float edge, bool is_less_in, bool is_edge_x_based) {
 			ans = v1.position.x >= edge;
 		}
 	}
-	else {
+	else if(edge_xyz == 2){
 		if (is_less_in) {
 			ans = v1.position.y <= edge;
 		}
 		else {
 			ans = v1.position.y >= edge;
+		}
+	}
+	else if(edge_xyz == 3){
+		if (is_less_in) {
+			ans = v1.position.z <= edge;
+		}
+		else {
+			ans = v1.position.z >= edge;
 		}
 	}
 	if(ans)
@@ -121,12 +138,12 @@ int is_inside(Vertex v1, float edge, bool is_less_in, bool is_edge_x_based) {
  * @param[in]  v_in             The v in
  * @param[in]  v_out            The v out
  * @param[in]  edge             The edge
- * @param[in]  is_edge_x_based  Indicates if edge x based
+ * @param[in]  edge_xyz  Indicates edge plane direction
  *
  * @return     Intersect vertex with correct interpolated z val and colors
  */
-Vertex intersection(Vertex v_in, Vertex v_out, float edge, bool is_edge_x_based){
-	if(is_edge_x_based){
+Vertex intersection(Vertex v_in, Vertex v_out, float edge, int edge_xyz){
+	if(edge_xyz == 1){
 		float pos_y = v_in.position.y  + (v_out.position.y - v_in.position.y) * (edge - v_in.position.x)/(v_out.position.x - v_in.position.x);
 		float pos_z = v_in.position.z  + (v_out.position.z - v_in.position.z) * (edge - v_in.position.x)/(v_out.position.x - v_in.position.x);
 		
@@ -137,7 +154,7 @@ Vertex intersection(Vertex v_in, Vertex v_out, float edge, bool is_edge_x_based)
 		return Vertex(glm::vec3(edge, pos_y, pos_z),glm::vec3(col_r, col_g, col_b));
 		// return Vertex(glm::vec3(edge, pos_y, pos_z),v_out.color);
 	}
-	else{
+	else if(edge_xyz == 2){
 		float pos_x = v_in.position.x  + (v_out.position.x - v_in.position.x) * (edge - v_in.position.y)/(v_out.position.y - v_in.position.y);
 		float pos_z = v_in.position.z  + (v_out.position.z - v_in.position.z) * (edge - v_in.position.y)/(v_out.position.y - v_in.position.y);
 		
@@ -146,6 +163,17 @@ Vertex intersection(Vertex v_in, Vertex v_out, float edge, bool is_edge_x_based)
 		float col_b = v_in.color.z  + (v_out.color.z - v_in.color.z) * (edge - v_in.position.y)/(v_out.position.y - v_in.position.y);
 
 		return Vertex(glm::vec3(pos_x, edge, pos_z),glm::vec3(col_r, col_g, col_b));
+		// return Vertex(glm::vec3(pos_x, edge, pos_z),v_out.color);	
+	}
+	else if(edge_xyz == 3){
+		float pos_x = v_in.position.x  + (v_out.position.x - v_in.position.x) * (edge - v_in.position.z)/(v_out.position.z - v_in.position.z);
+		float pos_y = v_in.position.y  + (v_out.position.y - v_in.position.y) * (edge - v_in.position.z)/(v_out.position.z - v_in.position.z);
+		
+		float col_r = v_in.color.x  + (v_out.color.x - v_in.color.x) * (edge - v_in.position.z)/(v_out.position.z - v_in.position.z); 
+		float col_g = v_in.color.y  + (v_out.color.y - v_in.color.y) * (edge - v_in.position.z)/(v_out.position.z - v_in.position.z);
+		float col_b = v_in.color.z  + (v_out.color.z - v_in.color.z) * (edge - v_in.position.z)/(v_out.position.z - v_in.position.z);
+
+		return Vertex(glm::vec3(pos_x, pos_y, edge),glm::vec3(col_r, col_g, col_b));
 		// return Vertex(glm::vec3(pos_x, edge, pos_z),v_out.color);	
 	}
 }
@@ -159,58 +187,58 @@ Vertex intersection(Vertex v_in, Vertex v_out, float edge, bool is_edge_x_based)
  * @param[in]  edge             The edge to be clipped about
  * @param      output           The output vertex list that will be appended with new clipped vertices
  */
-void clip_triangle(Vertex v1, Vertex v2, Vertex v3, float edge, bool is_less_in , bool is_edge_x_based, std::vector<Vertex> &output) {
-	int mask = is_inside(v1, edge, is_less_in, is_edge_x_based);
+void clip_triangle(Vertex v1, Vertex v2, Vertex v3, float edge, bool is_less_in , int edge_xyz, std::vector<Vertex> &output) {
+	int mask = is_inside(v1, edge, is_less_in, edge_xyz);
 	mask <<= 1;
-	mask |= is_inside(v2, edge, is_less_in, is_edge_x_based);
+	mask |= is_inside(v2, edge, is_less_in, edge_xyz);
 	mask <<= 1;
-	mask |= is_inside(v3, edge, is_less_in, is_edge_x_based);
+	mask |= is_inside(v3, edge, is_less_in, edge_xyz);
 	// mask = v1 | v2 | v3 
 	switch(mask){
 		case 0 :
 			break;
 		case 1 :
-			output.push_back(intersection(v3, v1, edge, is_edge_x_based));
-			output.push_back(intersection(v3, v2, edge, is_edge_x_based));
+			output.push_back(intersection(v3, v1, edge, edge_xyz));
+			output.push_back(intersection(v3, v2, edge, edge_xyz));
 			output.push_back(v3);
 			break;	
 		case 2 :
-			output.push_back(intersection(v2, v1, edge, is_edge_x_based));
+			output.push_back(intersection(v2, v1, edge, edge_xyz));
 			output.push_back(v2);
-			output.push_back(intersection(v2, v3, edge, is_edge_x_based));
+			output.push_back(intersection(v2, v3, edge, edge_xyz));
 			break;
 		case 3 :
-			output.push_back(intersection(v2, v1, edge, is_edge_x_based));
+			output.push_back(intersection(v2, v1, edge, edge_xyz));
 			output.push_back(v2);
 			output.push_back(v3);
 
-			output.push_back(intersection(v3, v1, edge, is_edge_x_based));
-			output.push_back(intersection(v2, v1, edge, is_edge_x_based));
+			output.push_back(intersection(v3, v1, edge, edge_xyz));
+			output.push_back(intersection(v2, v1, edge, edge_xyz));
 			output.push_back(v3);
 			break;
 		
 		case 4 :
 			output.push_back(v1);
-			output.push_back(intersection(v1, v2, edge, is_edge_x_based));
-			output.push_back(intersection(v1, v3, edge, is_edge_x_based));
+			output.push_back(intersection(v1, v2, edge, edge_xyz));
+			output.push_back(intersection(v1, v3, edge, edge_xyz));
 			break;
 		case 5 :
-			output.push_back(intersection(v1, v2, edge, is_edge_x_based));
+			output.push_back(intersection(v1, v2, edge, edge_xyz));
 			output.push_back(v1);
 			output.push_back(v3);
 
-			output.push_back(intersection(v3, v2, edge, is_edge_x_based));
-			output.push_back(intersection(v1, v2, edge, is_edge_x_based));
+			output.push_back(intersection(v3, v2, edge, edge_xyz));
+			output.push_back(intersection(v1, v2, edge, edge_xyz));
 			output.push_back(v3);
 			break;
 		
 		case 6 :
-			output.push_back(intersection(v1, v3, edge, is_edge_x_based));
+			output.push_back(intersection(v1, v3, edge, edge_xyz));
 			output.push_back(v1);
 			output.push_back(v2);
 
-			output.push_back(intersection(v2, v3, edge, is_edge_x_based));
-			output.push_back(intersection(v1, v3, edge, is_edge_x_based));
+			output.push_back(intersection(v2, v3, edge, edge_xyz));
+			output.push_back(intersection(v1, v3, edge, edge_xyz));
 			output.push_back(v2);
 			break;
 		case 7 :
@@ -227,14 +255,14 @@ void clip_triangle(Vertex v1, Vertex v2, Vertex v3, float edge, bool is_less_in 
  * @param[in]  vList            The transformed vertices list
  * @param[in]  edge             The edge ( either x value or y value) 
  * @param[in]  is_less_in       Indicates if less value than edge considered as inside the view area
- * @param[in]  is_edge_x_based  Indicates if edge horizontal or vertical
+ * @param[in]  edge_xyz  		Indicates edge plane direction
  *
  * @return    New vertex_list of cliped verties
  */
-std::vector<Vertex>  clip_for_edge(std::vector<Vertex> vList, float edge, bool is_less_in , bool is_edge_x_based) {
+std::vector<Vertex>  clip_for_edge(std::vector<Vertex> vList, float edge, bool is_less_in , int edge_xyz) {
 	std::vector<Vertex> output(0);
 	for (int i = 0; i < vList.size(); i += 3) {
-		clip_triangle(vList[i], vList[i + 1], vList[i + 2], edge, is_less_in, is_edge_x_based, output);
+		clip_triangle(vList[i], vList[i + 1], vList[i + 2], edge, is_less_in, edge_xyz, output);
 	}
 	return output;
 }
@@ -261,11 +289,12 @@ Model Model::clip(glm::mat4 transformation_mtx) {
 		transformed_vertex_list[i + 2] = Vertex(glm::vec3(x2.x / x2.w, x2.y / x2.w, x2.z / x2.w), vertex_list[i+2].color);
 	}
 
-	transformed_vertex_list = clip_for_edge(transformed_vertex_list, 10, true, false);
-	transformed_vertex_list = clip_for_edge(transformed_vertex_list, -10, false, true);
-	transformed_vertex_list = clip_for_edge(transformed_vertex_list, -10, false, false);
-	clipped_model.vertex_list = clip_for_edge(transformed_vertex_list, 10, true, true);
-
+	transformed_vertex_list = clip_for_edge(transformed_vertex_list, 10, true, 2);
+	transformed_vertex_list = clip_for_edge(transformed_vertex_list, -10, false, 1);
+	transformed_vertex_list = clip_for_edge(transformed_vertex_list, -10, false, 2);
+	transformed_vertex_list = clip_for_edge(transformed_vertex_list, 10, true, 1);
+	transformed_vertex_list = clip_for_edge(transformed_vertex_list, -0.99, true, 3);
+	clipped_model.vertex_list = clip_for_edge(transformed_vertex_list, -1.01, false, 3);
 	clipped_model.assignBuffer();
 	return clipped_model;
 }
@@ -484,8 +513,9 @@ bool Scene::load() {
 	fscanf (fp_input, "%f %f %f", &a, &b, &c);
 	cam.eye_position = glm::vec3(a, b, c);
 
-	fscanf (fp_input, "%f %f %f", &a, &b, &c);
-	cam.look_at = glm::vec3(a, b, c);
+	float l, m, n;
+	fscanf (fp_input, "%f %f %f", &l, &m, &n);
+	cam.look_at = glm::vec3(l - a, m - b, n - c);
 
 	fscanf (fp_input, "%f %f %f", &a, &b, &c);
 	cam.up = glm::vec3(a, b, c);
@@ -502,7 +532,29 @@ bool Scene::load() {
 	calc_CCS_NDCS();
 	calc_NDCS_DCS();
 
-	glm::mat4 temp = scene.A_ndcs_dcs * scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
+	glm::vec3 avg = glm::vec3(0.0f);
+	for(int i = 0; i < 8 ; i++){
+		avg += cam.frustum.vertex_list[i].position;
+	}
+	avg = avg/8.0f;
+
+
+	glm::vec4 myavg = glm::vec4(glm::vec3(0.0f, 0.0f, -1.8f), 1.0f);
+
+	glm::mat4 temp = scene.A_ndcs_dcs * scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs; //* scene.A_wcs_vcs;
+	                                 
+	//printmat4();
+
+	glm::mat4 pointmat = scene.A_vcs_ccs;
+
+	printmat4(pointmat);
+
+	printf("%f %f %f %f the point1\n", myavg.x, myavg.y, myavg.z, myavg.w);
+
+	myavg = pointmat * myavg ; 
+
+	printf("%f %f %f %f the point2\n", myavg.x, myavg.y, myavg.z, myavg.w);
+
 	clipped_model_list.resize(3);
 	for (int i = 0; i < 3; ++i) {
 		clipped_model_list[i].m = model_list[i].m.clip(temp * model_list[i].transformation_mtx);
@@ -566,8 +618,8 @@ void Scene::calc_WCS_VCS() {
  */
 void Scene::calc_VCS_CCS() {
 	glm::mat4 sh = glm::mat4(1.0f);
-	sh[2][0] = (cam.R + cam.L) / (2.0 * cam.N);
-	sh[2][1] = (cam.T + cam.B) / (2.0 * cam.N);
+	sh[2][0] = (cam.R + cam.L) / (-2.0 * cam.N);
+	sh[2][1] = (cam.T + cam.B) / (-2.0 * cam.N);
 
 	glm::mat4 sc = glm::mat4(1.0f);
 	sc[0][0] = (2.0 * cam.N) / (cam.R - cam.L);
@@ -576,7 +628,7 @@ void Scene::calc_VCS_CCS() {
 	glm::mat4 Nm = glm::mat4(1.0f);
 	Nm[2][2] = -(cam.F + cam.N) / (cam.F - cam.N);
 	Nm[2][3] = -1.0f;
-	Nm[3][2] = -(2.0 * cam.F * cam.N) / (cam.F - cam.N);
+	Nm[3][2] = (-2.0 * cam.F * cam.N) / (cam.F - cam.N);
 	Nm[3][3] = 0.0f;
 
 	A_vcs_ccs = Nm * sc * sh;

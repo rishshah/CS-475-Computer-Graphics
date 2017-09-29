@@ -104,7 +104,7 @@ void handle_translation() {
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glm::mat4 ortho_projection_matrix = glm::ortho(-1.0f*xp, xp, -1.0f*xp, xp, zn, zp);
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    // glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     handle_translation();
     handle_rotation();
     scene.draw(ortho_projection_matrix * glm::translate(glm::mat4(1.0f), scene.center)
@@ -132,7 +132,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     //! Create a windowed mode window and its OpenGL context
-    window = glfwCreateWindow(700, 700, "CS475 Assignment 1: Modelling and Inspection", NULL, NULL);
+    window = glfwCreateWindow(700, 700, "CS475 Assignment 2: Modelling and Viewing", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

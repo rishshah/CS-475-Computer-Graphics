@@ -172,6 +172,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 	// Modelling Viewing Pipeline callbacks
+	else if (key == GLFW_KEY_0 and action == GLFW_PRESS) {
+		printf("VCS view...\n");
+		scene.dummy_matrix = scene.reverse_vcs * scene.A_wcs_vcs;
+		scene.ndcs_divide = 0;
+		scene.cam.display_eye = 1;
+		scene.should_clip = 0;
+		scene.axes.dummy_matrix = glm::mat4(1.0f) ;
+		scene.calc_center();
+	}
 	else if (key == GLFW_KEY_1 and action == GLFW_PRESS) {
 		printf("VCS view...\n");
 		scene.dummy_matrix = scene.reverse_vcs * scene.A_wcs_vcs;
@@ -214,8 +223,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	else if(key == GLFW_KEY_5 and action == GLFW_PRESS){
 		printf("DCS view after clipping...\n");
+		scene.dummy_matrix = scene.A_ndcs_dcs * scene.A_ccs_ndcs * scene.A_vcs_ccs * scene.A_wcs_vcs;
+		scene.axes.dummy_matrix = scene.A_ndcs_dcs ;
+		scene.cam.display_eye = 0;
+		handle_dcs();
 		scene.should_clip = 1;
 		scene.ndcs_divide = 0;
+		scene.calc_center();
+	}
+	else if(key == GLFW_KEY_5 and action == GLFW_RELEASE){
+		key_state_recenter = false;
 	}
 	// Third Person View Callbacks
 	else if ( key == GLFW_KEY_UP or key == GLFW_KEY_DOWN or
