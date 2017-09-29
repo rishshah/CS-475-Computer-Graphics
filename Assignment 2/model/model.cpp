@@ -551,12 +551,13 @@ void Scene::calc_WCS_VCS() {
 	glm::vec3 u = glm::cross(cam.up, n) / glm::length(glm::cross(cam.up, n));
 	glm::vec3 v = glm::cross(n, u);
 
-	glm::vec4 row1 = glm::vec4(u, -cam.eye_position.x);
-	glm::vec4 row2 = glm::vec4(v, -cam.eye_position.y);
-	glm::vec4 row3 = glm::vec4(n, -cam.eye_position.z);
+	glm::vec4 row1 = glm::vec4(u, 0.0f);
+	glm::vec4 row2 = glm::vec4(v, 0.0f);
+	glm::vec4 row3 = glm::vec4(n, 0.0f);
 	glm::vec4 row4 = glm::vec4(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
 
  	A_wcs_vcs = glm::transpose(glm::mat4(row1, row2, row3, row4));
+ 	A_wcs_vcs =  A_wcs_vcs * glm::translate(glm::mat4(1.0f), -cam.eye_position);
  	reverse_vcs = glm::inverse(A_wcs_vcs);
 }
 
