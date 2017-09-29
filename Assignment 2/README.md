@@ -10,6 +10,8 @@
 - `[2]` -> VCS to CCS
 - `[3]` -> CCS to NDCS
 - `[4]` -> NDCS to DCS
+- `[5]` -> DCS to Clipped-DCS
+
 - `[ Up/Down ]` -> rotate about X axis 
 - `[ Left/Right ]` -> rotate about Y axis
 - `[ PgUp/PgDown ]` -> rotate about Z axis
@@ -19,8 +21,6 @@
 
 ## Status
 
-### ToDo
-- Clipping algorithm in CCS to be made
 
 ### Timeline
 - File structure
@@ -34,6 +34,8 @@
 - DCS has no z coordinate ( camera here has to be changed) {Doubt Occlusion Culling???}
 - CCS {Doubt Left-Right inversion}
 - NDCS perspective manual division 
+
+- Clipping algorithm in DCS implemented
 
 ---
 

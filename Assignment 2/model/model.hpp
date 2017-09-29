@@ -35,7 +35,7 @@ public:
 
 	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix,
 	          GLuint uNDCS, GLenum mode, glm::mat4 modelview_matrix, int ndcs_divide);
-	Model clip(glm::mat4 transformation_mtx, float edge, bool is_less_in , bool is_edge_x_based);
+	Model clip(glm::mat4 transformation_mtx);
 };
 
 

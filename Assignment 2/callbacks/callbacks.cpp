@@ -189,18 +189,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		scene.should_clip = 0;
 		scene.axes.dummy_matrix = scene.reverse_vcs ;
 		scene.calc_center();
-
-		glm::mat4 temp =  scene.reverse_vcs * scene.A_vcs_ccs * scene.A_wcs_vcs * scene.reverse_vcs;
-		glm::vec4 LB = temp * glm::vec4(scene.cam.frustum.vertex_list[4].position,1.0f);
-		printf("LB %f %f %f \n", LB.x/LB.w, LB.y/LB.w, LB.z/LB.w);
-		glm::vec4 RB = temp * glm::vec4(scene.cam.frustum.vertex_list[6].position,1.0f);
-		printf("RB %f %f %f \n", RB.x/RB.w, RB.y/RB.w, RB.z/RB.w);
-		
-		glm::vec4 TL = temp * glm::vec4(scene.cam.frustum.vertex_list[2].position,1.0f);
-		printf("TL %f %f %f \n", TL.x/TL.w, TL.y/TL.w, TL.z/TL.w);
-		glm::vec4 TR = temp * glm::vec4(scene.cam.frustum.vertex_list[0].position,1.0f);
-		printf("TR %f %f %f \n", TR.x/TR.w, TR.y/TR.w, TR.z/TR.w);
-	
 	}
 	else if (key == GLFW_KEY_3 and action == GLFW_PRESS) {
 		printf("NDCS view...\n");
@@ -223,11 +211,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	else if(key == GLFW_KEY_4 and action == GLFW_RELEASE){
 		key_state_recenter = false;
-		// printmat4(glm::translate(glm::mat4(1.0f), scene.center));
 	}
 	else if(key == GLFW_KEY_5 and action == GLFW_PRESS){
 		printf("DCS view after clipping...\n");
 		scene.should_clip = 1;
+		scene.ndcs_divide = 0;
 	}
 	// Third Person View Callbacks
 	else if ( key == GLFW_KEY_UP or key == GLFW_KEY_DOWN or
