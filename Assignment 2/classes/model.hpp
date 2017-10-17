@@ -37,48 +37,4 @@ public:
 	void calc_modelling_transformation();
 };
 
-
-/**
- * @brief      Class for camera, frustum and projectors postioned in world coordinate system.
- */
-class WorldCamera {
-public:
-	glm::vec3 eye_position;
-	glm::vec3 look_at;
-	glm::vec3 up;
-
-	float L, R, T, B, N, F;
-
-	GLuint vao;
-	GLuint vPosition, vColor, uModelViewMatrix;
-	GLuint uNDCS;
-
-	Model frustum, middle, eye;
-	int display_eye = 1;
-
-	void create_frustum();
-	void draw(glm::mat4 transformation_mtx);
-};
-
-/**
- * @brief      Class for world coordinate system axes.
- */
-class Axes {
-public:
-
-	Model m;
-	glm::mat4 dummy_matrix = glm::mat4(1.0f);
-
-	GLuint vao = 0;
-	GLuint vPosition, vColor, uModelViewMatrix;
-	GLuint uNDCS;
-
-
-	void create_axes();
-	void draw(glm::mat4 transformation_mtx);
-};
-
-
-#include "../main.hpp"
-
 #endif

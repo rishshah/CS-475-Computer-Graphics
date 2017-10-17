@@ -2,6 +2,8 @@
 #define _SCENE_HPP_
 
 #include "./model.hpp"
+#include "./axes.hpp"
+#include "./worldCamera.hpp"
 
 /**
  * @brief      Class for storing the entire scene data.
@@ -46,6 +48,8 @@ public:
 
 	void calc_NDCS_DCS();
 };
+
+#include "../main.hpp"
 
 extern Scene scene;
 

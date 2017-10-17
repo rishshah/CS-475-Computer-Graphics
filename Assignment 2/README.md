@@ -6,6 +6,7 @@
 
 ### Keyboard callbacks [M]
 
+- `[0]` -> WCS mode
 - `[1]` -> WCS to VCS
 - `[2]` -> VCS to CCS
 - `[3]` -> CCS to NDCS
@@ -29,12 +30,11 @@
 - Callbacks for translation and rotation 
 - coordinate axes
 - VCS changes coordinate instead of moving camera
-- Camera never changed ( except from use of keyboard callbacks)
+- Camera never changes ( except from use of keyboard callbacks)
 - Zoom mode Z,X
-- DCS has no z coordinate ( camera here has to be changed) {Doubt Occlusion Culling???}
-- CCS {Doubt Left-Right inversion}
+- DCS has no z coordinate ( camera here has to be changed)
+- CCS view
 - NDCS perspective manual division 
-
 - Clipping algorithm in DCS implemented
 
 ---
