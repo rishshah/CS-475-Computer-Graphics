@@ -1,17 +1,9 @@
 #include "main.hpp"
 #include <vector>
 
-// Third Person view matrix related parameters;
-float xp = 20.0f;
-float zp = 1000.0f;
-float zn = -1000.0f;
-
-//Scene center
-glm::vec3 center;
-
-
 // Translation  and Rotation Parameters
 const float TRANS_DELTA = 0.1;
+const float SCALE_DELTA = 0.1;
 const float ROT_DELTA = 0.05;
 
 const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -19,17 +11,24 @@ const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 const glm::vec4 Z_UNIT = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
 float xpos = 0.0, ypos = 0.0, zpos = 0.0;
+float xscale = 1.0, yscale = 1.0, zscale = 1.0;
+
 glm::mat4 translation_matrix = glm::mat4(1.0f);
+glm::mat4 rotation_matrix = glm::mat4(1.0f);
+glm::mat4 scaling_matrix = glm::mat4(1.0f);
+glm::mat4 projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 100.0f);
 
 //Externed variables defined here
 GLuint shaderProgram = 0;
 Scene scene;
 
-glm::mat4 rotation_matrix = glm::mat4(1.0f);
-
-std::vector<bool> key_state_translation(6, false);
+std::vector<bool> key_state_trans_or_scale(6, false);
 std::vector<bool> key_state_rotation(6, false);
+
 bool key_state_recenter = false;
+bool key_state_scaling_mode = false;
+int selected_model_number = 0;
+
 
 //-----------------------------------------------
 
@@ -63,51 +62,71 @@ void handle_rotation() {
 
 /**
  * @brief      Adjust translation matrix according to key_state_recenter and
- *             key_state_translation shared variables
+ *             key_state_trans_or_scale shared variables
  */
-void handle_translation() {
+void handle_translation_and_scaling() {
     if (key_state_recenter) {
         xpos = ypos = zpos = 0.0f;
+        rotation_matrix = glm::mat4(1.0f);
+        scaling_matrix = glm::mat4(1.0f);
+    }
+    else if (key_state_scaling_mode) {
+        if (key_state_trans_or_scale[0]) {
+            xscale = std::max(xscale - SCALE_DELTA, 0.0f);
+        }
+        else if (key_state_trans_or_scale[1]) {
+            xscale = std::max(xscale + SCALE_DELTA, 0.0f);
+        }
+
+        if (key_state_trans_or_scale[2]) {
+            yscale = std::max(yscale - SCALE_DELTA, 0.0f);
+        }
+        else if (key_state_trans_or_scale[3]) {
+            yscale = std::max(yscale + SCALE_DELTA, 0.0f);
+        }
+
+        if (key_state_trans_or_scale[4]) {
+            zscale = std::max(zscale + SCALE_DELTA, 0.0f);
+        }
+        else if (key_state_trans_or_scale[5]) {
+            zscale = std::max(zscale - SCALE_DELTA, 0.0f);
+        }
     }
     else {
-        if (key_state_translation[0]) {
+        if (key_state_trans_or_scale[0]) {
             xpos -= TRANS_DELTA;
         }
-        else if (key_state_translation[1]) {
+        else if (key_state_trans_or_scale[1]) {
             xpos += TRANS_DELTA;
         }
 
-        if (key_state_translation[2]) {
+        if (key_state_trans_or_scale[2]) {
             ypos += TRANS_DELTA;
         }
-        else if (key_state_translation[3]) {
+        else if (key_state_trans_or_scale[3]) {
             ypos -= TRANS_DELTA;
         }
 
-        if (key_state_translation[4]) {
-            //zpos += TRANS_DELTA;
-            xp -= TRANS_DELTA ;
+        if (key_state_trans_or_scale[4]) {
+            zpos += TRANS_DELTA;
         }
-        else if (key_state_translation[5]) {
-            //zpos -= TRANS_DELTA;
-            xp += TRANS_DELTA ;
+        else if (key_state_trans_or_scale[5]) {
+            zpos -= TRANS_DELTA;
         }
     }
 
     translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
+    scaling_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(xscale, yscale, zscale));
 }
-
 
 /**
  * @brief      Display everything and handle third-person-view matrix callbacks continuously
  */
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glm::mat4 ortho_projection_matrix = glm::ortho(-1.0f*xp, xp, -1.0f*xp, xp, zn, zp);
-    // glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-    handle_translation();
+    handle_translation_and_scaling();
     handle_rotation();
-    scene.draw(ortho_projection_matrix * translation_matrix * rotation_matrix);
+    scene.draw(translation_matrix * rotation_matrix * scaling_matrix, projection_matrix);
 }
 
 
@@ -179,9 +198,7 @@ int main() {
     shaderProgram = base::CreateProgramGL(shaderList);
     glUseProgram( shaderProgram );
 
-    if (!scene.load())
-        return 0;
-
+    scene.init();
     while (glfwWindowShouldClose(window) == 0) {
 
         renderGL(window);

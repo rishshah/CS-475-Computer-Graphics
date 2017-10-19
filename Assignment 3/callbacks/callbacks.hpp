@@ -11,7 +11,7 @@
 #include "../../glm/vec4.hpp"
 #include "../main.hpp"
 
-extern std::vector<bool> key_state_translation;
+extern std::vector<bool> key_state_trans_or_scale;
 //X     0 -> A      1 -> D
 //Y     2 -> W      3 -> S
 //Z     4 -> Z      5 -> X
@@ -22,13 +22,14 @@ extern std::vector<bool> key_state_rotation;
 //Z     4 -> pgUp   5 -> PgDown
 
 extern bool key_state_recenter;
+extern bool key_state_scaling_mode;
+extern int selected_model_number;
 
 namespace base {
 	void rotation_callback(int key, int action);
 	void recenter_callback(int key, int action);
-	void translation_callback(int key, int action);
+	void trans_and_scale_callback(int key, int action);
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void handle_dcs();
 };
 
 #endif

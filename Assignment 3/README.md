@@ -15,12 +15,23 @@
 - Lighting yet to be decided....
 
 ### Keyboard callbacks
-- None till now
+- `[0,1,2,3,4]` -> select model index (in model list stored in scene) to apply changes on (feature in progress default 0)
+
+- `[ Up/Down ]` -> rotate about X axis 
+- `[ Left/Right ]` -> rotate about Y axis
+- `[ PgUp/PgDown ]` -> rotate about Z axis
+- `[ W,S,A,D,Z,X ]` -> In nonscaling mode, key should allow translation along +ve and -ve Y,X and Z axis respectively
+- `[ W,S,A,D,Z,X ]` -> In scaling mode, key should allow scaling along Y,X and Z axis respectively
+- `[ C ]` -> Enter and exit scaling mode.
+- `[ L ]` -> Enter name of model relative to ./models/ and without extension. This heirarchical model is loaded in scene.
+- `[ k ]` -> Save a particular heirarchical model of scene
 
 ---
 
 ## Status
 - File structure in progress
+- Class structure completed
+- Most of the interactive view to create heirarchical models created
 
 ### ToDo
 - Make file structure, classes to make easy hierarchial modelling 

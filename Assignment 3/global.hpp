@@ -6,9 +6,6 @@
 #include "../glm/mat4x4.hpp"
 #include "../glm/gtc/type_ptr.hpp"
 
-
-extern glm::mat4 rotation_matrix;
-extern float xp;
 extern GLuint shaderProgram;
 
 #endif
