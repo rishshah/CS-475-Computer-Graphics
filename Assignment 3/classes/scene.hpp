@@ -20,19 +20,19 @@ private:
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 	float xscale = 1.0, yscale = 1.0, zscale = 1.0;
 
-public:
-	std::vector<HeirarchicalModel> model_list;
+
 	GLuint vao = 0;
 	GLuint vPosition, vColor, uModelViewMatrix;
-
 
 	glm::mat4 translation_matrix = glm::mat4(1.0f);
 	glm::mat4 rotation_matrix = glm::mat4(1.0f);
 	glm::mat4 scaling_matrix = glm::mat4(1.0f);
 
+public:
+	std::vector<HeirarchicalModel> model_list;
+	
 	void init();
 	void load_new_model(std::	string filename);
-	void save_model(int i);
 	void draw(glm::mat4 projection_transform);
 
 	void rotate(std::vector<bool> key_state_rotation);
@@ -40,7 +40,6 @@ public:
 	void trans_scale(std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode);
 	void trans_scale_model(int i, std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode);
 
-	// void join(int p, int c, glm::vec3 point_p, glm::vec3 point_c);
 };
 
 #include "../main.hpp"

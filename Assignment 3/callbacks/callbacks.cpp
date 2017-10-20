@@ -158,6 +158,9 @@ void recenter_callback(int key, int action) {
 	}
 }
 
+/**
+ * @brief handle input key presses from keyboard
+ */
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
@@ -180,6 +183,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	          key == GLFW_KEY_X) {
 		trans_and_scale_callback(key, action);
 	}
+	// toggle scaling mode
 	else if (key == GLFW_KEY_C and action == GLFW_PRESS) {
 		key_state_scaling_mode = !key_state_scaling_mode;
 		printf("SCALING MODE %d\n", key_state_scaling_mode);
@@ -187,44 +191,26 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 
 	// Modelling Mode Callbacks
+	// Load a new model
 	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
 		std::string model_filename;
 		printf("Enter File:");
 		std::cin >> model_filename;
 		scene.load_new_model(model_filename);
 	}
-	else if (key == GLFW_KEY_K and action == GLFW_PRESS) {
-		scene.save_model(selected_model_number);
-		printf("Saved model %d\n", selected_model_number);
-	}
 
+	// Select a model index
 	else if (key == GLFW_KEY_Q and action == GLFW_PRESS) {
 		printf("Select Model:");
 		std::cin >> selected_model_number;
 		pan_mode = false;
 		printf("model %d selected\n", selected_model_number);
 	}
+
+	// Switch to Pan mode
 	else if (key == GLFW_KEY_P and action == GLFW_PRESS) {
-		printf("Scene pan mode\n");
 		pan_mode = true;
+		printf("Scene pan mode\n");
 	}
-	// else if (key == GLFW_KEY_I and action == GLFW_PRESS) {
-	// 	if (!pan_mode) {
-	// 		printf("Enter new id for model %d: ", selected_model_number);
-	// 		scanf("%s", scene.model_list[selected_model_number].id);
-	// 	} else{
-	// 		printf("Exit pan mode and try again!\n");
-	// 	}
-	// }
-	// else if (key == GLFW_KEY_J and action == GLFW_PRESS) {
-	// 	std::cout << "Enter parent and child:";
-	// 	int a, b; std::cin >> a >> b ;
-	// 	std::cout << "Enter parent point:";
-	// 	float x, y, z; std::cin >> x >> y >> z;
-	// 	std::cout << "Enter child point:";
-	// 	float x1, y1, z1; std::cin >> x1 >> y1 >> z1;
-	// 	scene.join(a, b, glm::vec3(x, y, z), glm::vec3(x1, y1, z1));
-	// 	std::cout << "Joined!\n";
-	// }
 }
 };

@@ -1,12 +1,19 @@
 body
-3
+9
 36
 1.0 0.3 0.3
+0.0 0.0 0.0
 0.0 0.0 0.0
 0.0 0.0 0.0
 eye_left
 eye_right
 upper_mouth
+lower_mouth
+tail
+front_left_leg
+front_right_leg
+back_left_leg
+back_right_leg
 -1.0 1.0 1.0 	 0.1 0.6 0.6 
 -1.0 1.0 -1.0 	 0.1 0.6 0.6 
 1.0 1.0 1.0 	 0.1 0.6 0.6 

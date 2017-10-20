@@ -2,27 +2,24 @@
 
 const std::string FILE_NAME = "./models/perry/";
 
-void printmat4(glm::mat4 Awv) {
-	printf("\n");
-	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
-	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
-	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
-	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
-	printf("\n");
+/**
+ * @brief calculate rotation and scale matrix for each part corresponding to file's rotation and scale vector inputs
+ */
+void Model::calc_matrices() {
+	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	rotation_mtx = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
+	scale_mtx = glm::scale(glm::mat4(1.0f), scale_vec);
 }
-
-
-//--------------------------------------------------------------
-
 
 /**
  * @brief      Load model from a .raw file  and store its vertex data
- *
  * @param      filename the .raw file that contains the model
  *
  * @return     true iff file loaded successfully
  */
-bool Model::load(std::string filename, glm::vec3 cumu_translation, glm::vec3 par_scale_vec) {
+bool Model::load(std::string filename, glm::vec3 cumu_translation, glm::mat4 par_rotation_mtx, glm::mat4 par_scale_mtx) {
 	FILE *fp_input = fopen(filename.c_str(), "r" );
 	if (fp_input ==  NULL) {
 		printf("Error opening file %s\n", filename.c_str());
@@ -40,13 +37,18 @@ bool Model::load(std::string filename, glm::vec3 cumu_translation, glm::vec3 par
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	scale_vec = glm::vec3(x, y, z);
 
+	//rotation
+	fscanf(fp_input, "%f %f %f", &x, &y, &z);
+	rotation_vec = glm::vec3(x, y, z);
+
+	calc_matrices();
 	//par_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
-	par_translation_vec = glm::vec3(x * par_scale_vec.x, y * par_scale_vec.y, z * par_scale_vec.z);
+	par_translation_vec = glm::vec3(par_rotation_mtx * par_scale_mtx * glm::vec4(x, y, z, 1.0f));
 
 	//self_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
-	self_translation_vec = glm::vec3(x * scale_vec.x, y * scale_vec.y, z * scale_vec.z);
+	self_translation_vec = glm::vec3(rotation_mtx * scale_mtx * glm::vec4(x, y, z, 1.0f));
 
 	//final_translation
 	final_translation_vec = par_translation_vec - self_translation_vec + cumu_translation;
@@ -56,7 +58,7 @@ bool Model::load(std::string filename, glm::vec3 cumu_translation, glm::vec3 par
 		char child_filename[100];
 		fscanf(fp_input, "%s\n", child_filename);
 		Model m;
-		m.load(FILE_NAME + std::string(child_filename) + ".raw", final_translation_vec, par_scale_vec);
+		m.load(FILE_NAME + std::string(child_filename) + ".raw", final_translation_vec, rotation_mtx, scale_mtx);
 		m.assignBuffer();
 		child_model_list[i] = m;
 	}
@@ -76,39 +78,6 @@ bool Model::load(std::string filename, glm::vec3 cumu_translation, glm::vec3 par
 }
 
 /**
- * @brief      Load model from a .raw file  and store its vertex data
- *
- * @param      filename the .raw file that contains the model
- *
- * @return     true iff file loaded successfully
- */
-bool Model::save() {
-	FILE *fp_output = fopen((FILE_NAME + std::string(id) + ".raw").c_str(), "w" );
-	if (fp_output ==  NULL) {
-		printf("Error opening file %s\n", (FILE_NAME + std::string(id) + ".raw").c_str());
-		return false;
-	}
-	fprintf (fp_output, "%s\n", id);
-	fprintf (fp_output, "%zu\n", child_model_list.size());
-	fprintf (fp_output, "%zu\n", vertex_list.size());
-	fprintf (fp_output, "%.1f %.1f %.1f\n", scale_vec.x, scale_vec.y, scale_vec.z);
-	fprintf (fp_output, "%.1f %.1f %.1f\n", par_translation_vec.x, par_translation_vec.y, par_translation_vec.z);
-	fprintf (fp_output, "%.1f %.1f %.1f\n", self_translation_vec.x, self_translation_vec.y, self_translation_vec.z);
-
-	for (int i = 0; i < child_model_list.size(); ++i) {
-		fprintf (fp_output, "%s\n", child_model_list[i].id);
-		child_model_list[i].save();
-	}
-	for (int i = 0; i < vertex_list.size(); ++i) {
-		fprintf (fp_output, "%.1f %.1f %.1f \t %.1f %.1f %.1f \n", (float)vertex_list[i].position[0], (float)vertex_list[i].position[1], (float)vertex_list[i].position[2],
-		         (float)vertex_list[i].color[0], (float)vertex_list[i].color[1], (float)vertex_list[i].color[2]);
-	}
-	fclose(fp_output);
-	return true;
-}
-
-
-/**
  * @brief      fill the vbo for the model
  */
 void Model::assignBuffer() {
@@ -126,14 +95,17 @@ void Model::assignBuffer() {
  * @param[in]  vColor            location of color input in vertex shader
  * @param[in]  uModelViewMatrix  location of transformation matrix input in vertex shader
  * @param[in]  mode              The mode of drawing the model (GL_TRIANGLES, GL_LINES, GL_POINT)
+ * @param[in]  third_person_transform 	transformation matrix from ouside of this model
+ * @param[in]  projection_transform  	Matrix of projection from third person (scene) camera
  */
-void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 third_person_transform,  glm::mat4 projection_transform) {
+void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode,
+                 glm::mat4 third_person_transform,  glm::mat4 projection_transform) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
 
 	glm::mat4 final_translation_transform = glm::translate(glm::mat4(1.0f), final_translation_vec);
-	glm::mat4 modelling_transform = glm::scale(glm::mat4(1.0f), scale_vec);
+	glm::mat4 modelling_transform = rotation_mtx * scale_mtx;
 	glm::mat4 temp_matrix = projection_transform * third_person_transform * final_translation_transform * modelling_transform;
 	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(temp_matrix));
 

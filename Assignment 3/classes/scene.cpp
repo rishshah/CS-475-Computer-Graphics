@@ -1,6 +1,10 @@
 #include "./scene.hpp"
 
 const std::string FILE_NAME = "./models/perry/";
+
+/**
+ * @brief initialize vao and links to shaders for this scene
+ */
 void Scene::init() {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -15,23 +19,20 @@ void Scene::init() {
 
 	model_list.resize(0);
 }
+
 /**
- * @brief     Load new model in scene
+ * @brief Load new model in scene
+ * @param model_filename filename to load the model from relative to FILENAME path
  */
 void Scene::load_new_model(std::string model_filename) {
 	HeirarchicalModel hm;
-	hm.load(FILE_NAME + model_filename + ".raw", glm::vec3(0.0f), glm::vec3(1.0f));
+	hm.load(FILE_NAME + model_filename + ".raw", glm::vec3(0.0f), glm::mat4(1.0f), glm::mat4(1.0f));
 	model_list.push_back(hm);
-}
-
-void Scene::save_model(int i) {
-	model_list[i].scale_vec = glm::vec3(model_list[i].scaling_matrix * glm::scale(glm::mat4(1.0f), model_list[i].scale_vec) * glm::vec4(1.0));
-	model_list[i].save();
 }
 
 /**
  * @brief      draw all contents of the screen
- * @param[in]  third_person_transform  the third person transformation matrix to be used
+ * @param[in]  projection_transform  the third person camera projection transformation matrix
  */
 void Scene::draw(glm::mat4 projection_transform) {
 	glBindVertexArray(vao);
@@ -42,6 +43,10 @@ void Scene::draw(glm::mat4 projection_transform) {
 	}
 }
 
+/**
+ * @brief recalculate rotation matrix of scene
+ * @param key_state_rotation 	key press boolean vector input
+ */
 void Scene::rotate(std::vector<bool> key_state_rotation) {
 	if (key_state_rotation[0]) {
 		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
@@ -65,6 +70,11 @@ void Scene::rotate(std::vector<bool> key_state_rotation) {
 	}
 }
 
+/**
+ * @brief recalculate rotation matrix of model in scene
+ * @param i 					model index in model_list of scene
+ * @param key_state_rotation 	key press boolean vector input
+ */
 void Scene::rotate_model(int i, std::vector<bool> key_state_rotation) {
 	if (key_state_rotation[0]) {
 		model_list[i].rotation_matrix = glm::rotate(model_list[i].rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(model_list[i].rotation_matrix) * X_UNIT));
@@ -88,6 +98,12 @@ void Scene::rotate_model(int i, std::vector<bool> key_state_rotation) {
 	}
 }
 
+/**
+ * @brief recalculate translation and scaling matrix of scene
+ * @param key_state_trans_or_scale 	key press boolean vector input 	{WASDZX}
+ * @param key_state_scaling_mode 	key press boolean vector input 	{C}  Scaling is not allowed
+ * @param key_state_recenter 	key press boolean vector inputs 	{R}
+ */
 void Scene::trans_scale(std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode) {
 	if (key_state_recenter) {
 		xpos = ypos = zpos = 0.0f;
@@ -144,6 +160,14 @@ void Scene::trans_scale(std::vector<bool> key_state_trans_or_scale, bool key_sta
 	}
 }
 
+/**
+ * @brief recalculate translation and scaling matrix of model in scene
+ * @param i 					model index in model_list of scene
+ * @param key_state_trans_or_scale 	key press boolean vector input 	{WASDZX}
+ * @param key_state_scaling_mode 	key press boolean vector input 	{C}
+ * @param key_state_recenter 	key press boolean vector inputs 	{R}
+ *
+ */
 void Scene::trans_scale_model(int i, std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode) {
 	if (key_state_recenter) {
 		model_list[i].xpos = model_list[i].ypos = model_list[i].zpos = 0.0f;
@@ -200,14 +224,3 @@ void Scene::trans_scale_model(int i, std::vector<bool> key_state_trans_or_scale,
 		model_list[i].scaling_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(model_list[i].xscale, model_list[i].yscale, model_list[i].zscale));
 	}
 }
-
-// void Scene::join(int p, int c, glm::vec3 point_p, glm::vec3 point_c) {
-// 	Model m = model_list[c];
-// 	m.scale_vec = glm::vec3(model_list[c].scaling_matrix * glm::scale(glm::mat4(1.0f), model_list[c].scale_vec) * glm::vec4(1.0));
-// 	m.self_translation_vec = glm::vec3(model_list[c].scaling_matrix * glm::scale(glm::mat4(1.0f), model_list[c].scale_vec) * glm::vec4(point_c, 1.0f));
-// 	m.par_translation_vec = glm::vec3(model_list[p].scaling_matrix * glm::scale(glm::mat4(1.0f), model_list[p].scale_vec) * glm::vec4(point_p, 1.0f));
-// 	printf("self:: %f %f %f\n", m.self_translation_vec.x, m.self_translation_vec.y, m.self_translation_vec.z);
-// 	printf("par:: %f %f %f\n", m.par_translation_vec.x, m.par_translation_vec.y, m.par_translation_vec.z);
-
-// 	model_list[p].child_model_list.push_back(m);
-// };
