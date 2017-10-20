@@ -48,7 +48,7 @@ void handle_translation_and_scaling() {
  */
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    // glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     if (scene.model_list.size() > 0) {
         handle_translation_and_scaling();
         handle_rotation();
@@ -77,7 +77,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     //! Create a windowed mode window and its OpenGL context
-    window = glfwCreateWindow(700, 700, "CS475 Assignment 2: Modelling and Viewing", NULL, NULL);
+    window = glfwCreateWindow(700, 700, "CS475 Assignment 3: Modelling, Shading and Texturing", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
