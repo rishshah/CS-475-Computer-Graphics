@@ -1,5 +1,7 @@
 #include "model.hpp"
 
+const std::string FILE_NAME = "./models/perry/";
+
 void printmat4(glm::mat4 Awv) {
 	printf("\n");
 	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
@@ -20,7 +22,7 @@ void printmat4(glm::mat4 Awv) {
  *
  * @return     true iff file loaded successfully
  */
-bool Model::load(std::string filename) {
+bool Model::load(std::string filename, glm::vec3 cumu_translation, glm::vec3 par_scale_vec) {
 	FILE *fp_input = fopen(filename.c_str(), "r" );
 	if (fp_input ==  NULL) {
 		printf("Error opening file %s\n", filename.c_str());
@@ -40,18 +42,21 @@ bool Model::load(std::string filename) {
 
 	//par_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
-	par_translation_vec = glm::vec3(x, y, z);
+	par_translation_vec = glm::vec3(x * par_scale_vec.x, y * par_scale_vec.y, z * par_scale_vec.z);
 
 	//self_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
-	self_translation_vec = glm::vec3(x, y, z);
+	self_translation_vec = glm::vec3(x * scale_vec.x, y * scale_vec.y, z * scale_vec.z);
+
+	//final_translation
+	final_translation_vec = par_translation_vec - self_translation_vec + cumu_translation;
 
 	child_model_list.resize(num_children);
 	for (int i = 0; i < num_children; ++i) {
-		char child_filename[100]; 
+		char child_filename[100];
 		fscanf(fp_input, "%s\n", child_filename);
 		Model m;
-		m.load("./models/" + std::string(child_filename) + ".raw");
+		m.load(FILE_NAME + std::string(child_filename) + ".raw", final_translation_vec, par_scale_vec);
 		m.assignBuffer();
 		child_model_list[i] = m;
 	}
@@ -78,9 +83,9 @@ bool Model::load(std::string filename) {
  * @return     true iff file loaded successfully
  */
 bool Model::save() {
-	FILE *fp_output = fopen(("./models/" + std::string(id) + ".raw").c_str(), "w" );
+	FILE *fp_output = fopen((FILE_NAME + std::string(id) + ".raw").c_str(), "w" );
 	if (fp_output ==  NULL) {
-		printf("Error opening file %s\n", ("./models/" + std::string(id) + ".raw").c_str());
+		printf("Error opening file %s\n", (FILE_NAME + std::string(id) + ".raw").c_str());
 		return false;
 	}
 	fprintf (fp_output, "%s\n", id);
@@ -127,10 +132,9 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenu
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
 
-	glm::mat4 par_translation_transform = glm::translate(glm::mat4(1.0f), par_translation_vec);
-	glm::mat4 self_translation_transform = glm::translate(glm::mat4(1.0f), self_translation_vec); 
+	glm::mat4 final_translation_transform = glm::translate(glm::mat4(1.0f), final_translation_vec);
 	glm::mat4 modelling_transform = glm::scale(glm::mat4(1.0f), scale_vec);
-	glm::mat4 temp_matrix = projection_transform * par_translation_transform * third_person_transform * glm::inverse(self_translation_transform) * modelling_transform;
+	glm::mat4 temp_matrix = projection_transform * third_person_transform * final_translation_transform * modelling_transform;
 	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(temp_matrix));
 
 	glDrawArrays(mode, 0, vertex_list.size());
@@ -139,16 +143,3 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenu
 		child_model_list[i].draw(vPosition, vColor, uModelViewMatrix, mode, third_person_transform, projection_transform);
 	}
 }
-
-/**
- * @brief calculate transform to join parent to child
- *
- * @param m Child model
- * @param point_child Point on child to join to parent (in opengl coordinates)
- * @param point_parent Point on parent to join to child (in opengl coordinates)
- */
-void Model::join_child(Model m, glm::vec3 point_child, glm::vec3 point_parent) {
-	m.self_translation_vec = point_child;
-	m.par_translation_vec = point_parent;
-	child_model_list.push_back(m);
-};

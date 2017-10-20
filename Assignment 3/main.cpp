@@ -1,22 +1,9 @@
 #include "main.hpp"
 #include <vector>
 
-// Translation  and Rotation Parameters
-const float TRANS_DELTA = 0.1;
-const float SCALE_DELTA = 0.1;
-const float ROT_DELTA = 0.05;
 
-const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-const glm::vec4 Z_UNIT = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-
-float xpos = 0.0, ypos = 0.0, zpos = 0.0;
-float xscale = 1.0, yscale = 1.0, zscale = 1.0;
-
-glm::mat4 translation_matrix = glm::mat4(1.0f);
-glm::mat4 rotation_matrix = glm::mat4(1.0f);
-glm::mat4 scaling_matrix = glm::mat4(1.0f);
-glm::mat4 projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 100.0f);
+glm::mat4 projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 100.0f) *
+                              glm::lookAt(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 //Externed variables defined here
 GLuint shaderProgram = 0;
@@ -27,6 +14,7 @@ std::vector<bool> key_state_rotation(6, false);
 
 bool key_state_recenter = false;
 bool key_state_scaling_mode = false;
+bool pan_mode = true;
 int selected_model_number = 0;
 
 
@@ -38,26 +26,10 @@ int selected_model_number = 0;
  *             variable
  */
 void handle_rotation() {
-    if (key_state_rotation[0]) {
-        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
-    }
-    else if (key_state_rotation[1]) {
-        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
-    }
-
-    if (key_state_rotation[2]) {
-        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
-    }
-    else if (key_state_rotation[3]) {
-        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
-    }
-
-    if (key_state_rotation[4]) {
-        rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
-    }
-    else if (key_state_rotation[5]) {
-        rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
-    }
+    if (pan_mode)
+        scene.rotate(key_state_rotation);
+    else
+        scene.rotate_model(selected_model_number, key_state_rotation);
 }
 
 /**
@@ -65,58 +37,10 @@ void handle_rotation() {
  *             key_state_trans_or_scale shared variables
  */
 void handle_translation_and_scaling() {
-    if (key_state_recenter) {
-        xpos = ypos = zpos = 0.0f;
-        rotation_matrix = glm::mat4(1.0f);
-        scaling_matrix = glm::mat4(1.0f);
-    }
-    else if (key_state_scaling_mode) {
-        if (key_state_trans_or_scale[0]) {
-            xscale = std::max(xscale - SCALE_DELTA, 0.0f);
-        }
-        else if (key_state_trans_or_scale[1]) {
-            xscale = std::max(xscale + SCALE_DELTA, 0.0f);
-        }
-
-        if (key_state_trans_or_scale[2]) {
-            yscale = std::max(yscale - SCALE_DELTA, 0.0f);
-        }
-        else if (key_state_trans_or_scale[3]) {
-            yscale = std::max(yscale + SCALE_DELTA, 0.0f);
-        }
-
-        if (key_state_trans_or_scale[4]) {
-            zscale = std::max(zscale + SCALE_DELTA, 0.0f);
-        }
-        else if (key_state_trans_or_scale[5]) {
-            zscale = std::max(zscale - SCALE_DELTA, 0.0f);
-        }
-    }
-    else {
-        if (key_state_trans_or_scale[0]) {
-            xpos -= TRANS_DELTA;
-        }
-        else if (key_state_trans_or_scale[1]) {
-            xpos += TRANS_DELTA;
-        }
-
-        if (key_state_trans_or_scale[2]) {
-            ypos += TRANS_DELTA;
-        }
-        else if (key_state_trans_or_scale[3]) {
-            ypos -= TRANS_DELTA;
-        }
-
-        if (key_state_trans_or_scale[4]) {
-            zpos += TRANS_DELTA;
-        }
-        else if (key_state_trans_or_scale[5]) {
-            zpos -= TRANS_DELTA;
-        }
-    }
-
-    translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
-    scaling_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(xscale, yscale, zscale));
+    if (pan_mode)
+        scene.trans_scale(key_state_trans_or_scale, key_state_recenter, key_state_scaling_mode);
+    else
+        scene.trans_scale_model(selected_model_number, key_state_trans_or_scale, key_state_recenter, key_state_scaling_mode);
 }
 
 /**
@@ -124,14 +48,17 @@ void handle_translation_and_scaling() {
  */
 void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    handle_translation_and_scaling();
-    handle_rotation();
-    scene.draw(translation_matrix * rotation_matrix * scaling_matrix, projection_matrix);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    if (scene.model_list.size() > 0) {
+        handle_translation_and_scaling();
+        handle_rotation();
+        scene.draw(projection_matrix);
+    }
 }
 
 
 int main() {
-    //! The pointer to the GLFW window
+    //! The pointer to the GLFW window;
     GLFWwindow* window;
 
     //! Setting up the GLFW Error callback

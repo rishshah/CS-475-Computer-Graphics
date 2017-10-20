@@ -197,31 +197,34 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		scene.save_model(selected_model_number);
 		printf("Saved model %d\n", selected_model_number);
 	}
-	else if (key == GLFW_KEY_1 and action == GLFW_PRESS) {
-		selected_model_number = 1;
-		printf("SELECTED MODEL %d\n", selected_model_number);
-	}
-	else if (key == GLFW_KEY_2 and action == GLFW_PRESS) {
-		selected_model_number = 1;
-		printf("SELECTED MODEL %d\n", selected_model_number);
-	}
-	else if (key == GLFW_KEY_3 and action == GLFW_PRESS) {
-		selected_model_number = 3;
-		printf("SELECTED MODEL %d\n", selected_model_number);
-	}
-	else if (key == GLFW_KEY_4 and action == GLFW_PRESS) {
-		selected_model_number = 4;
-		printf("SELECTED MODEL %d\n", selected_model_number);
-	}
-	else if (key == GLFW_KEY_J) {
-		std::cout << "Enter parent and child:";
-		int a, b; std::cin >> a >> b ;
-		std::cout << "Enter parent point:";
-		float x, y, z; std::cin >> x >> y >> z;
-		std::cout << "Enter child point:";
-		float x1, y1, z1; std::cin >> x1 >> y1 >> z1;
-		scene.model_list[a].join_child(scene.model_list[b], glm::vec3(x, y, z), glm::vec3(x1, y1, z1));
-	}
-}
 
+	else if (key == GLFW_KEY_Q and action == GLFW_PRESS) {
+		printf("Select Model:");
+		std::cin >> selected_model_number;
+		pan_mode = false;
+		printf("model %d selected\n", selected_model_number);
+	}
+	else if (key == GLFW_KEY_P and action == GLFW_PRESS) {
+		printf("Scene pan mode\n");
+		pan_mode = true;
+	}
+	// else if (key == GLFW_KEY_I and action == GLFW_PRESS) {
+	// 	if (!pan_mode) {
+	// 		printf("Enter new id for model %d: ", selected_model_number);
+	// 		scanf("%s", scene.model_list[selected_model_number].id);
+	// 	} else{
+	// 		printf("Exit pan mode and try again!\n");
+	// 	}
+	// }
+	// else if (key == GLFW_KEY_J and action == GLFW_PRESS) {
+	// 	std::cout << "Enter parent and child:";
+	// 	int a, b; std::cin >> a >> b ;
+	// 	std::cout << "Enter parent point:";
+	// 	float x, y, z; std::cin >> x >> y >> z;
+	// 	std::cout << "Enter child point:";
+	// 	float x1, y1, z1; std::cin >> x1 >> y1 >> z1;
+	// 	scene.join(a, b, glm::vec3(x, y, z), glm::vec3(x1, y1, z1));
+	// 	std::cout << "Joined!\n";
+	// }
+}
 };

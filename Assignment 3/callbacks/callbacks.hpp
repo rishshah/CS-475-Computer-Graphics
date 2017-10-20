@@ -23,7 +23,10 @@ extern std::vector<bool> key_state_rotation;
 
 extern bool key_state_recenter;
 extern bool key_state_scaling_mode;
+extern bool pan_mode;
 extern int selected_model_number;
+
+extern glm::mat4 scaling_matrix;
 
 namespace base {
 	void rotation_callback(int key, int action);
