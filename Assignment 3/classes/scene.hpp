@@ -29,17 +29,16 @@ private:
 	glm::mat4 scaling_matrix = glm::mat4(1.0f);
 
 public:
-	std::vector<HeirarchicalModel> model_list;
+	std::vector<HeirarchicalModel*> model_list;
 	
 	void init();
-	void load_new_model(std::	string filename);
+	void load_new_model(std::string filename, std::string id);
 	void draw(glm::mat4 projection_transform);
+	HeirarchicalModel* find_heirarchical_model_by_id(std::string id);
 
 	void rotate(std::vector<bool> key_state_rotation);
-	void rotate_model(int i, std::vector<bool> key_state_rotation);
 	void trans_scale(std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode);
-	void trans_scale_model(int i, std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode);
-
+	~Scene();
 };
 
 #include "../main.hpp"

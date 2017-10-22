@@ -14,9 +14,12 @@ std::vector<bool> key_state_rotation(6, false);
 
 bool key_state_recenter = false;
 bool key_state_scaling_mode = false;
-bool pan_mode = true;
-int selected_model_number = 0;
 
+bool pan_mode = true;
+bool modelling_mode = false;
+
+HeirarchicalModel* curr_heirarchical_model = NULL;
+Model* curr_model = NULL;
 
 //-----------------------------------------------
 
@@ -28,8 +31,8 @@ int selected_model_number = 0;
 void handle_rotation() {
     if (pan_mode)
         scene.rotate(key_state_rotation);
-    else
-        scene.rotate_model(selected_model_number, key_state_rotation);
+    else if (modelling_mode)
+        curr_model->rotate(key_state_rotation);
 }
 
 /**
@@ -39,8 +42,6 @@ void handle_rotation() {
 void handle_translation_and_scaling() {
     if (pan_mode)
         scene.trans_scale(key_state_trans_or_scale, key_state_recenter, key_state_scaling_mode);
-    else
-        scene.trans_scale_model(selected_model_number, key_state_trans_or_scale, key_state_recenter, key_state_scaling_mode);
 }
 
 /**

@@ -1,7 +1,13 @@
 #include "./scene.hpp"
 
-const std::string FILE_NAME = "./models/perry/";
+const std::string FILE_NAME = "./models/";
 
+
+Scene::~Scene(){
+	for (int i = 0; i < model_list.size(); ++i){
+		delete model_list[i];
+	}
+};
 /**
  * @brief initialize vao and links to shaders for this scene
  */
@@ -24,9 +30,10 @@ void Scene::init() {
  * @brief Load new model in scene
  * @param model_filename filename to load the model from relative to FILENAME path
  */
-void Scene::load_new_model(std::string model_filename) {
-	HeirarchicalModel hm;
-	hm.load(FILE_NAME + model_filename + ".raw", glm::vec3(0.0f), glm::mat4(1.0f), glm::mat4(1.0f));
+void Scene::load_new_model(std::string model_filename, std::string id) {
+	HeirarchicalModel* hm = new HeirarchicalModel;
+	hm->hm_id = id;
+	hm->load(id, FILE_NAME + id + "/" + model_filename + ".raw", glm::vec3(0.0f), glm::mat4(1.0f), glm::mat4(1.0f));
 	model_list.push_back(hm);
 }
 
@@ -37,12 +44,19 @@ void Scene::load_new_model(std::string model_filename) {
 void Scene::draw(glm::mat4 projection_transform) {
 	glBindVertexArray(vao);
 	for (int i = 0; i < model_list.size(); ++i) {
-		model_list[i].draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, translation_matrix * rotation_matrix
-		                   * scaling_matrix * model_list[i].translation_matrix * model_list[i].rotation_matrix
-		                   * model_list[i].scaling_matrix, projection_transform);
+		model_list[i]->draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, translation_matrix * rotation_matrix
+		                   * scaling_matrix * model_list[i]->translation_matrix * model_list[i]->rotation_matrix
+		                   * model_list[i]->scaling_matrix, projection_transform);
 	}
 }
 
+HeirarchicalModel* Scene::find_heirarchical_model_by_id(std::string id){
+	for (int i = 0; i < model_list.size(); ++i){
+		if(model_list[i]->hm_id == id)
+			return model_list[i];
+	}
+	return NULL;
+}
 /**
  * @brief recalculate rotation matrix of scene
  * @param key_state_rotation 	key press boolean vector input
@@ -70,33 +84,6 @@ void Scene::rotate(std::vector<bool> key_state_rotation) {
 	}
 }
 
-/**
- * @brief recalculate rotation matrix of model in scene
- * @param i 					model index in model_list of scene
- * @param key_state_rotation 	key press boolean vector input
- */
-void Scene::rotate_model(int i, std::vector<bool> key_state_rotation) {
-	if (key_state_rotation[0]) {
-		model_list[i].rotation_matrix = glm::rotate(model_list[i].rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(model_list[i].rotation_matrix) * X_UNIT));
-	}
-	else if (key_state_rotation[1]) {
-		model_list[i].rotation_matrix = glm::rotate(model_list[i].rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(model_list[i].rotation_matrix) * X_UNIT));
-	}
-
-	if (key_state_rotation[2]) {
-		model_list[i].rotation_matrix = glm::rotate(model_list[i].rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(model_list[i].rotation_matrix) * Y_UNIT));
-	}
-	else if (key_state_rotation[3]) {
-		model_list[i].rotation_matrix = glm::rotate(model_list[i].rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(model_list[i].rotation_matrix) * Y_UNIT));
-	}
-
-	if (key_state_rotation[4]) {
-		model_list[i].rotation_matrix = glm::rotate(model_list[i].rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(model_list[i].rotation_matrix) * Z_UNIT));
-	}
-	else if (key_state_rotation[5]) {
-		model_list[i].rotation_matrix = glm::rotate(model_list[i].rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(model_list[i].rotation_matrix) * Z_UNIT));
-	}
-}
 
 /**
  * @brief recalculate translation and scaling matrix of scene
@@ -157,70 +144,5 @@ void Scene::trans_scale(std::vector<bool> key_state_trans_or_scale, bool key_sta
 	}
 	else {
 		translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
-	}
-}
-
-/**
- * @brief recalculate translation and scaling matrix of model in scene
- * @param i 					model index in model_list of scene
- * @param key_state_trans_or_scale 	key press boolean vector input 	{WASDZX}
- * @param key_state_scaling_mode 	key press boolean vector input 	{C}
- * @param key_state_recenter 	key press boolean vector inputs 	{R}
- *
- */
-void Scene::trans_scale_model(int i, std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode) {
-	if (key_state_recenter) {
-		model_list[i].xpos = model_list[i].ypos = model_list[i].zpos = 0.0f;
-	}
-	else if (key_state_scaling_mode) {
-		if (key_state_trans_or_scale[0]) {
-			model_list[i].xscale = std::max(model_list[i].xscale - SCALE_DELTA, 0.0f);
-		}
-		else if (key_state_trans_or_scale[1]) {
-			model_list[i].xscale = std::max(model_list[i].xscale + SCALE_DELTA, 0.0f);
-		}
-
-		if (key_state_trans_or_scale[2]) {
-			model_list[i].yscale = std::max(model_list[i].yscale - SCALE_DELTA, 0.0f);
-		}
-		else if (key_state_trans_or_scale[3]) {
-			model_list[i].yscale = std::max(model_list[i].yscale + SCALE_DELTA, 0.0f);
-		}
-
-		if (key_state_trans_or_scale[4]) {
-			model_list[i].zscale = std::max(model_list[i].zscale + SCALE_DELTA, 0.0f);
-		}
-		else if (key_state_trans_or_scale[5]) {
-			model_list[i].zscale = std::max(model_list[i].zscale - SCALE_DELTA, 0.0f);
-		}
-	}
-	else {
-		if (key_state_trans_or_scale[0]) {
-			model_list[i].xpos -= TRANS_DELTA;
-		}
-		else if (key_state_trans_or_scale[1]) {
-			model_list[i].xpos += TRANS_DELTA;
-		}
-
-		if (key_state_trans_or_scale[2]) {
-			model_list[i].ypos += TRANS_DELTA;
-		}
-		else if (key_state_trans_or_scale[3]) {
-			model_list[i].ypos -= TRANS_DELTA;
-		}
-
-		if (key_state_trans_or_scale[4]) {
-			model_list[i].zpos += TRANS_DELTA;
-		}
-		else if (key_state_trans_or_scale[5]) {
-			model_list[i].zpos -= TRANS_DELTA;
-		}
-	}
-	if (key_state_recenter) {
-		model_list[i].rotation_matrix = glm::mat4(1.0f);
-	}
-	else {
-		model_list[i].translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(model_list[i].xpos, model_list[i].ypos, model_list[i].zpos));
-		model_list[i].scaling_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(model_list[i].xscale, model_list[i].yscale, model_list[i].zscale));
 	}
 }

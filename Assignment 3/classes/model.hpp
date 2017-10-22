@@ -10,26 +10,32 @@
  */
 class Model {
 private:
-	glm::mat4 rotation_mtx, scale_mtx;
+
+	const float ROT_DELTA = 0.05;
+
+	const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	const glm::vec4 Z_UNIT = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+
 	char id[100];
 	std::vector<Vertex> vertex_list;
-	std::vector<Model> child_model_list;
+	std::vector<Model*> child_model_list;
 
-	glm::vec3 par_translation_vec = glm::vec3(0.0f);
-	glm::vec3 self_translation_vec = glm::vec3(0.0f);
-	glm::vec3 scale_vec = glm::vec3(1.0f);
-	glm::vec3 rotation_vec = glm::vec3(1.0f);
-
+	glm::vec3 par_translation_vec, self_translation_vec;
+	glm::vec3 scale_vec, rotation_vec;
+	glm::mat4 rotation_mtx, scale_mtx;
 
 	glm::vec3 final_translation_vec = glm::vec3(0.0f);
 	GLuint vbo;
-
-public:
-	void calc_matrices();
-	bool load(std::string filename, glm::vec3 cumu_translation, glm::mat4 par_rotation_mtx, glm::mat4 par_scale_mtx);
 	void assignBuffer();
-	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix,
-	          GLenum mode, glm::mat4 third_person_transform, glm::mat4 projection_transform);
+	void calc_matrices();
+public:
+	
+	bool load(std::string id, std::string filename, glm::vec3 cumu_translation, glm::mat4 par_rotation_mtx, glm::mat4 par_scale_mtx);
+	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 third_person_transform, glm::mat4 projection_transform);
+	Model* find_by_id(std::string id);
+	void rotate(std::vector<bool> key_state_rotation);	
+	~Model();
 };
 
 /**
@@ -37,6 +43,7 @@ public:
  */
 class HeirarchicalModel : public Model {
 public:
+	std::string hm_id;
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 	float xscale = 1.0, yscale = 1.0, zscale = 1.0;
 

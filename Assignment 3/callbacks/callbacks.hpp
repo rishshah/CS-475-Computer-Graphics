@@ -24,8 +24,11 @@ extern std::vector<bool> key_state_rotation;
 extern bool key_state_recenter;
 extern bool key_state_scaling_mode;
 extern bool pan_mode;
+extern bool modelling_mode;
 
-extern int selected_model_number;
+extern HeirarchicalModel* curr_heirarchical_model;
+extern Model* curr_model;
+;
 
 namespace base {
 	void rotation_callback(int key, int action);

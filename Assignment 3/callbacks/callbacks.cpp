@@ -159,6 +159,35 @@ void recenter_callback(int key, int action) {
 }
 
 /**
+ * @brief select part of model based on which key is pressed
+ * 
+ * @param key key pressed
+ * @return returns id of selected part
+ */
+std::string handle_modelling_callback(int key) {
+	switch (key) {
+	case GLFW_KEY_1:
+		return "eye_ball_left";
+	case GLFW_KEY_2:
+		return "eye_ball_right";
+	case GLFW_KEY_3:
+		return "lower_mouth";
+	case GLFW_KEY_4:
+		return "tail";
+	case GLFW_KEY_5:
+		return "front_left_leg";
+	case GLFW_KEY_6:
+		return "front_right_leg";
+	case GLFW_KEY_7:
+		return "back_left_leg";
+	case GLFW_KEY_8:
+		return "back_right_leg";
+	default:
+		return "body";
+	}
+}
+
+/**
  * @brief handle input key presses from keyboard
  */
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -193,24 +222,42 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	// Modelling Mode Callbacks
 	// Load a new model
 	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
-		std::string model_filename;
-		printf("Enter File:");
-		std::cin >> model_filename;
-		scene.load_new_model(model_filename);
-	}
-
-	// Select a model index
-	else if (key == GLFW_KEY_Q and action == GLFW_PRESS) {
-		printf("Select Model:");
-		std::cin >> selected_model_number;
-		pan_mode = false;
-		printf("model %d selected\n", selected_model_number);
+		std::string model_filename, id;
+		printf("Enter File and id:");
+		std::cin >> model_filename >> id;
+		scene.load_new_model(model_filename, id);
 	}
 
 	// Switch to Pan mode
 	else if (key == GLFW_KEY_P and action == GLFW_PRESS) {
 		pan_mode = true;
+		modelling_mode = false;
 		printf("Scene pan mode\n");
+	}
+
+	//Modelling mode
+	else if (key == GLFW_KEY_M and action == GLFW_PRESS) {
+		modelling_mode = true;
+		pan_mode = false;
+		printf("Select heirarchical model:\n");
+		std::string id; std::cin >> id;
+		curr_heirarchical_model = scene.find_heirarchical_model_by_id(id);
+		curr_model = curr_heirarchical_model->find_by_id("body");
+	}
+	else if (modelling_mode and action == GLFW_PRESS and
+	         (key == GLFW_KEY_1 or
+	          key == GLFW_KEY_2 or
+	          key == GLFW_KEY_3 or
+	          key == GLFW_KEY_4 or
+	          key == GLFW_KEY_5 or
+	          key == GLFW_KEY_6 or
+	          key == GLFW_KEY_7 or
+	          key == GLFW_KEY_8)
+	        ) {
+		std::string id = handle_modelling_callback(key);
+		curr_model = curr_heirarchical_model->find_by_id(id);
+		if (curr_model != NULL)
+			printf("modelling %s now!\n", id.c_str());
 	}
 }
 };
