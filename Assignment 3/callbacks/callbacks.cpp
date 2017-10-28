@@ -182,6 +182,8 @@ std::string handle_modelling_callback(int key) {
 		return "back_left_leg";
 	case GLFW_KEY_8:
 		return "back_right_leg";
+	case GLFW_KEY_9:
+		return "face";
 	default:
 		return "body";
 	}
@@ -252,7 +254,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	          key == GLFW_KEY_5 or
 	          key == GLFW_KEY_6 or
 	          key == GLFW_KEY_7 or
-	          key == GLFW_KEY_8)
+	          key == GLFW_KEY_8 or
+	          key == GLFW_KEY_9)
 	        ) {
 		std::string id = handle_modelling_callback(key);
 		curr_model = curr_heirarchical_model->find_by_id(id);
