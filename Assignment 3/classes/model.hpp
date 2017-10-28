@@ -3,6 +3,7 @@
 
 #include "../global.hpp"
 #include "./vertex.hpp"
+#include "../utils/texture_utils.hpp"
 
 
 /**
@@ -25,13 +26,13 @@ private:
 	glm::vec3 scale_vec, rotation_vec;
 	glm::mat4 rotation_mtx, scale_mtx;
 
-	GLuint vbo;
+	GLuint vbo, tex;
 	void assignBuffer();
 	void calc_matrices();
 public:
 	
 	bool load(std::string id, std::string filename, glm::mat4 scale_mtx);
-	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 par_final_transform, glm::mat4 third_person_transform);
+	void draw(GLuint, GLuint, GLuint, GLuint, GLuint, glm::mat4, glm::mat4);
 	Model* find_by_id(std::string id);
 	void rotate(std::vector<bool> key_state_rotation);	
 	~Model();
