@@ -1,7 +1,12 @@
 #include "callbacks.hpp"
 
+
+
 namespace base {
 
+void printvec3(std::string s, glm::vec3 v) {
+	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
+};
 /**
  * @brief      Update(Set/Reset) global shared varible key_state_rotation according to
  *             the key used.
@@ -257,6 +262,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		pan_mode = true;
 		modelling_mode = false;
 		printf("Scene pan mode\n");
+	}
+
+	else if (key == GLFW_KEY_Q and action == GLFW_PRESS) {
+		printvec3("RotVec:", curr_model->rotation_vec);
 	}
 
 	//Modelling mode
