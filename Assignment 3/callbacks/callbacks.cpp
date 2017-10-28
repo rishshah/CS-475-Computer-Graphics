@@ -160,32 +160,54 @@ void recenter_callback(int key, int action) {
 
 /**
  * @brief select part of model based on which key is pressed
- * 
+ *
  * @param key key pressed
  * @return returns id of selected part
  */
-std::string handle_modelling_callback(int key) {
-	switch (key) {
-	case GLFW_KEY_1:
-		return "eye_ball_left";
-	case GLFW_KEY_2:
-		return "eye_ball_right";
-	case GLFW_KEY_3:
-		return "lower_mouth";
-	case GLFW_KEY_4:
-		return "tail";
-	case GLFW_KEY_5:
-		return "front_left_leg";
-	case GLFW_KEY_6:
-		return "front_right_leg";
-	case GLFW_KEY_7:
-		return "back_left_leg";
-	case GLFW_KEY_8:
-		return "back_right_leg";
-	case GLFW_KEY_9:
-		return "face";
-	default:
-		return "body";
+std::string handle_modelling_callback(std::string model_id, int key) {
+	if (model_id == "perry") {
+		switch (key) {
+		case GLFW_KEY_1:
+			return "eye_ball_left";
+		case GLFW_KEY_2:
+			return "eye_ball_right";
+		case GLFW_KEY_3:
+			return "lower_mouth";
+		case GLFW_KEY_4:
+			return "tail";
+		case GLFW_KEY_5:
+			return "front_left_leg";
+		case GLFW_KEY_6:
+			return "front_right_leg";
+		case GLFW_KEY_7:
+			return "back_left_leg";
+		case GLFW_KEY_8:
+			return "back_right_leg";
+		case GLFW_KEY_9:
+			return "body";
+		}
+	}
+	else if (model_id == "phineas") {
+		switch (key) {
+		case GLFW_KEY_1:
+			return "face";
+		case GLFW_KEY_2:
+			return "sleeve_left";
+		case GLFW_KEY_3:
+			return "sleeve_right";
+		case GLFW_KEY_4:
+			return "hand_left";
+		case GLFW_KEY_5:
+			return "hand_right";
+		case GLFW_KEY_6:
+			return "thigh_left";
+		case GLFW_KEY_7:
+			return "thigh_right";
+		case GLFW_KEY_8:
+			return "leg_left";
+		case GLFW_KEY_9:
+			return "leg_right";
+		}
 	}
 }
 
@@ -257,7 +279,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	          key == GLFW_KEY_8 or
 	          key == GLFW_KEY_9)
 	        ) {
-		std::string id = handle_modelling_callback(key);
+		std::string id = handle_modelling_callback(curr_heirarchical_model->hm_id, key);
 		curr_model = curr_heirarchical_model->find_by_id(id);
 		if (curr_model != NULL)
 			printf("modelling %s now!\n", id.c_str());

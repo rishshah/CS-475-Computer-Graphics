@@ -25,14 +25,13 @@ private:
 	glm::vec3 scale_vec, rotation_vec;
 	glm::mat4 rotation_mtx, scale_mtx;
 
-	glm::vec3 final_translation_vec = glm::vec3(0.0f);
 	GLuint vbo;
 	void assignBuffer();
 	void calc_matrices();
 public:
 	
-	bool load(std::string id, std::string filename, glm::vec3 cumu_translation, glm::mat4 par_rotation_mtx, glm::mat4 par_scale_mtx);
-	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 third_person_transform, glm::mat4 projection_transform);
+	bool load(std::string id, std::string filename, glm::mat4 scale_mtx);
+	void draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 par_final_transform, glm::mat4 third_person_transform);
 	Model* find_by_id(std::string id);
 	void rotate(std::vector<bool> key_state_rotation);	
 	~Model();

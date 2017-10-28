@@ -1,6 +1,18 @@
 #include "model.hpp"
 
 const std::string FILE_NAME = "./models/";
+void print(std::string s, glm::vec3 v) {
+	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
+};
+
+void printmat4(glm::mat4 Awv) {
+	printf("\n");
+	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+	printf("\n");
+}
 
 /**
  * @brief calculate rotation and scale matrix for each part corresponding to file's rotation and scale vector inputs
@@ -19,7 +31,7 @@ void Model::calc_matrices() {
  *
  * @return     true iff file loaded successfully
  */
-bool Model::load(std::string hm_id, std::string filename, glm::vec3 cumu_translation, glm::mat4 par_rotation_mtx, glm::mat4 par_scale_mtx) {
+bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mtx ) {
 	FILE *fp_input = fopen(filename.c_str(), "r" );
 	if (fp_input ==  NULL) {
 		printf("Error opening file %s\n", filename.c_str());
@@ -44,21 +56,18 @@ bool Model::load(std::string hm_id, std::string filename, glm::vec3 cumu_transla
 	calc_matrices();
 	//par_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
-	par_translation_vec = glm::vec3(par_rotation_mtx * par_scale_mtx * glm::vec4(x, y, z, 1.0f));
+	par_translation_vec = glm::vec3(par_scale_mtx * glm::vec4(x, y, z, 1.0f));
 
 	//self_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
-	self_translation_vec = glm::vec3(rotation_mtx * scale_mtx * glm::vec4(x, y, z, 1.0f));
-
-	//final_translation
-	final_translation_vec = par_translation_vec - self_translation_vec + cumu_translation;
+	self_translation_vec = glm::vec3(scale_mtx * glm::vec4(x, y, z, 1.0f));
 
 	child_model_list.resize(num_children);
 	for (int i = 0; i < num_children; ++i) {
 		char child_filename[100];
 		fscanf(fp_input, "%s\n", child_filename);
 		child_model_list[i] = new Model;
-		child_model_list[i]->load(hm_id, FILE_NAME + hm_id + "/" + std::string(child_filename) + ".raw", final_translation_vec, rotation_mtx, scale_mtx);
+		child_model_list[i]->load(hm_id, FILE_NAME + hm_id + "/" + std::string(child_filename) + ".raw", scale_mtx);
 		child_model_list[i]->assignBuffer();
 	}
 
@@ -97,38 +106,40 @@ void Model::assignBuffer() {
  * @param[in]  third_person_transform 	transformation matrix from ouside of this model
  * @param[in]  projection_transform  	Matrix of projection from third person (scene) camera
  */
-void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 third_person_transform,  glm::mat4 projection_transform) {
+void Model::draw(GLuint vPosition, GLuint vColor, GLuint uModelViewMatrix, GLenum mode, glm::mat4 par_final_transform,
+                 glm::mat4 third_person_transform) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
 
-	glm::mat4 final_translation_transform = glm::translate(glm::mat4(1.0f), final_translation_vec);
+	glm::mat4 par_translation_transform = glm::translate(glm::mat4(1.0f), par_translation_vec);
 	glm::mat4 self_translation_transform = glm::translate(glm::mat4(1.0f), self_translation_vec);
-	glm::mat4 modelling_transform = self_translation_transform * rotation_mtx * glm::inverse(self_translation_transform) * scale_mtx;
-	glm::mat4 temp_matrix = projection_transform * third_person_transform * final_translation_transform * modelling_transform;
+
+	glm::mat4 modelling_transform = par_translation_transform  * rotation_mtx * glm::inverse(self_translation_transform);
+	glm::mat4 temp_matrix = third_person_transform * par_final_transform *  modelling_transform * scale_mtx;
 	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(temp_matrix));
 
 	glDrawArrays(mode, 0, vertex_list.size());
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
-		child_model_list[i]->draw(vPosition, vColor, uModelViewMatrix, mode, third_person_transform * final_translation_transform * 
-			self_translation_transform * rotation_mtx * glm::inverse(self_translation_transform) * glm::inverse(final_translation_transform),
-			projection_transform);
+		child_model_list[i]->draw(vPosition, vColor, uModelViewMatrix, mode,
+		                          par_final_transform * modelling_transform,
+		                          third_person_transform);
 	}
 }
 
 /**
  * @brief get in heirarchy model pointer by id
- * 
+ *
  * @param id [description]
  * @return [description]
  */
-Model* Model::find_by_id(std::string id){
-	if(std::string(this->id) == id)
+Model* Model::find_by_id(std::string id) {
+	if (std::string(this->id) == id)
 		return this;
-	for (int i = 0; i < child_model_list.size(); ++i){
+	for (int i = 0; i < child_model_list.size(); ++i) {
 		Model* m = child_model_list[i]->find_by_id(id);
-		if(m != NULL)
+		if (m != NULL)
 			return m;
 	}
 	return NULL;
@@ -148,6 +159,7 @@ void Model::rotate(std::vector<bool> key_state_rotation) {
 	}
 
 	if (key_state_rotation[2]) {
+
 		rotation_mtx = glm::rotate(rotation_mtx, -ROT_DELTA, glm::vec3(glm::transpose(rotation_mtx) * Y_UNIT));
 	}
 	else if (key_state_rotation[3]) {
@@ -162,8 +174,8 @@ void Model::rotate(std::vector<bool> key_state_rotation) {
 	}
 }
 
-Model::~Model(){
-	for (int i = 0; i < child_model_list.size(); ++i){
+Model::~Model() {
+	for (int i = 0; i < child_model_list.size(); ++i) {
 		delete child_model_list[i];
 	}
 }

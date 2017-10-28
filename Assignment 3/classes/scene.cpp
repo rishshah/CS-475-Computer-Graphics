@@ -3,8 +3,8 @@
 const std::string FILE_NAME = "./models/";
 
 
-Scene::~Scene(){
-	for (int i = 0; i < model_list.size(); ++i){
+Scene::~Scene() {
+	for (int i = 0; i < model_list.size(); ++i) {
 		delete model_list[i];
 	}
 };
@@ -33,7 +33,7 @@ void Scene::init() {
 void Scene::load_new_model(std::string model_filename, std::string id) {
 	HeirarchicalModel* hm = new HeirarchicalModel;
 	hm->hm_id = id;
-	hm->load(id, FILE_NAME + id + "/" + model_filename + ".raw", glm::vec3(0.0f), glm::mat4(1.0f), glm::mat4(1.0f));
+	hm->load(id, FILE_NAME + id + "/" + model_filename + ".raw", glm::mat4(1.0f));
 	model_list.push_back(hm);
 }
 
@@ -44,15 +44,17 @@ void Scene::load_new_model(std::string model_filename, std::string id) {
 void Scene::draw(glm::mat4 projection_transform) {
 	glBindVertexArray(vao);
 	for (int i = 0; i < model_list.size(); ++i) {
-		model_list[i]->draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, translation_matrix * rotation_matrix
-		                   * scaling_matrix * model_list[i]->translation_matrix * model_list[i]->rotation_matrix
-		                   * model_list[i]->scaling_matrix, projection_transform);
+		model_list[i]->draw(vPosition, vColor, uModelViewMatrix, GL_TRIANGLES, 
+							 glm::mat4(1.0f) ,projection_transform * 
+							translation_matrix * rotation_matrix * scaling_matrix * 
+							model_list[i]->translation_matrix * model_list[i]->rotation_matrix
+		                    * model_list[i]->scaling_matrix);
 	}
 }
 
-HeirarchicalModel* Scene::find_heirarchical_model_by_id(std::string id){
-	for (int i = 0; i < model_list.size(); ++i){
-		if(model_list[i]->hm_id == id)
+HeirarchicalModel* Scene::find_heirarchical_model_by_id(std::string id) {
+	for (int i = 0; i < model_list.size(); ++i) {
+		if (model_list[i]->hm_id == id)
 			return model_list[i];
 	}
 	return NULL;
