@@ -4,8 +4,7 @@
 #include "../global.hpp"
 #include "./vertex.hpp"
 #include "../utils/texture_utils.hpp"
-
-
+#include <algorithm>
 /**
  * @brief      Class for a generic model or model part.
  */
@@ -13,7 +12,7 @@ class Model {
 
 private:
 
-	const float ROT_DELTA = 0.05;
+	const float ROT_DELTA = 1.0f;
 
 	const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -24,7 +23,7 @@ private:
 	std::vector<Model*> child_model_list;
 
 	glm::vec3 par_translation_vec, self_translation_vec;
-	glm::vec3 scale_vec, rotation_vec;
+	glm::vec3 rotation_lim_base, rotation_lim_top;
 	glm::mat4 rotation_mtx, scale_mtx;
 
 	GLuint vbo, tex;
@@ -33,6 +32,7 @@ private:
 
 public:
 	
+	glm::vec3 scale_vec, rotation_vec;
 	bool load(std::string id, std::string filename, glm::mat4 scale_mtx);
 	void draw(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, glm::mat4, glm::mat4);
 	Model* find_by_id(std::string id);

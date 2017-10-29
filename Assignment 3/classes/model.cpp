@@ -55,7 +55,12 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	//rotation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_vec = glm::vec3(x, y, z);
-
+	
+	fscanf(fp_input, "%f %f %f", &x, &y, &z);
+	rotation_lim_base = glm::vec3(x, y, z);
+	fscanf(fp_input, "%f %f %f", &x, &y, &z);
+	rotation_lim_top = glm::vec3(x, y, z);
+	
 	calc_matrices();
 	//par_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
@@ -196,29 +201,37 @@ Model* Model::find_by_id(std::string id) {
  * @brief recalculate rotation matrix of model in scene
  * @param i 					model index in model_list of scene
  * @param key_state_rotation 	key press boolean vector input
+ * //X     0 -> Up     1 -> Down	
+ * //Y     2 -> Left   3 -> Right
+ * //Z     4 -> pgUp   5 -> PgDown
  */
+
 void Model::rotate(std::vector<bool> key_state_rotation) {
 	if (key_state_rotation[0]) {
-		rotation_mtx = glm::rotate(rotation_mtx, -ROT_DELTA, glm::vec3(glm::transpose(rotation_mtx) * X_UNIT));
+		rotation_vec.x = std::max(rotation_lim_base.x, rotation_vec.x - ROT_DELTA);
 	}
 	else if (key_state_rotation[1]) {
-		rotation_mtx = glm::rotate(rotation_mtx, ROT_DELTA, glm::vec3(glm::transpose(rotation_mtx) * X_UNIT));
+		rotation_vec.x = std::min(rotation_lim_top.x, rotation_vec.x + ROT_DELTA);
 	}
 
 	if (key_state_rotation[2]) {
-
-		rotation_mtx = glm::rotate(rotation_mtx, -ROT_DELTA, glm::vec3(glm::transpose(rotation_mtx) * Y_UNIT));
+		rotation_vec.y = std::max(rotation_lim_base.y, rotation_vec.y - ROT_DELTA);
 	}
 	else if (key_state_rotation[3]) {
-		rotation_mtx = glm::rotate(rotation_mtx, ROT_DELTA, glm::vec3(glm::transpose(rotation_mtx) * Y_UNIT));
+		rotation_vec.y = std::min(rotation_lim_top.y, rotation_vec.y + ROT_DELTA);
 	}
 
 	if (key_state_rotation[4]) {
-		rotation_mtx = glm::rotate(rotation_mtx, ROT_DELTA, glm::vec3(glm::transpose(rotation_mtx) * Z_UNIT));
+		rotation_vec.z = std::min(rotation_lim_top.z, rotation_vec.z + ROT_DELTA);
 	}
 	else if (key_state_rotation[5]) {
-		rotation_mtx = glm::rotate(rotation_mtx, -ROT_DELTA, glm::vec3(glm::transpose(rotation_mtx) * Z_UNIT));
+		rotation_vec.z = std::max(rotation_lim_base.z, rotation_vec.z - ROT_DELTA);
 	}
+
+	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	rotation_mtx = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
 }
 
 Model::~Model() {
