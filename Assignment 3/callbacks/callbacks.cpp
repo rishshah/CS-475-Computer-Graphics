@@ -212,6 +212,14 @@ std::string handle_modelling_callback(std::string model_id, int key) {
 			return "leg_left";
 		case GLFW_KEY_9:
 			return "leg_right";
+		case GLFW_KEY_0:
+			return "body";
+		}
+	}
+	else if (model_id == "scene") {
+		switch (key) {
+		case GLFW_KEY_1:
+			return "sky";
 		}
 	}
 }
@@ -251,10 +259,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	// Modelling Mode Callbacks
 	// Load a new model
 	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
-		std::string model_filename, id;
-		printf("Enter File and id:");
-		std::cin >> model_filename >> id;
-		scene.load_new_model(model_filename, id);
+		std::string model_filename;
+		printf("Enter File:");
+		std::cin >> model_filename;
+		scene.load_new_model(model_filename, "body");
 	}
 
 	// Switch to Pan mode
@@ -278,7 +286,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		curr_model = curr_heirarchical_model->find_by_id("body");
 	}
 	else if (modelling_mode and action == GLFW_PRESS and
-	         (key == GLFW_KEY_1 or
+	         (key == GLFW_KEY_0 or
+	          key == GLFW_KEY_1 or
 	          key == GLFW_KEY_2 or
 	          key == GLFW_KEY_3 or
 	          key == GLFW_KEY_4 or
