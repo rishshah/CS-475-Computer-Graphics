@@ -91,14 +91,14 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 			v.texture = glm::vec2(tx, ty);
 			v.normal = v.position;
 			vertex_list[i] = v;
-			// if(i%3 == 2){
-			// 	glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
-			// 	glm::vec3 vec2 = vertex_list[i].position - vertex_list[i-1].position;
-			// 	glm::vec3 crossproduct = glm::cross(vec1, vec2);
-			// 	vertex_list[i-2].normal = crossproduct;
-			// 	vertex_list[i-1].normal = crossproduct;
-			// 	vertex_list[i].normal = crossproduct;
-			// }
+			if(i%3 == 2){
+				glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
+				glm::vec3 vec2 = vertex_list[i].position - vertex_list[i-1].position;
+				glm::vec3 crossproduct = glm::cross(vec1, vec2);
+				vertex_list[i-2].normal = crossproduct;
+				vertex_list[i-1].normal = crossproduct;
+				vertex_list[i].normal = crossproduct;
+			}
 
 		}
 	} else {
@@ -112,14 +112,14 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 			v.texture = glm::vec2(0, 0);
 			v.normal = v.position;
 			vertex_list[i] = v;
-			// if(i%3 == 2){
-			// 	glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
-			// 	glm::vec3 vec2 = vertex_list[i].position - vertex_list[i-1].position;
-			// 	glm::vec3 crossproduct = glm::cross(vec1, vec2);
-			// 	// vertex_list[i-2].normal = crossproduct;
-			// 	// vertex_list[i-1].normal = crossproduct;
-			// 	// vertex_list[i].normal = crossproduct;
-			// }
+			if(i%3 == 2){
+				glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
+				glm::vec3 vec2 = vertex_list[i].position - vertex_list[i-1].position;
+				glm::vec3 crossproduct = glm::cross(vec1, vec2);
+				vertex_list[i-2].normal = crossproduct;
+				vertex_list[i-1].normal = crossproduct;
+				vertex_list[i].normal = crossproduct;
+			}
 		}
 	}
 	assignBuffer();
