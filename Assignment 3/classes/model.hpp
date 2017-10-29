@@ -14,10 +14,6 @@ private:
 
 	const float ROT_DELTA = 1.0f;
 
-	const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-	const glm::vec4 Z_UNIT = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-
 	char id[100];
 	std::vector<Vertex> vertex_list;
 	std::vector<Model*> child_model_list;

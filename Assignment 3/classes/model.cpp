@@ -83,7 +83,6 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	if (is_texture_present == 1) {
 		char texture_filename[30]; fscanf (fp_input, "%s", texture_filename);
 		tex = LoadTexture(texture_filename, 256, 256);
-		glBindTexture(GL_TEXTURE_2D, tex);
 		for (int i = 0; i < num_vertices; ++i) {
 			float vx, vy, vz, tx, ty;
 			fscanf(fp_input, "%f %f %f %f %f", &vx, &vy, &vz, &tx, &ty);
@@ -152,6 +151,8 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoo
                  glm::mat4 projection_transform, glm::mat4 third_person_transform) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
 	glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(2 * sizeof(glm::vec3)));
