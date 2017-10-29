@@ -258,12 +258,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	// Modelling Mode Callbacks
 	// Load a new model
-	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
-		std::string model_filename;
-		printf("Enter File:");
-		std::cin >> model_filename;
-		scene.load_new_model(model_filename, "body");
-	}
+	// else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
+	// 	std::string model_filename;
+	// 	printf("Enter File:");
+	// 	std::cin >> model_filename;
+	// 	scene.load_new_model("body", model_filename);
+	// }
 
 	// Switch to Pan mode
 	else if (key == GLFW_KEY_P and action == GLFW_PRESS) {

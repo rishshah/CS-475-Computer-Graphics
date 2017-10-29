@@ -40,8 +40,10 @@ void Scene::init() {
  * @brief Load new model in scene
  * @param model_filename filename to load the model from relative to FILENAME path
  */
-void Scene::load_new_model(std::string model_filename, std::string id) {
+void Scene::load_new_model(std::string model_filename, std::string id, glm::vec3 scale_vec, glm::vec3 translation_vec) {
 	HeirarchicalModel* hm = new HeirarchicalModel;
+	hm->scaling_matrix = glm::scale(glm::mat4(1.0f), scale_vec);
+	hm->translation_matrix = glm::translate(glm::mat4(1.0f), translation_vec);
 	hm->hm_id = id;
 	hm->load(id, FILE_NAME + id + "/" + model_filename + ".raw", glm::mat4(1.0f));
 	model_list.push_back(hm);
