@@ -10,6 +10,7 @@
  * @brief      Class for a generic model or model part.
  */
 class Model {
+
 private:
 
 	const float ROT_DELTA = 0.05;
@@ -29,10 +30,11 @@ private:
 	GLuint vbo, tex;
 	void assignBuffer();
 	void calc_matrices();
+
 public:
 	
 	bool load(std::string id, std::string filename, glm::mat4 scale_mtx);
-	void draw(GLuint, GLuint, GLuint, GLuint, GLuint, glm::mat4, glm::mat4);
+	void draw(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, glm::mat4, glm::mat4);
 	Model* find_by_id(std::string id);
 	void rotate(std::vector<bool> key_state_rotation);	
 	~Model();

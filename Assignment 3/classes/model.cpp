@@ -1,18 +1,20 @@
 #include "model.hpp"
 
 const std::string FILE_NAME = "./models/";
+
 void print(std::string s, glm::vec3 v) {
-	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
-};
+    printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
+}
 
 void printmat4(glm::mat4 Awv) {
-	printf("\n");
-	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
-	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
-	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
-	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
-	printf("\n");
+    printf("\n");
+    printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+    printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+    printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+    printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+    printf("\n");
 }
+
 
 /**
  * @brief calculate rotation and scale matrix for each part corresponding to file's rotation and scale vector inputs
@@ -84,7 +86,17 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 			v.position = glm::vec3(vx, vy, vz);
 			v.color = glm::vec3(cx, cy, cz);
 			v.texture = glm::vec2(tx, ty);
+			v.normal = v.position; 
 			vertex_list[i] = v;
+			// if(i%3 == 2){
+			// 	glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
+			// 	glm::vec3 vec2 = vertex_list[i].position - vertex_list[i-1].position;
+			// 	glm::vec3 crossproduct = glm::cross(vec1, vec2);
+			// 	vertex_list[i-2].normal = crossproduct;
+			// 	vertex_list[i-1].normal = crossproduct;
+			// 	vertex_list[i].normal = crossproduct;
+			// }
+			
 		}
 	} else {
 		tex = -1;
@@ -95,7 +107,16 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 			v.position = glm::vec3(vx, vy, vz);
 			v.color = glm::vec3(cx, cy, cz);
 			v.texture = glm::vec2(0, 0);
+			v.normal = v.position;
 			vertex_list[i] = v;
+			// if(i%3 == 2){
+			// 	glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
+			// 	glm::vec3 vec2 = vertex_list[i].position - vertex_list[i-1].position;
+			// 	glm::vec3 crossproduct = glm::cross(vec1, vec2);
+			// 	// vertex_list[i-2].normal = crossproduct;
+			// 	// vertex_list[i-1].normal = crossproduct;
+			// 	// vertex_list[i].normal = crossproduct;
+			// }
 		}
 	}
 	assignBuffer();
@@ -122,25 +143,33 @@ void Model::assignBuffer() {
  * @param[in]  third_person_transform 	transformation matrix from ouside of this model
  * @param[in]  projection_transform  	Matrix of projection from third person (scene) camera
  */
-void Model::draw(GLuint vPosition, GLuint vColor, GLuint vTexCoord, GLuint uModelViewMatrix, GLuint uIs_tp, glm::mat4 par_final_transform,
+void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoord, GLuint uModelViewMatrix, GLuint normalMatrix, GLuint uIs_tp, glm::mat4 par_final_transform,
                  glm::mat4 third_person_transform) {
+	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
-	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(2 * sizeof(glm::vec3)));
+	glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(2 * sizeof(glm::vec3)));
+	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(3 * sizeof(glm::vec3)));
 
 	glm::mat4 par_translation_transform = glm::translate(glm::mat4(1.0f), par_translation_vec);
 	glm::mat4 self_translation_transform = glm::translate(glm::mat4(1.0f), self_translation_vec);
 
 	glm::mat4 modelling_transform = par_translation_transform  * rotation_mtx * glm::inverse(self_translation_transform);
 	glm::mat4 temp_matrix = third_person_transform * par_final_transform *  modelling_transform * scale_mtx;
+	
 	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(temp_matrix));
+	
+	glm::mat3 normal_mat = glm::transpose( glm::inverse( glm::mat3(temp_matrix)));
+
+	glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, glm::value_ptr(normal_mat));
+
 	glUniform1i(uIs_tp, tex == -1 ? 0 : 1);
 
 	glDrawArrays(GL_TRIANGLES, 0, vertex_list.size());
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
-		child_model_list[i]->draw(vPosition, vColor, vTexCoord, uModelViewMatrix, uIs_tp,
+		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, normalMatrix, uIs_tp,
 		                          par_final_transform * modelling_transform,
 		                          third_person_transform);
 	}

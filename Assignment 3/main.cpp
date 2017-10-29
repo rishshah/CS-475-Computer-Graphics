@@ -7,6 +7,7 @@ glm::mat4 projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f,
 
 //Externed variables defined here
 GLuint shaderProgram = 0;
+GLuint viewMatrix;
 Scene scene;
 
 std::vector<bool> key_state_trans_or_scale(6, false);
@@ -127,6 +128,11 @@ int main() {
     glUseProgram( shaderProgram );
 
     scene.init();
+    
+    viewMatrix = glGetUniformLocation( shaderProgram, "viewMatrix");
+
+    glUniformMatrix4fv(viewMatrix, 1, GL_FALSE, glm::value_ptr(projection_matrix));
+
     while (glfwWindowShouldClose(window) == 0) {
 
         renderGL(window);
