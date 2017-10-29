@@ -16,7 +16,8 @@ void Scene::init() {
 	glBindVertexArray(vao);
 
 	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
-	normalMatrix = glGetUniformLocation( shaderProgram, "normalMatrix");
+	uNormalMatrix = glGetUniformLocation( shaderProgram, "normalMatrix");
+	uViewMatrix = glGetUniformLocation( shaderProgram, "viewMatrix");
 
 	uIs_tp = glGetUniformLocation( shaderProgram, "uIs_tp" );
 
@@ -29,10 +30,8 @@ void Scene::init() {
 	vNormal = glGetAttribLocation( shaderProgram, "vNormal" );
 	glEnableVertexAttribArray( vNormal );
 
-
 	vTexCoord = glGetAttribLocation( shaderProgram, "vTexCoord" );
 	glEnableVertexAttribArray( vTexCoord );
-
 
 	model_list.resize(0);
 }
@@ -55,8 +54,8 @@ void Scene::load_new_model(std::string model_filename, std::string id) {
 void Scene::draw(glm::mat4 projection_transform) {
 	glBindVertexArray(vao);
 	for (int i = 0; i < model_list.size(); ++i) {
-		model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, normalMatrix, uIs_tp, 
-							 glm::mat4(1.0f) ,projection_transform * 
+		model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp, 
+							 glm::mat4(1.0f) ,projection_transform, 
 							translation_matrix * rotation_matrix * scaling_matrix * 
 							model_list[i]->translation_matrix * model_list[i]->rotation_matrix
 		                    * model_list[i]->scaling_matrix);

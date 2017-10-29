@@ -3,16 +3,16 @@
 const std::string FILE_NAME = "./models/";
 
 void print(std::string s, glm::vec3 v) {
-    printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
+	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
 }
 
 void printmat4(glm::mat4 Awv) {
-    printf("\n");
-    printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
-    printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
-    printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
-    printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
-    printf("\n");
+	printf("\n");
+	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+	printf("\n");
 }
 
 
@@ -42,9 +42,6 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 
 	int num_vertices, num_children, is_texture_present = -1;
 	fscanf (fp_input, "%s", id);
-	// fscanf (fp_input, "%d", &is_texture_present);
-	fscanf (fp_input, "%d", &num_children);
-	fscanf (fp_input, "%d", &num_vertices);
 
 	float x, y, z;
 
@@ -55,12 +52,12 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	//rotation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_vec = glm::vec3(x, y, z);
-	
+
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_lim_base = glm::vec3(x, y, z);
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_lim_top = glm::vec3(x, y, z);
-	
+
 	calc_matrices();
 	//par_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
@@ -70,6 +67,7 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	self_translation_vec = glm::vec3(scale_mtx * glm::vec4(x, y, z, 1.0f));
 
+	fscanf (fp_input, "%d", &num_children);
 	child_model_list.resize(num_children);
 	for (int i = 0; i < num_children; ++i) {
 		char child_filename[100];
@@ -79,19 +77,20 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 		child_model_list[i]->assignBuffer();
 	}
 
+	fscanf (fp_input, "%d", &is_texture_present);
+	fscanf (fp_input, "%d", &num_vertices);
 	vertex_list.resize(num_vertices);
 	if (is_texture_present == 1) {
 		char texture_filename[30]; fscanf (fp_input, "%s", texture_filename);
 		tex = LoadTexture(texture_filename, 256, 256);
 		glBindTexture(GL_TEXTURE_2D, tex);
 		for (int i = 0; i < num_vertices; ++i) {
-			float vx, vy, vz, cx, cy, cz, tx, ty;
-			fscanf(fp_input, "%f %f %f %f %f %f %f %f", &vx, &vy, &vz, &cx, &cy, &cz, &tx, &ty);
+			float vx, vy, vz, tx, ty;
+			fscanf(fp_input, "%f %f %f %f %f", &vx, &vy, &vz, &tx, &ty);
 			Vertex v;
 			v.position = glm::vec3(vx, vy, vz);
-			v.color = glm::vec3(cx, cy, cz);
 			v.texture = glm::vec2(tx, ty);
-			v.normal = v.position; 
+			v.normal = v.position;
 			vertex_list[i] = v;
 			// if(i%3 == 2){
 			// 	glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
@@ -101,7 +100,7 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 			// 	vertex_list[i-1].normal = crossproduct;
 			// 	vertex_list[i].normal = crossproduct;
 			// }
-			
+
 		}
 	} else {
 		tex = -1;
@@ -148,9 +147,10 @@ void Model::assignBuffer() {
  * @param[in]  third_person_transform 	transformation matrix from ouside of this model
  * @param[in]  projection_transform  	Matrix of projection from third person (scene) camera
  */
-void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoord, GLuint uModelViewMatrix, GLuint normalMatrix, GLuint uIs_tp, glm::mat4 par_final_transform,
-                 glm::mat4 third_person_transform) {
-	
+void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoord, GLuint uModelViewMatrix,
+                 GLuint uNormalMatrix, GLuint uViewMatrix, GLuint uIs_tp, glm::mat4 par_final_transform,
+                 glm::mat4 projection_transform, glm::mat4 third_person_transform) {
+
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0) );
 	glVertexAttribPointer(vColor, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(glm::vec3)) );
@@ -161,22 +161,23 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoo
 	glm::mat4 self_translation_transform = glm::translate(glm::mat4(1.0f), self_translation_vec);
 
 	glm::mat4 modelling_transform = par_translation_transform  * rotation_mtx * glm::inverse(self_translation_transform);
-	glm::mat4 temp_matrix = third_person_transform * par_final_transform *  modelling_transform * scale_mtx;
-	
+	glm::mat4 temp_matrix = projection_transform * third_person_transform * par_final_transform *  modelling_transform * scale_mtx;
+
 	glUniformMatrix4fv(uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(temp_matrix));
-	
+	glUniformMatrix4fv(uViewMatrix, 1, GL_FALSE, glm::value_ptr(projection_transform));
+
 	glm::mat3 normal_mat = glm::transpose( glm::inverse( glm::mat3(temp_matrix)));
 
-	glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, glm::value_ptr(normal_mat));
+	glUniformMatrix3fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normal_mat));
 
 	glUniform1i(uIs_tp, tex == -1 ? 0 : 1);
 
 	glDrawArrays(GL_TRIANGLES, 0, vertex_list.size());
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
-		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, normalMatrix, uIs_tp,
+		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp,
 		                          par_final_transform * modelling_transform,
-		                          third_person_transform);
+		                          projection_transform, third_person_transform);
 	}
 }
 
@@ -201,7 +202,7 @@ Model* Model::find_by_id(std::string id) {
  * @brief recalculate rotation matrix of model in scene
  * @param i 					model index in model_list of scene
  * @param key_state_rotation 	key press boolean vector input
- * //X     0 -> Up     1 -> Down	
+ * //X     0 -> Up     1 -> Down
  * //Y     2 -> Left   3 -> Right
  * //Z     4 -> pgUp   5 -> PgDown
  */

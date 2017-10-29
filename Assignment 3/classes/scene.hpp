@@ -23,7 +23,7 @@ private:
 
 	GLuint vao = 0;
 	GLuint vPosition, vColor, vNormal, vTexCoord;
-	GLuint uModelViewMatrix, uIs_tp, normalMatrix;
+	GLuint uModelViewMatrix, uIs_tp, uNormalMatrix, uViewMatrix;
 
 	glm::mat4 translation_matrix = glm::mat4(1.0f);
 	glm::mat4 rotation_matrix = glm::mat4(1.0f);
