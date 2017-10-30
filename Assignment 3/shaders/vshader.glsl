@@ -7,6 +7,8 @@ in vec2 vTexCoord;
 
 out vec4 color;
 out vec2 tex;
+out float spec_shine;
+out float light_inten;
 flat out int is_texture_present;
 
 uniform int uIs_tp;
@@ -71,7 +73,11 @@ void main (void)
 
   float spec = max(spec1, spec2);
 
+  spec_shine = spec;
+
   float inten_color = max( (max(intensity, intensity2) * diffuse) ,  ambient);
+
+  light_inten = inten_color;
 
   vec4 new_color = vec4(min((vColor*inten_color + vec3(spec, spec, spec)), vec3(1.0)), 1.0);
 
