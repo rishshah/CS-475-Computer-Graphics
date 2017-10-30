@@ -1,10 +1,6 @@
 #include "main.hpp"
 #include <vector>
 
-
-glm::mat4 projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 1000.0f) *
-                              glm::lookAt(glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
 //Externed variables defined here
 GLuint shaderProgram = 0;
 Scene scene;
@@ -55,7 +51,7 @@ void renderGL(GLFWwindow* window) {
         handle_translation_and_scaling();
         handle_rotation();
         sky_model->rotate(std::vector<bool>{0, 0, 1, 0, 0, 0});
-        scene.draw(projection_matrix);
+        scene.draw();
     }
 }
 

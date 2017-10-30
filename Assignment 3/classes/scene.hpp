@@ -20,6 +20,16 @@ private:
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 	float xscale = 1.0, yscale = 1.0, zscale = 1.0;
 
+	const float field_of_view = 60.0f;
+	const float aspect_ratio = 1.0f;
+	const float near_plane = 0.1f;
+	const float far_plane = 1000.0f;
+
+	const glm::vec3 eye_position = glm::vec3(0.0f, 2.0f, 5.0f);
+	const glm::vec3 lookat_center = glm::vec3(0.0f, 0.0f, 0.0f);
+	const glm::vec3 up =  glm::vec3(0.0f, 1.0f, 0.0f);
+
+	glm::mat4 projection_transform;
 
 	GLuint vao = 0;
 	GLuint vPosition, vColor, vNormal, vTexCoord;
@@ -31,10 +41,10 @@ private:
 
 public:
 	std::vector<HeirarchicalModel*> model_list;
-	
+
 	void init();
 	void load_new_model(std::string filename, std::string id, glm::vec3 scale_vec, glm::vec3 translation_vec);
-	void draw(glm::mat4 projection_transform);
+	void draw();
 	HeirarchicalModel* find_heirarchical_model_by_id(std::string id);
 
 	void rotate(std::vector<bool> key_state_rotation);
