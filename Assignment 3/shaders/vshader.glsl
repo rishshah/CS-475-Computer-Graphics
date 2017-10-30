@@ -9,7 +9,8 @@ out vec4 color;
 out vec2 tex;
 out float spec_shine;
 out float light_inten;
-
+out vec4 position_pt;
+out mat4 view_matrix;
 flat out int is_texture_present;
 
 uniform int uIs_tp;
@@ -19,8 +20,6 @@ uniform mat4 viewMatrix;
 
 void main (void) 
 {
-    
-  normalpt = vNormal;
 
   //vec4 diffuse = vec4(0.4, 0.4, 0.4, 1.0); 
   //vec4 ambient = vec4(0.6, 0.6, 0.6, 1.0);
@@ -35,11 +34,13 @@ void main (void)
   
   
   // Defining Light 
-  vec4 lightPos = vec4(1.0, 0.0, 1.0, 0.0);
-  vec4 lightPos2 = vec4(-1.0, 0.0, -1.0, 0.0);
+  vec4 lightPos = vec4(1.0, 1.0, 0.0, 0.0);
+  vec4 lightPos2 = vec4(-1.0, 1.0, 0.0, 0.0);
 
   vec3 lightDir = vec3(viewMatrix * lightPos); 
   vec3 lightDir2 = vec3(viewMatrix * lightPos2); 
+
+  view_matrix = viewMatrix;
 
   lightDir = normalize(lightDir);
   lightDir2 = normalize(lightDir2);  
@@ -50,13 +51,15 @@ void main (void)
   float dotProduct = dot(n, lightDir);
   float dotProduct2 = dot(n, lightDir2);
   
-  float intensity =  max( dotProduct, 0.0);
+  float intensity =  max(abs(dotProduct), 0.0);
 
-  float intensity2 = max( dotProduct2, 0.0);
+  float intensity2 = max(abs(dotProduct2), 0.0);
 
   // Compute specular component only if light falls on vertex
   
   gl_Position = uModelViewMatrix * vec4(vPosition, 1.0f);
+
+  position_pt = gl_Position;
 
   vec3 eye = normalize(vec3(-gl_Position));
 
