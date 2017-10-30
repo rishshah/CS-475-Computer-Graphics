@@ -2,6 +2,14 @@
 
 const std::string FILE_NAME = "./models/";
 
+void printmat41(glm::mat4 Awv) {
+	printf("\n");
+	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+	printf("\n");
+}
 
 Scene::~Scene() {
 	for (int i = 0; i < model_list.size(); ++i) {
@@ -33,6 +41,9 @@ void Scene::init() {
 	vTexCoord = glGetAttribLocation( shaderProgram, "vTexCoord" );
 	glEnableVertexAttribArray( vTexCoord );
 
+	projection_transform = glm::perspective(glm::radians(field_of_view), aspect_ratio, near_plane, far_plane) *
+	                       glm::lookAt(eye_position, lookat_center, up);
+	
 	model_list.resize(0);
 }
 
@@ -53,13 +64,13 @@ void Scene::load_new_model(std::string model_filename, std::string id, glm::vec3
  * @brief      draw all contents of the screen
  * @param[in]  projection_transform  the third person camera projection transformation matrix
  */
-void Scene::draw(glm::mat4 projection_transform) {
+void Scene::draw() {
 	glBindVertexArray(vao);
 	for (int i = 0; i < model_list.size(); ++i) {
-		model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp, 
-							 glm::mat4(1.0f) ,projection_transform, 
-							translation_matrix * rotation_matrix * scaling_matrix * 
-							model_list[i]->translation_matrix * model_list[i]->rotation_matrix
+		model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp,
+		                    glm::mat4(1.0f) , projection_transform,
+		                    translation_matrix * rotation_matrix * scaling_matrix *
+		                    model_list[i]->translation_matrix * model_list[i]->rotation_matrix
 		                    * model_list[i]->scaling_matrix);
 	}
 }
@@ -76,26 +87,34 @@ HeirarchicalModel* Scene::find_heirarchical_model_by_id(std::string id) {
  * @param key_state_rotation 	key press boolean vector input
  */
 void Scene::rotate(std::vector<bool> key_state_rotation) {
+	glm::mat4 rotation_mtx_x = glm::mat4(1.0f);
+	glm::mat4 rotation_mtx_y = glm::mat4(1.0f);
+	glm::mat4 rotation_mtx_z = glm::mat4(1.0f);
+
 	if (key_state_rotation[0]) {
-		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
+		rotation_mtx_x = glm::rotate(glm::mat4(1.0f), -ROT_DELTA, glm::vec3(1.0f, 0.0f, 0.0f));;
 	}
 	else if (key_state_rotation[1]) {
-		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
+		rotation_mtx_x = glm::rotate(glm::mat4(1.0f), +ROT_DELTA, glm::vec3(1.0f, 0.0f, 0.0f));;
 	}
 
 	if (key_state_rotation[2]) {
-		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
+		rotation_mtx_y = glm::rotate( glm::mat4(1.0f), -ROT_DELTA, glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 	else if (key_state_rotation[3]) {
-		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
+		rotation_mtx_y = glm::rotate( glm::mat4(1.0f), +ROT_DELTA, glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	if (key_state_rotation[4]) {
-		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
+		rotation_mtx_z = glm::rotate( glm::mat4(1.0f), ROT_DELTA, glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 	else if (key_state_rotation[5]) {
-		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
+		rotation_mtx_z = glm::rotate( glm::mat4(1.0f), -ROT_DELTA, glm::vec3(0.0f, 0.0f, 1.0f));
 	}
+
+	rotation_matrix = glm::translate(glm::mat4(1.0f), eye_position) * glm::inverse(translation_matrix) * rotation_mtx_z * rotation_mtx_y * rotation_mtx_x
+	                  * translation_matrix * glm::translate(glm::mat4(1.0f), -eye_position) *rotation_matrix;
+	printmat41(translation_matrix);
 }
 
 
