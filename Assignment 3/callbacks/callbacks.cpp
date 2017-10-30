@@ -216,12 +216,6 @@ std::string handle_modelling_callback(std::string model_id, int key) {
 			return "body";
 		}
 	}
-	else if (model_id == "scene") {
-		switch (key) {
-		case GLFW_KEY_1:
-			return "sky";
-		}
-	}
 }
 
 /**
@@ -257,13 +251,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 
 	// Modelling Mode Callbacks
+
 	// Load a new model
-	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
-		std::string model_filename;
-		printf("Enter File:");
-		std::cin >> model_filename;
-		scene.load_new_model("body", model_filename);
-	}
+	// else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
+	// 	std::string model_filename;
+	// 	printf("Enter File:");
+	// 	std::cin >> model_filename;
+	// 	scene.load_new_model("body", model_filename);
+	// }
 
 	// Switch to Pan mode
 	else if (key == GLFW_KEY_P and action == GLFW_PRESS) {

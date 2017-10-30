@@ -2,8 +2,8 @@
 #include <vector>
 
 
-glm::mat4 projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 100.0f) *
-                              glm::lookAt(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+glm::mat4 projection_matrix = glm::perspective(glm::radians(60.0f), 1.0f / 1.0f, 0.1f, 1000.0f) *
+                              glm::lookAt(glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 //Externed variables defined here
 GLuint shaderProgram = 0;
@@ -20,6 +20,7 @@ bool modelling_mode = false;
 
 HeirarchicalModel* curr_heirarchical_model = NULL;
 Model* curr_model = NULL;
+Model* sky_model = NULL;
 
 //-----------------------------------------------
 
@@ -53,10 +54,18 @@ void renderGL(GLFWwindow* window) {
     if (scene.model_list.size() > 0) {
         handle_translation_and_scaling();
         handle_rotation();
+        sky_model->rotate(std::vector<bool>{0, 0, 1, 0, 0, 0});
         scene.draw(projection_matrix);
     }
 }
 
+void set_up_scene(){
+    scene.init();
+    scene.load_new_model("body", "scene", glm::vec3(10,10,10), glm::vec3(0,0,0));
+    sky_model = scene.find_heirarchical_model_by_id("scene")->find_by_id("sky");
+    scene.load_new_model("body", "phineas", glm::vec3(1,1,1), glm::vec3(0,2.7,2));
+    scene.load_new_model("body", "perry", glm::vec3(1,1,1), glm::vec3(0,1.3,0));
+}
 
 int main() {
     //! The pointer to the GLFW window;
@@ -126,7 +135,7 @@ int main() {
     shaderProgram = base::CreateProgramGL(shaderList);
     glUseProgram( shaderProgram );
 
-    scene.init();
+    set_up_scene();
 
     while (glfwWindowShouldClose(window) == 0) {
 

@@ -33,7 +33,7 @@ public:
 	std::vector<HeirarchicalModel*> model_list;
 	
 	void init();
-	void load_new_model(std::string filename, std::string id);
+	void load_new_model(std::string filename, std::string id, glm::vec3 scale_vec, glm::vec3 translation_vec);
 	void draw(glm::mat4 projection_transform);
 	HeirarchicalModel* find_heirarchical_model_by_id(std::string id);
 
