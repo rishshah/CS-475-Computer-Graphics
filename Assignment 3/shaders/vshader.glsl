@@ -23,38 +23,57 @@ void main (void)
   //vec4 spec = vec4(0.0); 
   float diffuse = 0.7;
   float ambient = 0.3;
-  float specular = 0.2;
-  float spec = 0.0;
-
+  float specular = 0.1;
+  float spec1 = 0.0;
+  float spec2 = 0.0;
   float shininess = 0.05;
   
   
   // Defining Light 
-  vec4 lightPos = vec4(0.0, 0.0, 10.0, 0.0);
+  vec4 lightPos = vec4(1.0, 0.0, 1.0, 0.0);
+  vec4 lightPos2 = vec4(-1.0, 0.0, -1.0, 0.0);
+
   vec3 lightDir = vec3(viewMatrix * lightPos); 
-  lightDir = normalize(lightDir);  
+  vec3 lightDir2 = vec3(viewMatrix * lightPos2); 
+
+  lightDir = normalize(lightDir);
+  lightDir2 = normalize(lightDir2);  
 
   // gl_Position = uModelViewMatrix * vPosition
   
   vec3 n = normalize(normalMatrix * normalize(vNormal));
   float dotProduct = dot(n, lightDir);
+  float dotProduct2 = dot(n, lightDir2);
+  
   float intensity =  max( dotProduct, 0.0);
+
+  float intensity2 = max( dotProduct2, 0.0);
 
   // Compute specular component only if light falls on vertex
   
   gl_Position = uModelViewMatrix * vec4(vPosition, 1.0f);
 
+  vec3 eye = normalize(vec3(-gl_Position));
+
   if(intensity > 0.0)
   {
-	vec3 eye = normalize(vec3(-gl_Position));
-	vec3 h = normalize(lightDir + eye );
-   	float intSpec = max(dot(h,n), 0.0);	
-    spec = specular * pow(intSpec, shininess);
+	  vec3 h = normalize(lightDir + eye );
+   	float intSpec = dot(h,n);	
+    spec1 = specular * pow(intSpec, shininess); //*10.0*(intensity-0.3);
   }  	
-  
-  float inten_color = max((intensity * diffuse), ambient);
 
-  vec4 new_color = vec4(min((vColor*inten_color + vec3(spec, spec, spec)), 1.0), 1.0);
+  if(intensity2 > 0.0)
+  {
+    vec3 h = normalize(lightDir2 + eye );
+    float intSpec = dot(h,n);  
+    spec2 = specular * pow(intSpec, shininess); //*10.0*(intensity-0.3);
+  }
+
+  float spec = max(spec1, spec2);
+
+  float inten_color = max( (max(intensity, intensity2) * diffuse) ,  ambient);
+
+  vec4 new_color = vec4(min((vColor*inten_color + vec3(spec, spec, spec)), vec3(1.0)), 1.0);
 
   // color = vec4(vColor, 1.0);
   

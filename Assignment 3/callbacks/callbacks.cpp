@@ -262,7 +262,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		std::string model_filename;
 		printf("Enter File:");
 		std::cin >> model_filename;
-		scene.load_new_model(model_filename, "body");
+		scene.load_new_model("body", model_filename);
 	}
 
 	// Switch to Pan mode
