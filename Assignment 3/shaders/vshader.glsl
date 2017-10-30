@@ -9,6 +9,7 @@ out vec4 color;
 out vec2 tex;
 out float spec_shine;
 out float light_inten;
+
 flat out int is_texture_present;
 
 uniform int uIs_tp;
@@ -18,6 +19,8 @@ uniform mat4 viewMatrix;
 
 void main (void) 
 {
+    
+  normalpt = vNormal;
 
   //vec4 diffuse = vec4(0.4, 0.4, 0.4, 1.0); 
   //vec4 ambient = vec4(0.6, 0.6, 0.6, 1.0);
