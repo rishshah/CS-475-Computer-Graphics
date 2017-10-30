@@ -11,7 +11,7 @@
 #include "../../glm/vec4.hpp"
 #include "../main.hpp"
 
-extern std::vector<bool> key_state_trans_or_scale;
+extern std::vector<bool> key_state_translation;
 //X     0 -> A      1 -> D
 //Y     2 -> W      3 -> S
 //Z     4 -> Z      5 -> X
@@ -22,7 +22,6 @@ extern std::vector<bool> key_state_rotation;
 //Z     4 -> pgUp   5 -> PgDown
 
 extern bool key_state_recenter;
-extern bool key_state_scaling_mode;
 extern bool pan_mode;
 extern bool modelling_mode;
 

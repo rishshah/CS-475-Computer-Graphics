@@ -48,7 +48,7 @@ public:
 	HeirarchicalModel* find_heirarchical_model_by_id(std::string id);
 
 	void rotate(std::vector<bool> key_state_rotation);
-	void trans_scale(std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode);
+	void translate(std::vector<bool> key_state_translation, bool key_state_recenter);
 	~Scene();
 };
 

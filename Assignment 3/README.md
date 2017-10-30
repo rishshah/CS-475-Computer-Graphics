@@ -15,10 +15,8 @@
 
 ### Keyboard callbacks
 
-- `[ C ]` -> Toggle scaling mode.
-- `[ L ]` -> Enter name of heirarchical model to load it in view {"phineas", "perry", "scene"}
 - `[ P ]` -> switch to pan mode
-- `[ M ]` -> switch to modelling mode
+- `[ M ]` -> switch to modelling mode {"phineas", "perry"}
 
 #### Modelling mode for rotating parts about their joins
 - `[ Up/Down ]` -> rotate about X axis 
@@ -48,12 +46,11 @@
 - `[9]` -> leg_right
 - `[0]` -> body
 
-#### Pan mode moving third person camera
+#### Pan mode moving third person camera about its center
 - `[ Up/Down ]` -> rotate about X axis 
 - `[ Left/Right ]` -> rotate about Y axis
 - `[ PgUp/PgDown ]` -> rotate about Z axis
-- `[ W,S,A,D,Z,X ]` -> In nonscaling mode, key should allow translation along +ve and -ve Y,X and Z axis respectively
-- `[ W,S,A,D,Z,X ]` -> In scaling mode, key should allow scaling along Y,X and Z axis respectively
+- `[ W,S,A,D,Z,X ]` -> keys should allow translation along +ve and -ve Y,X and Z axis respectively
 
 ---
 
