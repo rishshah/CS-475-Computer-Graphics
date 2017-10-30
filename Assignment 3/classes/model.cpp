@@ -2,18 +2,18 @@
 
 const std::string FILE_NAME = "./models/";
 
-void print(std::string s, glm::vec3 v) {
-	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
-}
+// void print(std::string s, glm::vec3 v) {
+// 	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
+// }
 
-void printmat4(glm::mat4 Awv) {
-	printf("\n");
-	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
-	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
-	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
-	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
-	printf("\n");
-}
+// void printmat4(glm::mat4 Awv) {
+// 	printf("\n");
+// 	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+// 	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+// 	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+// 	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+// 	printf("\n");
+// }
 
 
 /**

@@ -1,12 +1,6 @@
 #include "callbacks.hpp"
-
-
-
 namespace base {
 
-void printvec3(std::string s, glm::vec3 v) {
-	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
-};
 /**
  * @brief      Update(Set/Reset) global shared varible key_state_rotation according to
  *             the key used.
@@ -78,7 +72,7 @@ void rotation_callback(int key, int action) {
 }
 
 /**
- * @brief      Update(Set/Reset) global shared varible key_state_trans_or_scale according to
+ * @brief      Update(Set/Reset) global shared varible key_state_translation according to
  *             the key used.
  *             0 - A    |
  *             1 - D    |
@@ -93,56 +87,56 @@ void rotation_callback(int key, int action) {
 void trans_and_scale_callback(int key, int action) {
 	// Translate along Xaxis
 	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-		key_state_trans_or_scale[0] = true;
-		key_state_trans_or_scale[1] = false;
+		key_state_translation[0] = true;
+		key_state_translation[1] = false;
 	}
 	else if (key == GLFW_KEY_A && action == GLFW_RELEASE) {
-		key_state_trans_or_scale[0] = false;
-		key_state_trans_or_scale[1] = false;
+		key_state_translation[0] = false;
+		key_state_translation[1] = false;
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		key_state_trans_or_scale[1] = true;
-		key_state_trans_or_scale[0] = false;
+		key_state_translation[1] = true;
+		key_state_translation[0] = false;
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_RELEASE) {
-		key_state_trans_or_scale[1] = false;
-		key_state_trans_or_scale[0] = false;
+		key_state_translation[1] = false;
+		key_state_translation[0] = false;
 	}
 
 	// Translate along Yaxis
 	else if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		key_state_trans_or_scale[2] = true;
-		key_state_trans_or_scale[3] = false;
+		key_state_translation[2] = true;
+		key_state_translation[3] = false;
 	}
 	else if (key == GLFW_KEY_W && action == GLFW_RELEASE) {
-		key_state_trans_or_scale[2] = false;
-		key_state_trans_or_scale[3] = false;
+		key_state_translation[2] = false;
+		key_state_translation[3] = false;
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		key_state_trans_or_scale[3] = true;
-		key_state_trans_or_scale[2] = false;
+		key_state_translation[3] = true;
+		key_state_translation[2] = false;
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_RELEASE) {
-		key_state_trans_or_scale[3] = false;
-		key_state_trans_or_scale[2] = false;
+		key_state_translation[3] = false;
+		key_state_translation[2] = false;
 	}
 
 	// Translate along Zaxis
 	else if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
-		key_state_trans_or_scale[4] = true;
-		key_state_trans_or_scale[5] = false;
+		key_state_translation[4] = true;
+		key_state_translation[5] = false;
 	}
 	else if (key == GLFW_KEY_Z && action == GLFW_RELEASE) {
-		key_state_trans_or_scale[4] = false;
-		key_state_trans_or_scale[5] = false;
+		key_state_translation[4] = false;
+		key_state_translation[5] = false;
 	}
 	else if (key == GLFW_KEY_X && action == GLFW_PRESS) {
-		key_state_trans_or_scale[5] = true;
-		key_state_trans_or_scale[4] = false;
+		key_state_translation[5] = true;
+		key_state_translation[4] = false;
 	}
 	else if (key == GLFW_KEY_X && action == GLFW_RELEASE) {
-		key_state_trans_or_scale[5] = false;
-		key_state_trans_or_scale[4] = false;
+		key_state_translation[5] = false;
+		key_state_translation[4] = false;
 	}
 }
 
@@ -243,32 +237,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	          key == GLFW_KEY_X) {
 		trans_and_scale_callback(key, action);
 	}
-	// toggle scaling mode
-	else if (key == GLFW_KEY_C and action == GLFW_PRESS) {
-		key_state_scaling_mode = !key_state_scaling_mode;
-		printf("SCALING MODE %d\n", key_state_scaling_mode);
-	}
-
-
-	// Modelling Mode Callbacks
-
-	// Load a new model
-	// else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
-	// 	std::string model_filename;
-	// 	printf("Enter File:");
-	// 	std::cin >> model_filename;
-	// 	scene.load_new_model("body", model_filename);
-	// }
-
+	
 	// Switch to Pan mode
 	else if (key == GLFW_KEY_P and action == GLFW_PRESS) {
 		pan_mode = true;
 		modelling_mode = false;
 		printf("Scene pan mode\n");
-	}
-
-	else if (key == GLFW_KEY_Q and action == GLFW_PRESS) {
-		printvec3("RotVec:", curr_model->rotation_vec);
 	}
 
 	//Modelling mode
@@ -298,4 +272,5 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			printf("modelling %s now!\n", id.c_str());
 	}
 }
+
 };

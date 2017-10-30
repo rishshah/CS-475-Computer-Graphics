@@ -2,15 +2,6 @@
 
 const std::string FILE_NAME = "./models/";
 
-void printmat41(glm::mat4 Awv) {
-	printf("\n");
-	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
-	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
-	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
-	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
-	printf("\n");
-}
-
 Scene::~Scene() {
 	for (int i = 0; i < model_list.size(); ++i) {
 		delete model_list[i];
@@ -114,68 +105,40 @@ void Scene::rotate(std::vector<bool> key_state_rotation) {
 
 	rotation_matrix = glm::translate(glm::mat4(1.0f), eye_position) * glm::inverse(translation_matrix) * rotation_mtx_z * rotation_mtx_y * rotation_mtx_x
 	                  * translation_matrix * glm::translate(glm::mat4(1.0f), -eye_position) *rotation_matrix;
-	printmat41(translation_matrix);
 }
 
 
 /**
  * @brief recalculate translation and scaling matrix of scene
- * @param key_state_trans_or_scale 	key press boolean vector input 	{WASDZX}
- * @param key_state_scaling_mode 	key press boolean vector input 	{C}  Scaling is not allowed
+ * @param key_state_translation 	key press boolean vector input 	{WASDZX}
  * @param key_state_recenter 	key press boolean vector inputs 	{R}
  */
-void Scene::trans_scale(std::vector<bool> key_state_trans_or_scale, bool key_state_recenter, bool key_state_scaling_mode) {
+void Scene::translate(std::vector<bool> key_state_translation, bool key_state_recenter) {
 	if (key_state_recenter) {
 		xpos = ypos = zpos = 0.0f;
-	}
-	else if (key_state_scaling_mode) {
-		if (key_state_trans_or_scale[0]) {
-			xscale = std::max(xscale - SCALE_DELTA, 0.0f);
-		}
-		else if (key_state_trans_or_scale[1]) {
-			xscale = std::max(xscale + SCALE_DELTA, 0.0f);
-		}
-
-		if (key_state_trans_or_scale[2]) {
-			yscale = std::max(yscale - SCALE_DELTA, 0.0f);
-		}
-		else if (key_state_trans_or_scale[3]) {
-			yscale = std::max(yscale + SCALE_DELTA, 0.0f);
-		}
-
-		if (key_state_trans_or_scale[4]) {
-			zscale = std::max(zscale + SCALE_DELTA, 0.0f);
-		}
-		else if (key_state_trans_or_scale[5]) {
-			zscale = std::max(zscale - SCALE_DELTA, 0.0f);
-		}
-	}
-	else {
-		if (key_state_trans_or_scale[0]) {
-			xpos -= TRANS_DELTA;
-		}
-		else if (key_state_trans_or_scale[1]) {
-			xpos += TRANS_DELTA;
-		}
-
-		if (key_state_trans_or_scale[2]) {
-			ypos += TRANS_DELTA;
-		}
-		else if (key_state_trans_or_scale[3]) {
-			ypos -= TRANS_DELTA;
-		}
-
-		if (key_state_trans_or_scale[4]) {
-			zpos += TRANS_DELTA;
-		}
-		else if (key_state_trans_or_scale[5]) {
-			zpos -= TRANS_DELTA;
-		}
-	}
-	if (key_state_recenter) {
 		rotation_matrix = glm::mat4(1.0f);
 	}
 	else {
-		translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
+		if (key_state_translation[0]) {
+			xpos -= TRANS_DELTA;
+		}
+		else if (key_state_translation[1]) {
+			xpos += TRANS_DELTA;
+		}
+
+		if (key_state_translation[2]) {
+			ypos += TRANS_DELTA;
+		}
+		else if (key_state_translation[3]) {
+			ypos -= TRANS_DELTA;
+		}
+
+		if (key_state_translation[4]) {
+			zpos += TRANS_DELTA;
+		}
+		else if (key_state_translation[5]) {
+			zpos -= TRANS_DELTA;
+		}
 	}
+	translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
 }

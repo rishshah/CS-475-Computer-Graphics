@@ -5,11 +5,10 @@
 GLuint shaderProgram = 0;
 Scene scene;
 
-std::vector<bool> key_state_trans_or_scale(6, false);
+std::vector<bool> key_state_translation(6, false);
 std::vector<bool> key_state_rotation(6, false);
 
 bool key_state_recenter = false;
-bool key_state_scaling_mode = false;
 
 bool pan_mode = true;
 bool modelling_mode = false;
@@ -34,11 +33,11 @@ void handle_rotation() {
 
 /**
  * @brief      Adjust translation matrix according to key_state_recenter and
- *             key_state_trans_or_scale shared variables
+ *             key_state_translation shared variables
  */
-void handle_translation_and_scaling() {
+void handle_translation() {
     if (pan_mode)
-        scene.trans_scale(key_state_trans_or_scale, key_state_recenter, key_state_scaling_mode);
+        scene.translate(key_state_translation, key_state_recenter);
 }
 
 /**
@@ -48,7 +47,7 @@ void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     if (scene.model_list.size() > 0) {
-        handle_translation_and_scaling();
+        handle_translation();
         handle_rotation();
         sky_model->rotate(std::vector<bool>{0, 0, 1, 0, 0, 0});
         scene.draw();
