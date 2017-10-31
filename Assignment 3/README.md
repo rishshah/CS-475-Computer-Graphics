@@ -59,14 +59,14 @@
 ## Timeline
 - Made file structure, classes to make easy hierarchial modelling 
 - Make models' parts; save them in file with their joint information
-- Interactive view to create heirarchical models created
 - Perry model created
 - Phineas model created
 - Create sceen as a fixed joint model
 - Search and apply correct textures to scene and perry
 - Create callbacks creatively so as to reuse most of them as there could be many such ones
 - Assemble models and animate them
-- 2 Lightings ( 1 direction and 1 point source)
+- rotating sky created
+- 3 Lightings ( 2 directional and 1 point source (spot light out of sun))
 - Placment of models in sceen finally
 
 ---
