@@ -34,7 +34,7 @@ private:
 	//Opengl parameteres
 	GLuint vao = 0;
 	GLuint vPosition, vColor, vNormal, vTexCoord;
-	GLuint uModelViewMatrix, uIs_tp, uNormalMatrix, uViewMatrix, uLight_flag;
+	GLuint uModelViewMatrix, uIs_tp, uNormalMatrix, uViewMatrix, multMatrix, uLight_flag;
 
 	//Scene rotation and translation paramters
 	glm::mat4 translation_matrix = glm::mat4(1.0f);

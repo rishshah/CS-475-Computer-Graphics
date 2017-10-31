@@ -15,7 +15,7 @@ void Model::calc_matrices() {
 
 /**
  * @brief      Load model from a .raw file  and store its vertex data
- * 
+ *
  * @param filename 	the .raw file that contains the model
  * @param hm_id 	the heirarchical model id (folder name)
  * @param par_scale_mtx  scaling matrix of parent for calculation of par_relative translation
@@ -68,7 +68,7 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 		child_model_list[i]->assignBuffer();
 	}
 
-	//texture dependent file vertices read 
+	//texture dependent file vertices read
 	fscanf (fp_input, "%d", &is_texture_present);
 	fscanf (fp_input, "%d", &num_vertices);
 	vertex_list.resize(num_vertices);
@@ -139,8 +139,8 @@ void Model::assignBuffer() {
  * @param[in]  projection_transform  	Matrix of projection from third person (scene) camera
  */
 void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoord, GLuint uModelViewMatrix,
-                 GLuint uNormalMatrix, GLuint uViewMatrix, GLuint uIs_tp, GLuint uLight_flag, int light_flag, glm::mat4 par_final_transform,
-                 glm::mat4 projection_transform, glm::mat4 third_person_transform) {
+                 GLuint uNormalMatrix, GLuint uViewMatrix, GLuint multMatrix, GLuint uIs_tp, GLuint uLight_flag, int light_flag, glm::mat4 par_final_transform,
+                 glm::mat4 projection_transform, glm::mat4 half_third_person, glm::mat4 third_person_transform) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -163,6 +163,10 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoo
 
 	glUniformMatrix3fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normal_mat));
 
+	glm::mat4 mult_mat = half_third_person;
+
+	glUniformMatrix4fv(multMatrix, 1, GL_FALSE, glm::value_ptr(mult_mat));
+
 	glUniform1i(uIs_tp, tex == -1 ? 0 : 1);
 	glUniform1i(uLight_flag, light_flag);
 
@@ -170,9 +174,10 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoo
 	glDrawArrays(GL_TRIANGLES, 0, vertex_list.size());
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
-		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp, uLight_flag, light_flag,
+		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix,
+		                          uViewMatrix, multMatrix, uIs_tp, uLight_flag, light_flag,
 		                          par_final_transform * modelling_transform,
-		                          projection_transform, third_person_transform);
+		                          projection_transform, half_third_person, third_person_transform);
 	}
 }
 

@@ -1,6 +1,6 @@
 #include "./scene.hpp"
 
-/**  
+/**
  * @brief destructor to deallocate all models
  */
 Scene::~Scene() {
@@ -12,7 +12,7 @@ Scene::~Scene() {
 /**
  * @brief toggle Spotlight
  */
-void Scene::toggle_light(){
+void Scene::toggle_light() {
 	light_flag = 1 - light_flag;
 }
 
@@ -26,6 +26,7 @@ void Scene::init() {
 	uModelViewMatrix = glGetUniformLocation( shaderProgram, "uModelViewMatrix");
 	uNormalMatrix = glGetUniformLocation( shaderProgram, "normalMatrix");
 	uViewMatrix = glGetUniformLocation( shaderProgram, "viewMatrix");
+	multMatrix = glGetUniformLocation( shaderProgram, "multMatrix");
 
 	uIs_tp = glGetUniformLocation( shaderProgram, "uIs_tp" );
 	uLight_flag = glGetUniformLocation( shaderProgram, "uLight_flag" );
@@ -51,7 +52,7 @@ void Scene::init() {
 /**
  * @brief Load new model in scene
  * @details [long description]
- * 
+ *
  * @param model_filename filename to load the model from relative to FILENAME path
  * @param id the folder which is the root of heirarchitiacal model to load
  * @param scale_vec scaling vector for heirarchical model
@@ -72,9 +73,10 @@ void Scene::load_new_model(std::string model_filename, std::string id, glm::vec3
 void Scene::draw() {
 	glBindVertexArray(vao);
 	for (int i = 0; i < model_list.size(); ++i) {
-		model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp,  uLight_flag, light_flag,
+		model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix,
+		                    multMatrix, uIs_tp, uLight_flag, light_flag,
 		                    glm::mat4(1.0f) , projection_transform,
-		                    translation_matrix * rotation_matrix * scaling_matrix *
+		                    translation_matrix * rotation_matrix, translation_matrix * rotation_matrix * scaling_matrix *
 		                    model_list[i]->translation_matrix * model_list[i]->rotation_matrix
 		                    * model_list[i]->scaling_matrix);
 	}
@@ -82,7 +84,7 @@ void Scene::draw() {
 
 /**
  * @brief get pointer to heirarchical model by searching them in scene by id
- * 
+ *
  * @param id id of model to search in the scene
  * @return pointer to resulting model
  */
@@ -123,7 +125,7 @@ void Scene::rotate(std::vector<bool> key_state_rotation) {
 	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.x), glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.y), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.z), glm::vec3(0.0f, 0.0f, 1.0f));
-	
+
 	rotation_matrix = glm::translate(glm::mat4(1.0f), eye_position) * glm::inverse(translation_matrix) * rotation_mtx_z * rotation_mtx_y * rotation_mtx_x
 	                  * translation_matrix * glm::translate(glm::mat4(1.0f), -eye_position);
 }
