@@ -12,7 +12,7 @@ class Model {
 
 private:
 
-	const float ROT_DELTA = 1.0f;
+	const float ROT_DELTA = 0.5f;
 
 	char id[100];
 	std::vector<Vertex> vertex_list;
@@ -27,12 +27,12 @@ private:
 	void calc_matrices();
 
 public:
-	
+
 	glm::vec3 scale_vec, rotation_vec;
 	bool load(std::string id, std::string filename, glm::mat4 scale_mtx);
-	void draw(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, glm::mat4, glm::mat4, glm::mat4);
+	void draw(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, int, glm::mat4, glm::mat4, glm::mat4);
 	Model* find_by_id(std::string id);
-	void rotate(std::vector<bool> key_state_rotation);	
+	void rotate(std::vector<bool> key_state_rotation);
 	~Model();
 };
 

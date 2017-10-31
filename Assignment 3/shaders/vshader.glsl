@@ -14,6 +14,8 @@ out mat4 view_matrix;
 flat out int is_texture_present;
 
 uniform int uIs_tp;
+uniform int uLight_flag;
+
 uniform mat4 uModelViewMatrix;
 uniform mat3 normalMatrix;
 uniform mat4 viewMatrix;

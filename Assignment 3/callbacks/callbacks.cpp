@@ -1,6 +1,10 @@
 #include "callbacks.hpp"
 namespace base {
 
+void print(std::string s, glm::vec3 v) {
+	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
+}
+
 /**
  * @brief      Update(Set/Reset) global shared varible key_state_rotation according to
  *             the key used.
@@ -238,6 +242,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		trans_and_scale_callback(key, action);
 	}
 	
+	// Toggle spotlight
+	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
+		scene.toggle_light();
+	}
+
 	// Switch to Pan mode
 	else if (key == GLFW_KEY_P and action == GLFW_PRESS) {
 		pan_mode = true;

@@ -21,14 +21,15 @@ Model* sky_model = NULL;
 
 
 /**
- * @brief      Adjust rotation matrix according to key_state_rotation shared
- *             variable
+ * @brief    Adjust rotation matrix according to key_state_rotation shared variable
  */
 void handle_rotation() {
     if (pan_mode)
         scene.rotate(key_state_rotation);
     else if (modelling_mode)
         curr_model->rotate(key_state_rotation);
+    
+    sky_model->rotate(std::vector<bool>{0, 0, 0, 0, 0, 1});
 }
 
 /**
@@ -49,11 +50,13 @@ void renderGL(GLFWwindow* window) {
     if (scene.model_list.size() > 0) {
         handle_translation();
         handle_rotation();
-        sky_model->rotate(std::vector<bool>{0, 0, 1, 0, 0, 0});
         scene.draw();
     }
 }
 
+/**
+ * @brief load, position and scale all models to form a nice scene
+ */
 void set_up_scene(){
     scene.init();
     scene.load_new_model("body", "scene", glm::vec3(10,10,10), glm::vec3(0,0,0));

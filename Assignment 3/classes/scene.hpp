@@ -9,37 +9,40 @@
 class Scene {
 private:
 	// Translation  and Rotation Parameters
-	const float TRANS_DELTA = 0.1;
-	const float SCALE_DELTA = 0.02;
-	const float ROT_DELTA = 0.05;
-
-	const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-	const glm::vec4 Z_UNIT = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-
+	const float TRANS_DELTA = 0.2;
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
-	float xscale = 1.0, yscale = 1.0, zscale = 1.0;
+	const float ROT_DELTA = 1;
+	glm::vec3 rotation_vec = glm::vec3(0.0f);
 
+	// Folder path where the all scene models are present
+	const std::string FILE_NAME = "./models/";
+
+	//Camera Location and Perspective view Setup Parameters
 	const float field_of_view = 60.0f;
 	const float aspect_ratio = 1.0f;
 	const float near_plane = 0.1f;
 	const float far_plane = 1000.0f;
 
-	const glm::vec3 eye_position = glm::vec3(0.0f, 2.0f, 5.0f);
-	const glm::vec3 lookat_center = glm::vec3(0.0f, 0.0f, 0.0f);
+	const glm::vec3 eye_position = glm::vec3(-10.0f, 8.0f, -5.0f);
+	const glm::vec3 lookat_center = glm::vec3(4.0f, 5.0f, 0.0f);
 	const glm::vec3 up =  glm::vec3(0.0f, 1.0f, 0.0f);
-
+	
 	glm::mat4 projection_transform;
 
+	int light_flag = 1;
+
+	//Opengl parameteres
 	GLuint vao = 0;
 	GLuint vPosition, vColor, vNormal, vTexCoord;
-	GLuint uModelViewMatrix, uIs_tp, uNormalMatrix, uViewMatrix;
+	GLuint uModelViewMatrix, uIs_tp, uNormalMatrix, uViewMatrix, uLight_flag;
 
+	//Scene rotation and translation paramters
 	glm::mat4 translation_matrix = glm::mat4(1.0f);
 	glm::mat4 rotation_matrix = glm::mat4(1.0f);
 	glm::mat4 scaling_matrix = glm::mat4(1.0f);
 
 public:
+	//List of all models in the scene
 	std::vector<HeirarchicalModel*> model_list;
 
 	void init();
@@ -49,6 +52,7 @@ public:
 
 	void rotate(std::vector<bool> key_state_rotation);
 	void translate(std::vector<bool> key_state_translation, bool key_state_recenter);
+	void toggle_light();
 	~Scene();
 };
 

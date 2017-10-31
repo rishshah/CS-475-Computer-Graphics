@@ -2,20 +2,6 @@
 
 const std::string FILE_NAME = "./models/";
 
-// void print(std::string s, glm::vec3 v) {
-// 	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
-// }
-
-// void printmat4(glm::mat4 Awv) {
-// 	printf("\n");
-// 	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
-// 	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
-// 	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
-// 	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
-// 	printf("\n");
-// }
-
-
 /**
  * @brief calculate rotation and scale matrix for each part corresponding to file's rotation and scale vector inputs
  */
@@ -29,9 +15,11 @@ void Model::calc_matrices() {
 
 /**
  * @brief      Load model from a .raw file  and store its vertex data
- * @param      filename the .raw file that contains the model
- *
- * @return     true iff file loaded successfully
+ * 
+ * @param filename 	the .raw file that contains the model
+ * @param hm_id 	the heirarchical model id (folder name)
+ * @param par_scale_mtx  scaling matrix of parent for calculation of par_relative translation
+ * @return true iff file loaded successfully
  */
 bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mtx ) {
 	FILE *fp_input = fopen(filename.c_str(), "r" );
@@ -53,12 +41,14 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_vec = glm::vec3(x, y, z);
 
+	//joint rotation constraints
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_lim_base = glm::vec3(x, y, z);
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_lim_top = glm::vec3(x, y, z);
 
 	calc_matrices();
+
 	//par_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	par_translation_vec = glm::vec3(par_scale_mtx * glm::vec4(x, y, z, 1.0f));
@@ -67,6 +57,7 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	self_translation_vec = glm::vec3(scale_mtx * glm::vec4(x, y, z, 1.0f));
 
+	//children models
 	fscanf (fp_input, "%d", &num_children);
 	child_model_list.resize(num_children);
 	for (int i = 0; i < num_children; ++i) {
@@ -77,6 +68,7 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 		child_model_list[i]->assignBuffer();
 	}
 
+	//texture dependent file vertices read 
 	fscanf (fp_input, "%d", &is_texture_present);
 	fscanf (fp_input, "%d", &num_vertices);
 	vertex_list.resize(num_vertices);
@@ -91,12 +83,12 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 			v.texture = glm::vec2(tx, ty);
 			v.normal = v.position;
 			vertex_list[i] = v;
-			if(i%3 == 2){
-				glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
-				glm::vec3 vec2 = vertex_list[i].position - vertex_list[i-1].position;
+			if (i % 3 == 2) {
+				glm::vec3 vec1 = vertex_list[i - 2].position - vertex_list[i - 1].position;
+				glm::vec3 vec2 = vertex_list[i].position - vertex_list[i - 1].position;
 				glm::vec3 crossproduct = glm::cross(vec1, vec2);
-				vertex_list[i-2].normal = crossproduct;
-				vertex_list[i-1].normal = crossproduct;
+				vertex_list[i - 2].normal = crossproduct;
+				vertex_list[i - 1].normal = crossproduct;
 				vertex_list[i].normal = crossproduct;
 			}
 
@@ -112,12 +104,12 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 			v.texture = glm::vec2(0, 0);
 			v.normal = v.position;
 			vertex_list[i] = v;
-			if(i%3 == 2){
-				glm::vec3 vec1 = vertex_list[i-2].position - vertex_list[i-1].position;
-				glm::vec3 vec2 = vertex_list[i].position - vertex_list[i-1].position;
+			if (i % 3 == 2) {
+				glm::vec3 vec1 = vertex_list[i - 2].position - vertex_list[i - 1].position;
+				glm::vec3 vec2 = vertex_list[i].position - vertex_list[i - 1].position;
 				glm::vec3 crossproduct = glm::cross(vec1, vec2);
-				vertex_list[i-2].normal = crossproduct;
-				vertex_list[i-1].normal = crossproduct;
+				vertex_list[i - 2].normal = crossproduct;
+				vertex_list[i - 1].normal = crossproduct;
 				vertex_list[i].normal = crossproduct;
 			}
 		}
@@ -147,7 +139,7 @@ void Model::assignBuffer() {
  * @param[in]  projection_transform  	Matrix of projection from third person (scene) camera
  */
 void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoord, GLuint uModelViewMatrix,
-                 GLuint uNormalMatrix, GLuint uViewMatrix, GLuint uIs_tp, glm::mat4 par_final_transform,
+                 GLuint uNormalMatrix, GLuint uViewMatrix, GLuint uIs_tp, GLuint uLight_flag, int light_flag, glm::mat4 par_final_transform,
                  glm::mat4 projection_transform, glm::mat4 third_person_transform) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -172,11 +164,13 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoo
 	glUniformMatrix3fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normal_mat));
 
 	glUniform1i(uIs_tp, tex == -1 ? 0 : 1);
+	glUniform1i(uLight_flag, light_flag);
+
 
 	glDrawArrays(GL_TRIANGLES, 0, vertex_list.size());
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
-		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp,
+		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp, uLight_flag, light_flag,
 		                          par_final_transform * modelling_transform,
 		                          projection_transform, third_person_transform);
 	}
@@ -207,7 +201,6 @@ Model* Model::find_by_id(std::string id) {
  * //Y     2 -> Left   3 -> Right
  * //Z     4 -> pgUp   5 -> PgDown
  */
-
 void Model::rotate(std::vector<bool> key_state_rotation) {
 	if (key_state_rotation[0]) {
 		rotation_vec.x = std::max(rotation_lim_base.x, rotation_vec.x - ROT_DELTA);
@@ -236,6 +229,9 @@ void Model::rotate(std::vector<bool> key_state_rotation) {
 	rotation_mtx = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
 }
 
+/**
+ * @brief Destructor to deallocate child models recursively
+ */
 Model::~Model() {
 	for (int i = 0; i < child_model_list.size(); ++i) {
 		delete child_model_list[i];
