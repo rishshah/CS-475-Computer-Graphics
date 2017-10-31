@@ -11,12 +11,14 @@ out float spec_shine;
 out float light_inten;
 out vec4 position_pt;
 out mat4 view_matrix;
+out mat4 mult_matrix;
 flat out int is_texture_present;
 
 uniform int uIs_tp;
 uniform mat4 uModelViewMatrix;
 uniform mat3 normalMatrix;
 uniform mat4 viewMatrix;
+uniform mat4 multMatrix;
 
 void main (void) 
 {
@@ -31,14 +33,18 @@ void main (void)
   float spec1 = 0.0;
   float spec2 = 0.0;
   float shininess = 0.05;
-  
+  mult_matrix = multMatrix;
   
   // Defining Light 
   vec4 lightPos = vec4(1.0, 1.0, 0.0, 0.0);
   vec4 lightPos2 = vec4(-1.0, 1.0, 0.0, 0.0);
+  
+  vec4 spotlightPos = vec4(0.0, 5.0, 0.0, 1.0);
+  vec3 spotlightDir = normalize(vec3(viewMatrix * spotlightPos));
 
   vec3 lightDir = vec3(viewMatrix * lightPos); 
   vec3 lightDir2 = vec3(viewMatrix * lightPos2); 
+
 
   view_matrix = viewMatrix;
 
@@ -59,6 +65,8 @@ void main (void)
   
   gl_Position = uModelViewMatrix * vec4(vPosition, 1.0f);
 
+  //position_pt = vec4(vPosition, 1.0f);
+ 
   position_pt = gl_Position;
 
   vec3 eye = normalize(vec3(-gl_Position));

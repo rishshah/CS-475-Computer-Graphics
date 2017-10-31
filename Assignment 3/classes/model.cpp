@@ -147,8 +147,8 @@ void Model::assignBuffer() {
  * @param[in]  projection_transform  	Matrix of projection from third person (scene) camera
  */
 void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoord, GLuint uModelViewMatrix,
-                 GLuint uNormalMatrix, GLuint uViewMatrix, GLuint uIs_tp, glm::mat4 par_final_transform,
-                 glm::mat4 projection_transform, glm::mat4 third_person_transform) {
+                 GLuint uNormalMatrix, GLuint uViewMatrix, GLuint multMatrix, GLuint uIs_tp, glm::mat4 par_final_transform,
+                 glm::mat4 projection_transform, glm::mat4 half_third_person, glm::mat4 third_person_transform) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -171,14 +171,18 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoo
 
 	glUniformMatrix3fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(normal_mat));
 
+	glm::mat4 mult_mat = half_third_person;
+
+	glUniformMatrix4fv(multMatrix, 1, GL_FALSE, glm::value_ptr(mult_mat));
+
 	glUniform1i(uIs_tp, tex == -1 ? 0 : 1);
 
 	glDrawArrays(GL_TRIANGLES, 0, vertex_list.size());
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
-		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, uIs_tp,
+		child_model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix, multMatrix, uIs_tp,
 		                          par_final_transform * modelling_transform,
-		                          projection_transform, third_person_transform);
+		                          projection_transform, half_third_person, third_person_transform);
 	}
 }
 
