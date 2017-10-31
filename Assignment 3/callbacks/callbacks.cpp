@@ -1,10 +1,6 @@
 #include "callbacks.hpp"
 namespace base {
 
-void print(std::string s, glm::vec3 v) {
-	printf("%s :%f %f %f\n", s.c_str(), v.x, v.y, v.z);
-}
-
 /**
  * @brief      Update(Set/Reset) global shared varible key_state_rotation according to
  *             the key used.
@@ -88,7 +84,7 @@ void rotation_callback(int key, int action) {
  * @param[in]  key     The key pressed
  * @param[in]  action  The action (release or press)
  */
-void trans_and_scale_callback(int key, int action) {
+void translation_callback(int key, int action) {
 	// Translate along Xaxis
 	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
 		key_state_translation[0] = true;
@@ -239,12 +235,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	          key == GLFW_KEY_D or
 	          key == GLFW_KEY_Z or
 	          key == GLFW_KEY_X) {
-		trans_and_scale_callback(key, action);
+		translation_callback(key, action);
 	}
 	
 	// Toggle spotlight
 	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
 		scene.toggle_light();
+		printf("Spotlight togled.\n");
 	}
 
 	// Switch to Pan mode
@@ -254,15 +251,23 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		printf("Scene pan mode\n");
 	}
 
-	//Modelling mode
-	else if (key == GLFW_KEY_M and action == GLFW_PRESS) {
+	//Modelling mode PERRY
+	else if (key == GLFW_KEY_N and action == GLFW_PRESS) {
 		modelling_mode = true;
 		pan_mode = false;
-		printf("Select heirarchical model:\n");
-		std::string id; std::cin >> id;
-		curr_heirarchical_model = scene.find_heirarchical_model_by_id(id);
+		curr_heirarchical_model = scene.find_heirarchical_model_by_id("perry");
 		curr_model = curr_heirarchical_model->find_by_id("body");
+		printf("Modelling PERRY now!\n");
 	}
+	//Modelling mode PHINEAS
+	else if (key == GLFW_KEY_H and action == GLFW_PRESS) {
+		modelling_mode = true;
+		pan_mode = false;
+		curr_heirarchical_model = scene.find_heirarchical_model_by_id("phineas");
+		curr_model = curr_heirarchical_model->find_by_id("body");
+		printf("Modelling PHINEAS now!\n");
+	}
+
 	else if (modelling_mode and action == GLFW_PRESS and
 	         (key == GLFW_KEY_0 or
 	          key == GLFW_KEY_1 or
@@ -277,8 +282,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	        ) {
 		std::string id = handle_modelling_callback(curr_heirarchical_model->hm_id, key);
 		curr_model = curr_heirarchical_model->find_by_id(id);
-		if (curr_model != NULL)
-			printf("modelling %s now!\n", id.c_str());
+		if (curr_model != NULL){
+			printf("Modelling %s now!\n", id.c_str());
+		} else{
+			printf("Part selection failed! Retry again...\n");
+		}
 	}
 }
 

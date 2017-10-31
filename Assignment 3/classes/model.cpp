@@ -129,14 +129,23 @@ void Model::assignBuffer() {
 }
 
 /**
- * @brief      draw model on screen
- *
- * @param[in]  vPosition         location of position input in vertex shader
- * @param[in]  vColor            location of color input in vertex shader
- * @param[in]  uModelViewMatrix  location of transformation matrix input in vertex shader
- * @param[in]  mode              The mode of drawing the model (GL_TRIANGLES, GL_LINES, GL_POINT)
- * @param[in]  third_person_transform 	transformation matrix from ouside of this model
- * @param[in]  projection_transform  	Matrix of projection from third person (scene) camera
+ * @brief draw the model on the screen
+ * 
+ * @param vPosition 			shader reference to vPosition variable
+ * @param vColor 				shader reference to vColor variable
+ * @param vNormal 				shader reference to vNormal variable
+ * @param vTexCoord 			shader reference to vTexCoord variable
+ * @param uModelViewMatrix 		shader reference to uModelViewMatrix variable
+ * @param uNormalMatrix 		shader reference to uNormalMatrix variable
+ * @param uViewMatrix 			shader reference to uViewMatrix variable
+ * @param multMatrix 			shader reference to multMatrix variable
+ * @param uIs_tp 				shader reference to uIs_tp variable
+ * @param uLight_flag 			shader reference to uLight_flag variable
+ * @param light_flag 			spotlight on/off status
+ * @param par_final_transform 	matrix accounting for parent model rotation and translation
+ * @param projection_transform  projection perspective matrix of inital setup camera
+ * @param half_third_person 	Only camera movements matrix
+ * @param third_person_transform camera movements * heirarchial initial setup matrix
  */
 void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoord, GLuint uModelViewMatrix,
                  GLuint uNormalMatrix, GLuint uViewMatrix, GLuint multMatrix, GLuint uIs_tp, GLuint uLight_flag, int light_flag, glm::mat4 par_final_transform,
@@ -182,11 +191,9 @@ void Model::draw(GLuint vPosition, GLuint vColor, GLuint vNormal, GLuint vTexCoo
 }
 
 /**
- * @brief get in heirarchy model pointer by id
- *
- * @param id [description]
- * @return [description]
- */
+ * @brief get in heirarchy model pointer by id 
+ * @return pointer to found model part
+ */ 
 Model* Model::find_by_id(std::string id) {
 	if (std::string(this->id) == id)
 		return this;

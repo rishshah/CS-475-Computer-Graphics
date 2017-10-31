@@ -9,9 +9,13 @@
 class Scene {
 private:
 	// Translation  and Rotation Parameters
+	const glm::vec4 X_UNIT = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	const glm::vec4 Y_UNIT = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	const glm::vec4 Z_UNIT = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+
 	const float TRANS_DELTA = 0.2;
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
-	const float ROT_DELTA = 1;
+	const float ROT_DELTA = 0.03;
 	glm::vec3 rotation_vec = glm::vec3(0.0f);
 
 	// Folder path where the all scene models are present
@@ -36,10 +40,9 @@ private:
 	GLuint vPosition, vColor, vNormal, vTexCoord;
 	GLuint uModelViewMatrix, uIs_tp, uNormalMatrix, uViewMatrix, multMatrix, uLight_flag;
 
-	//Scene rotation and translation paramters
+	//Scene rotation and translation matrices
 	glm::mat4 translation_matrix = glm::mat4(1.0f);
 	glm::mat4 rotation_matrix = glm::mat4(1.0f);
-	glm::mat4 scaling_matrix = glm::mat4(1.0f);
 
 public:
 	//List of all models in the scene

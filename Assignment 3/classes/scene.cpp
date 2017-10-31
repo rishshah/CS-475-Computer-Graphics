@@ -72,11 +72,13 @@ void Scene::load_new_model(std::string model_filename, std::string id, glm::vec3
  */
 void Scene::draw() {
 	glBindVertexArray(vao);
+	glm::mat4 cam_movement_transform = translation_matrix * glm::translate(glm::mat4(1.0f), eye_position) * glm::inverse(translation_matrix) *
+	                                   rotation_matrix * translation_matrix * glm::translate(glm::mat4(1.0f), -eye_position);
+
 	for (int i = 0; i < model_list.size(); ++i) {
 		model_list[i]->draw(vPosition, vColor, vNormal, vTexCoord, uModelViewMatrix, uNormalMatrix, uViewMatrix,
 		                    multMatrix, uIs_tp, uLight_flag, light_flag,
-		                    glm::mat4(1.0f) , projection_transform,
-		                    translation_matrix * rotation_matrix, translation_matrix * rotation_matrix * scaling_matrix *
+		                    glm::mat4(1.0f) , projection_transform, cam_movement_transform, cam_movement_transform *
 		                    model_list[i]->translation_matrix * model_list[i]->rotation_matrix
 		                    * model_list[i]->scaling_matrix);
 	}
@@ -102,32 +104,25 @@ HeirarchicalModel* Scene::find_heirarchical_model_by_id(std::string id) {
  */
 void Scene::rotate(std::vector<bool> key_state_rotation) {
 	if (key_state_rotation[0]) {
-		rotation_vec.x -= ROT_DELTA;
+		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
 	}
 	else if (key_state_rotation[1]) {
-		rotation_vec.x += ROT_DELTA;
+		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
 	}
 
 	if (key_state_rotation[2]) {
-		rotation_vec.y -= ROT_DELTA;
+		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
 	}
 	else if (key_state_rotation[3]) {
-		rotation_vec.y += ROT_DELTA;
+		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
 	}
 
 	if (key_state_rotation[4]) {
-		rotation_vec.z += ROT_DELTA;
+		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
 	}
 	else if (key_state_rotation[5]) {
-		rotation_vec.z -= ROT_DELTA;
+		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
 	}
-
-	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.x), glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.y), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	rotation_matrix = glm::translate(glm::mat4(1.0f), eye_position) * glm::inverse(translation_matrix) * rotation_mtx_z * rotation_mtx_y * rotation_mtx_x
-	                  * translation_matrix * glm::translate(glm::mat4(1.0f), -eye_position);
 }
 
 /**
@@ -141,10 +136,10 @@ void Scene::translate(std::vector<bool> key_state_translation, bool key_state_re
 		rotation_matrix = glm::mat4(1.0f);
 	}
 	else {
-		if (key_state_translation[0]) {
+		if (key_state_translation[4]) {
 			xpos -= TRANS_DELTA;
 		}
-		else if (key_state_translation[1]) {
+		else if (key_state_translation[5]) {
 			xpos += TRANS_DELTA;
 		}
 
@@ -155,10 +150,10 @@ void Scene::translate(std::vector<bool> key_state_translation, bool key_state_re
 			ypos -= TRANS_DELTA;
 		}
 
-		if (key_state_translation[4]) {
+		if (key_state_translation[0]) {
 			zpos += TRANS_DELTA;
 		}
-		else if (key_state_translation[5]) {
+		else if (key_state_translation[1]) {
 			zpos -= TRANS_DELTA;
 		}
 	}
