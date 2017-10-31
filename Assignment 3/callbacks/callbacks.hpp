@@ -30,9 +30,6 @@ extern Model* curr_model;
 ;
 
 namespace base {
-	void rotation_callback(int key, int action);
-	void recenter_callback(int key, int action);
-	void trans_and_scale_callback(int key, int action);
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
 

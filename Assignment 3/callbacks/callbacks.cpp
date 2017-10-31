@@ -1,5 +1,4 @@
 #include "callbacks.hpp"
-namespace base {
 
 /**
  * @brief      Update(Set/Reset) global shared varible key_state_rotation according to
@@ -212,6 +211,7 @@ std::string handle_modelling_callback(std::string model_id, int key) {
 	}
 }
 
+namespace base {
 /**
  * @brief handle input key presses from keyboard
  */
@@ -237,12 +237,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	          key == GLFW_KEY_X) {
 		translation_callback(key, action);
 	}
-	
+
 	// Toggle spotlight
 	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
-		if(scene.toggle_light()){
+		if (scene.toggle_light()) {
 			printf("Spotlight On.\n");
-		} else{
+		} else {
 			printf("Spotlight Off.\n");
 		}
 	}
@@ -285,9 +285,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	        ) {
 		std::string id = handle_modelling_callback(curr_heirarchical_model->hm_id, key);
 		curr_model = curr_heirarchical_model->find_by_id(id);
-		if (curr_model != NULL){
+		if (curr_model != NULL) {
 			printf("Modelling %s now!\n", id.c_str());
-		} else{
+		} else {
 			printf("Part selection failed! Retry again...\n");
 		}
 	}
