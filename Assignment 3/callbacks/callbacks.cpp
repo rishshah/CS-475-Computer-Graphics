@@ -240,8 +240,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	
 	// Toggle spotlight
 	else if (key == GLFW_KEY_L and action == GLFW_PRESS) {
-		scene.toggle_light();
-		printf("Spotlight togled.\n");
+		if(scene.toggle_light()){
+			printf("Spotlight On.\n");
+		} else{
+			printf("Spotlight Off.\n");
+		}
 	}
 
 	// Switch to Pan mode

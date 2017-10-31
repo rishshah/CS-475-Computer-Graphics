@@ -16,12 +16,14 @@
 ### Keyboard callbacks
 
 - `[ P ]` -> switch to pan mode
-- `[ M ]` -> switch to modelling mode {"phineas", "perry"}
+- `[ H ]` -> switch to modelling mode {"phineas"}
+- `[ N ]` -> switch to modelling mode {"perry"}
+- `[ L ]` -> toggle spotlight from sun shaped sphere
 
 #### Modelling mode for rotating parts about their joins
 - `[ Up/Down ]` -> rotate about X axis 
 - `[ Left/Right ]` -> rotate about Y axis
-- `[ PgUp/PgDown ]` -> rotate about Z axis
+- `[ PgUp/PgDown ]` -> rlotate about Z axis
 
 ##### Choose Perry parts to model
 - `[1]` -> eye_ball_left
@@ -46,7 +48,7 @@
 - `[9]` -> leg_right
 - `[0]` -> body
 
-#### Pan mode moving third person camera about its center
+#### Pan mode moving third person camera about its center (but axes of rotation are global axes)
 - `[ Up/Down ]` -> rotate about X axis 
 - `[ Left/Right ]` -> rotate about Y axis
 - `[ PgUp/PgDown ]` -> rotate about Z axis
@@ -64,10 +66,7 @@
 - Search and apply correct textures to scene and perry
 - Create callbacks creatively so as to reuse most of them as there could be many such ones
 - Assemble models and animate them
-
-### ToDo
 - 2 Lightings ( 1 direction and 1 point source)
-- Phineas model texture changes
 - Placment of models in sceen finally
 
 ---

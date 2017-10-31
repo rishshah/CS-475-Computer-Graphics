@@ -11,9 +11,11 @@ Scene::~Scene() {
 
 /**
  * @brief toggle Spotlight
+ * @dreturn spotlight status on/off
  */
-void Scene::toggle_light() {
+bool Scene::toggle_light() {
 	light_flag = 1 - light_flag;
+	return light_flag == 1;
 }
 
 /**

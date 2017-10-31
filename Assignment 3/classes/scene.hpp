@@ -55,7 +55,7 @@ public:
 
 	void rotate(std::vector<bool> key_state_rotation);
 	void translate(std::vector<bool> key_state_translation, bool key_state_recenter);
-	void toggle_light();
+	bool toggle_light();
 	~Scene();
 };
 

@@ -8,12 +8,13 @@ body
 0.0 0.0 0.0
 0.0 0.0 0.0
 
-5
+6
 wall_left
 wall_right
 wall_front
 wall_back
 sky
+sun
 
 1
 36
