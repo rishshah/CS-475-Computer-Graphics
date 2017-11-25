@@ -12,7 +12,7 @@ SRCS= $(wildcard */*.cpp) $(wildcard *.cpp)
 OBJS= $(patsubst %.cpp, %.o, $(SRCS))
 
 all: $(BIN)
-
+	rm -f ./animation/frames/out*.tga
 %.o : %.cpp %.hpp
 	$(CC) -c $(CPPFLAGS) $< -o $@ $(LDFLAGS) $(LIBS)
 
