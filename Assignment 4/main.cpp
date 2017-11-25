@@ -55,9 +55,9 @@ void renderGL(GLFWwindow* window) {
 void set_up_scene(){
     scene = new Scene();
     scene->load_new_model("body", "scene", glm::vec3(10,10,10), glm::vec3(0,0,0));
-    sky_model = scene->find_heirarchical_model_by_id("scene")->find_by_id("sky");
     scene->load_new_model("body", "phineas", glm::vec3(1,1,1), glm::vec3(0,2.7,2));
     scene->load_new_model("body", "perry", glm::vec3(1,1,1), glm::vec3(0,1.3,0));
+    // sky_model = scene->find_heirarchical_model_by_id("scene")->find_by_id("sky");
 }
 
 int main() {

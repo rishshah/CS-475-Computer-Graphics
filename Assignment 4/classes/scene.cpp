@@ -1,5 +1,16 @@
 #include "./scene.hpp"
 
+
+
+// void printmat4(glm::mat4 Awv) {
+// 	printf("\n");
+// 	printf("%f, %f, %f, %f \n", Awv[0][0], Awv[1][0], Awv[2][0], Awv[3][0]);
+// 	printf("%f, %f, %f, %f \n", Awv[0][1], Awv[1][1], Awv[2][1], Awv[3][1]);
+// 	printf("%f, %f, %f, %f \n", Awv[0][2], Awv[1][2], Awv[2][2], Awv[3][2]);
+// 	printf("%f, %f, %f, %f \n", Awv[0][3], Awv[1][3], Awv[2][3], Awv[3][3]);
+// 	printf("\n");
+// }
+
 /**
  * @brief Initialize scene, camera and opengl shader variable locations
  */
@@ -7,8 +18,6 @@ Scene::Scene() {
 	params = new OpenglParams();
 	cam = new Camera();
 	model_list.resize(0);
-	xpos = ypos = zpos = next_xpos = next_ypos = next_zpos = 0;
-	rotation_vec = next_rotation_vec = glm::vec3(0.0f);
 }
 
 /**
@@ -244,12 +253,11 @@ void Scene::play(GLFWwindow* window) {
 			curr_timer = glfwGetTime();
 		}
 		current_frame_num = next_frame_num;
-		
 		xpos = next_xpos;
 		ypos = next_ypos;
 		zpos = next_zpos;
-		
 		rotation_vec = next_rotation_vec;
+		printf("\n");
 
 		// printf("Next frame %d \n", next_frame_num);
 	}

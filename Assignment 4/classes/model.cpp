@@ -29,6 +29,7 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	//rotation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_vec = glm::vec3(x, y, z);
+	next_rotation_vec = rotation_vec;
 
 	//joint rotation constraints
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);

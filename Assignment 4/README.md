@@ -15,10 +15,10 @@
 
 - `[ P ]` -> switch to playback mode
 - `[ R ]` -> switch to record mode
-- `[ V ]` -> switch to view mode ( No models saved in this state )
+- `[ V ]` -> switch to view mode ( Camera Part models saved in this state )
 
 #### Pan(View) mode
-- Just see things from all angles by moving third person camera about its center (but axes of rotation are global axes)
+- Just see things (and adjust camera) from all angles by moving third person camera about its center (but axes of rotation are global axes)
 
 - `[ Up/Down ]` -> rotate about X axis 
 - `[ Left/Right ]` -> rotate about Y axis
@@ -76,12 +76,21 @@
 - Loading keyframes
 - Saving framebuffer data
 - Finding commands to join movie
-- Incorporating camera movements
+- Incorporating camera movements and fixed rotation of other entities
 
-### InProgress
+### Story Plot
+``` Phineas doing timepass (walking or ball jugling)
+	Spaceship comes into picture 
+	It tries to take phineas and perry puts on hat to save phineas
+	Phineas is still unaware of this because as he turns around perry still acts as platipus
+	Shapeship future?? ```
+
+#### Extra features required
+- Spaceship
+- Ball
+- Sounds
 
 ### ToDo
-- Story Plot finalizing
 - Explicitly creating keyframes
 - Playing the animation
 

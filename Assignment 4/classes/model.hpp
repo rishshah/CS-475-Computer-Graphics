@@ -23,14 +23,14 @@ private:
 	
 	glm::vec3 rotation_lim_base, rotation_lim_top;
 
-	glm::vec3 scale_vec, rotation_vec, next_rotation_vec;
-	glm::mat4 scale_mtx, rotation_mtx;
+	glm::mat4 scale_mtx;
 	
 	GLuint vbo, tex;
 	void assignBuffer();
 	void calc_rotation_mtx();
 
 public:
+	glm::vec3 scale_vec, rotation_vec, next_rotation_vec;
 
 	bool load(std::string id, std::string filename, glm::mat4 scale_mtx);
 	void save_keyframe(FILE* fp);

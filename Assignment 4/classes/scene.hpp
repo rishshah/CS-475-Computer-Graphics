@@ -18,8 +18,8 @@ private:
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 	float next_xpos = 0.0, next_ypos = 0.0, next_zpos = 0.0;
 	// Rotation Parameters
-	const float ROT_DELTA = 0.03;
-	glm::vec3 rotation_vec, next_rotation_vec;
+	const float ROT_DELTA = 1;
+	glm::vec3 rotation_vec = glm::vec3(0.0f), next_rotation_vec = glm::vec3(0.0f);
 	
 	// Folder path where the all scene models are present
 	const std::string MODEL_FILE_NAME = "./models/";
@@ -32,7 +32,7 @@ private:
 	Camera* cam;
 	OpenglParams* params;
 	
-	int current_frame_num = 0, next_frame_num;
+	int current_frame_num = 0, next_frame_num = 0;
 	int light_flag = 1;
 	std::vector<HeirarchicalModel*> model_list;
 
