@@ -4,10 +4,9 @@
 #include "../global.hpp"
 
 /**
- * @brief      Class for vertex position and color data.
+ * @brief      Struct for vertex position, color normal and texture data.
  */
-class Vertex {
-public:
+struct Vertex {
 	glm::vec3 position;
 	glm::vec3 color;
 	glm::vec3 normal = glm::vec3(1.0f);

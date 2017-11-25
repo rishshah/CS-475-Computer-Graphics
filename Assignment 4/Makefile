@@ -19,8 +19,9 @@ all: $(BIN)
 $(BIN): $(OBJS)
 	$(CC) $(CPPFLAGS) $(OBJS) -o $(BIN) $(LDFLAGS) $(LIBS)
 
-# $(OBJS): $(SRCS) $(INCS)
-# 	$(CC) $(CPPFLAGS) -c $(SRCS) -o $(OBJS) $(LDFLAGS) $(LIBS)
+
+video:
+	ffmpeg -start_number 0 -i ./animation/frames/out%d.tga -vcodec mpeg4 ./animation/video/animation.avi
 
 report:  
 	doxygen config_file
@@ -28,3 +29,5 @@ report:
 clean:
 	rm -f $(OBJS) $(BIN)
 	rm -rf html/
+	rm -f ./animation/frames/out*.tga
+	rm -f ./animation/video/animation.avi

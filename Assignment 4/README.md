@@ -26,11 +26,7 @@
 - `[ W,S,A,D,Z,X ]` -> keys should allow translation along +ve and -ve Y,X and Z axis respectively
 
 #### Playback Mode
-- Play the animation from the one/two keyframes.txt file 
-
-- `[ Q ]` -> Save the animation into a video file
-- `[ ... ]` -> Pause the animation at current position (optional)
-- `[ ... ]` -> Resume the animation from current position (optional)
+- Play the animation from the keyframes.txt file and save the frames
 
 #### Record mode
 -  Record animation by positioning models using Modelling callbacks and save keyframes when models in right positions
@@ -71,9 +67,26 @@
 ---
 
 ## Status
+
+### Done
+- Basic file structure created
+- Translatation of models taken care of
+- Necessary callbacks created functinality on these remaining
+
+### In Progress
+- Saving keyframes  				(record   mode)
+- Loading keyframes 				(playback mode)
+- Saving framebuffer data 			(playback mode)
+- Finding commands to join movie
+
+### ToDo
+- Story Plot finalizing
+- Explicitly creating keyframes
+- Playing the animation
+
 ---
 
-## Execution
+## Execution 
 
 ### Compiling
 - `cd "Assignment 4"`
@@ -82,12 +95,20 @@
 ### Testing
 - `./executable`
 
+### Video
+- requires installed vlc 
+- `make video`
+- `vlc ./animation/video/output.avi`
+
 ### Clean up
 - `make clean`
 
 ---
+### Requirements
+- `sudo apt-get install vlc-bin` (vlc)
+- `sudo apt-get install doxyden` (doxygen)
 
-## HTML Report
+### HTML Report
 - requires installed doxygen 
 - `make report`
 - `open in web-browser "./screenshot_page/index.html"`
@@ -98,5 +119,4 @@
 - HTML Report: `https://codyhouse.co/demo/expandable-image-gallery/index.html`
 - Callbacks: `http://www.glfw.org/docs/latest/group__keys.html`
 - Tutorials: `https://github.com/paragchaudhuri/cs475-tutorials`
-
-	
+- Creating Video - `https://superuser.com/questions/624567/how-to-create-a-video-from-images-using-ffmpeg`	

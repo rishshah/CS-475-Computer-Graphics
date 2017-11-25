@@ -219,39 +219,44 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-
-	// Recenter/Switch to Recode mode
-	else if ( key == GLFW_KEY_R) {
-		if (mode == RECORD_MODE or  mode == VIEW_MODE)
-			recenter_callback(key, action);
-		else{
-			mode = RECORD_MODE;
-			printf("In Recording Mode...\n");
-		}
-	}
 	
+	// Switch to Recode mode
+	else if ( key == GLFW_KEY_R) {
+		mode = RECORD_MODE;
+		printf("In Recording Mode...\n");
+	}
 	// Switch to Playback mode
 	else if (key == GLFW_KEY_P and action == GLFW_PRESS) {
 		mode = PLAYBACK_MODE;
 		printf("In Playback Mode...\n");
-	}
+		printf("Playing Animation...\n");
+		scene->play(window);
+		printf("Animation Saved...\n");
+		mode = RECORD_MODE;
+		printf("In Recording Mode...\n");
 
+	}
 	// Switch to Playback mode
 	else if (key == GLFW_KEY_V and action == GLFW_PRESS) {
 		mode = VIEW_MODE;
-		printf("In Pan Mode...\n");
+		printf("In View Mode...\n");
 	}
-	
-	//Save Callbacks
+
+	//Save Keyframe callback
 	else if (key == GLFW_KEY_Q and action == GLFW_PRESS) {
-		if(mode == RECORD_MODE){
-			scene->save_keyframe();
-		} else if(mode == PLAYBACK_MODE){
-			scene->save_animation();
+		if (mode == RECORD_MODE) {
+			printf("Enter keyframe number: ");
+			int num; std::cin >> num;
+			scene->save_keyframe(num);
+			printf("Keyframe %d saved!\n", num);
 		}
 	}
 
-	// Third Person View Callbacks
+	// Third Person View Callbacks	
+	else if ( key == GLFW_KEY_T) {
+		if (mode == RECORD_MODE or  mode == VIEW_MODE)
+			recenter_callback(key, action);
+	}
 	else if ( key == GLFW_KEY_UP or key == GLFW_KEY_DOWN or
 	          key == GLFW_KEY_LEFT or key == GLFW_KEY_RIGHT or
 	          key == GLFW_KEY_PAGE_UP or key == GLFW_KEY_PAGE_DOWN) {
@@ -311,8 +316,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	          key == GLFW_KEY_8 or
 	          key == GLFW_KEY_9)
 	        ) {
-		if(mode == RECORD_MODE){
-			std::string id = handle_modelling_callback(curr_heirarchical_model->hm_id, key);
+		if (mode == RECORD_MODE and curr_heirarchical_model != NULL) {
+			std::string id = handle_modelling_callback(curr_heirarchical_model->get_id(), key);
 			curr_model = curr_heirarchical_model->find_by_id(id);
 			if (curr_model != NULL) {
 				printf("Modelling %s now!\n", id.c_str());

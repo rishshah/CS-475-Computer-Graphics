@@ -48,7 +48,7 @@ void renderGL(GLFWwindow* window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     handle_translation();
     handle_rotation();
-    scene->draw();
+    scene->draw(0);
 }
 
 /**
@@ -82,7 +82,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     //! Create a windowed mode window and its OpenGL context
-    window = glfwCreateWindow(700, 700, "CS475 Assignment 3: Modelling, Shading and Texturing", NULL, NULL);
+    window = glfwCreateWindow(700, 700, "CS475 Assignment 4: Animation", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

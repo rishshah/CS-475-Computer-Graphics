@@ -12,11 +12,13 @@ private:
 
 	const glm::vec3 lookat_center = glm::vec3(4.0f, 5.0f, 0.0f);
 	const glm::vec3 up =  glm::vec3(0.0f, 1.0f, 0.0f);
+	const glm::vec3 eye_position = glm::vec3(-10.0f, 8.0f, -5.0f);
+	glm::mat4 projection_transform;
 	
 public:
  	Camera();	
-	const glm::vec3 eye_position = glm::vec3(-10.0f, 8.0f, -5.0f);
-	glm::mat4 projection_transform;
+ 	glm::vec3 get_eye_position();
+	glm::mat4 get_projection_transform();
 };
 
 #endif

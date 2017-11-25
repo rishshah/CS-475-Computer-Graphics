@@ -5,12 +5,11 @@ const std::string FILE_NAME = "./models/";
 /**
  * @brief calculate rotation and scale matrix for each part corresponding to file's rotation and scale vector inputs
  */
-void Model::calc_matrices() {
+void Model::calc_rotation_mtx() {
 	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.x), glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.y), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.z), glm::vec3(0.0f, 0.0f, 1.0f));
 	rotation_mtx = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
-	scale_mtx = glm::scale(glm::mat4(1.0f), scale_vec);
 }
 
 /**
@@ -47,7 +46,7 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_lim_top = glm::vec3(x, y, z);
 
-	calc_matrices();
+	scale_mtx = glm::scale(glm::mat4(1.0f), scale_vec);
 
 	//par_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
@@ -130,17 +129,7 @@ void Model::assignBuffer() {
 
 /**
  * @brief draw the model on the screen
- *
- * @param vPosition 			shader reference to vPosition variable
- * @param vColor 				shader reference to vColor variable
- * @param vNormal 				shader reference to vNormal variable
- * @param vTexCoord 			shader reference to vTexCoord variable
- * @param uModelViewMatrix 		shader reference to uModelViewMatrix variable
- * @param uNormalMatrix 		shader reference to uNormalMatrix variable
- * @param uViewMatrix 			shader reference to uViewMatrix variable
- * @param multMatrix 			shader reference to multMatrix variable
- * @param uIs_tp 				shader reference to uIs_tp variable
- * @param uLight_flag 			shader reference to uLight_flag variable
+ * @param params 				Opengl location of important variables in shaders
  * @param light_flag 			spotlight on/off status
  * @param par_final_transform 	matrix accounting for parent model rotation and translation
  * @param projection_transform  projection perspective matrix of inital setup camera
@@ -148,7 +137,8 @@ void Model::assignBuffer() {
  * @param third_person_transform camera movements * heirarchial initial setup matrix
  */
 void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_transform,
-                 glm::mat4 projection_transform, glm::mat4 half_third_person, glm::mat4 third_person_transform) {
+                 glm::mat4 projection_transform, glm::mat4 half_third_person, glm::mat4 third_person_transform,
+                 double interpolation_factor) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -161,6 +151,10 @@ void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_trans
 	glm::mat4 par_translation_transform = glm::translate(glm::mat4(1.0f), par_translation_vec);
 	glm::mat4 self_translation_transform = glm::translate(glm::mat4(1.0f), self_translation_vec);
 
+	rotation_vec.x += interpolation_factor * (next_rotation_vec.x - rotation_vec.x);
+	rotation_vec.y += interpolation_factor * (next_rotation_vec.y - rotation_vec.y);
+	rotation_vec.z += interpolation_factor * (next_rotation_vec.z - rotation_vec.z);
+	calc_rotation_mtx();
 	glm::mat4 modelling_transform = par_translation_transform  * rotation_mtx * glm::inverse(self_translation_transform);
 	glm::mat4 temp_matrix = projection_transform * third_person_transform * par_final_transform *  modelling_transform * scale_mtx;
 
@@ -183,7 +177,7 @@ void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_trans
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
 		child_model_list[i]->draw(params, light_flag, par_final_transform * modelling_transform,
-		                          projection_transform, half_third_person, third_person_transform);
+		                          projection_transform, half_third_person, third_person_transform, interpolation_factor);
 	}
 }
 
@@ -231,12 +225,32 @@ void Model::rotate(std::vector<bool> key_state_rotation) {
 	else if (key_state_rotation[5]) {
 		rotation_vec.z = std::max(rotation_lim_base.z, rotation_vec.z - ROT_DELTA);
 	}
-
-	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.x), glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.y), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.z), glm::vec3(0.0f, 0.0f, 1.0f));
-	rotation_mtx = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
 }
+
+void Model::load_next_keyframe(FILE* fp) {
+	fscanf(fp, "%f ", &next_rotation_vec.x);
+	fscanf(fp, "%f ", &next_rotation_vec.y);
+	fscanf(fp, "%f ", &next_rotation_vec.z);
+
+	for (int i = 0; i < child_model_list.size(); ++i) {
+		child_model_list[i]->load_next_keyframe(fp);
+	}
+}
+
+void Model::save_keyframe(FILE* fp) {
+	// fprintf(fp, "%s~Rx ", id);
+	// fprintf(fp, "%s~Ry ", id);
+	// fprintf(fp, "%s~Rz ", id);
+
+	fprintf(fp, "%.2f ", rotation_vec.x);
+	fprintf(fp, "%.2f ", rotation_vec.y);
+	fprintf(fp, "%.2f ", rotation_vec.z);
+
+	for (int i = 0; i < child_model_list.size(); ++i) {
+		child_model_list[i]->save_keyframe(fp);
+	}
+}
+
 
 /**
  * @brief Destructor to deallocate child models recursively

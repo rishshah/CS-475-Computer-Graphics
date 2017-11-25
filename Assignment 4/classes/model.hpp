@@ -23,17 +23,19 @@ private:
 	
 	glm::vec3 rotation_lim_base, rotation_lim_top;
 
-	glm::vec3 scale_vec, rotation_vec;
+	glm::vec3 scale_vec, rotation_vec, next_rotation_vec;
 	glm::mat4 scale_mtx, rotation_mtx;
 	
 	GLuint vbo, tex;
 	void assignBuffer();
-	void calc_matrices();
+	void calc_rotation_mtx();
 
 public:
 
 	bool load(std::string id, std::string filename, glm::mat4 scale_mtx);
-	void draw(OpenglParams* params, int, glm::mat4, glm::mat4, glm::mat4, glm::mat4);
+	void save_keyframe(FILE* fp);
+	void load_next_keyframe(FILE* fp);
+	void draw(OpenglParams* params, int, glm::mat4, glm::mat4, glm::mat4, glm::mat4, double);
 	Model* find_by_id(std::string id);
 	void rotate(std::vector<bool> key_state_rotation);
 	~Model();

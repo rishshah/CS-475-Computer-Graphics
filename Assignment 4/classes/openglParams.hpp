@@ -2,9 +2,10 @@
 #define _PARAMS_HPP_
 
 #include "../global.hpp"
-
-class OpenglParams{
-public:
+/**
+ * @brief Struct to store all parameters that need to be passed to vertex shader
+ */
+struct OpenglParams{
 	OpenglParams();
 	GLuint vao = 0;
 	GLuint vPosition, vColor, vNormal, vTexCoord;

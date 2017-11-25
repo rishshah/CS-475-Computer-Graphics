@@ -16,6 +16,7 @@ Scene::~Scene() {
 		delete model_list[i];
 	}
 	delete cam;
+	delete params;
 };
 
 
@@ -39,20 +40,20 @@ bool Scene::toggle_light() {
  */
 void Scene::load_new_model(std::string model_filename, std::string id, glm::vec3 scale_vec, glm::vec3 translation_vec) {
 	HeirarchicalModel* hm = new HeirarchicalModel(id, scale_vec, translation_vec);
-	hm->load(id, FILE_NAME + id + "/" + model_filename + ".raw", glm::mat4(1.0f));
+	hm->load(id, MODEL_FILE_NAME + id + "/" + model_filename + ".raw", glm::mat4(1.0f));
 	model_list.push_back(hm);
 }
 
 /**
  * @brief      draw all contents of scene of the screen
  */
-void Scene::draw() {
+void Scene::draw(double interpolation_factor) {
 	glBindVertexArray(params->vao);
-	glm::mat4 cam_movement_transform = translation_matrix * glm::translate(glm::mat4(1.0f), cam->eye_position) * glm::inverse(translation_matrix) *
-	                                   rotation_matrix * translation_matrix * glm::translate(glm::mat4(1.0f), -cam->eye_position);
+	glm::mat4 cam_movement_transform = translation_matrix * glm::translate(glm::mat4(1.0f), cam->get_eye_position()) * glm::inverse(translation_matrix) *
+	                                   rotation_matrix * translation_matrix * glm::translate(glm::mat4(1.0f), -cam->get_eye_position());
 
 	for (int i = 0; i < model_list.size(); ++i) {
-		model_list[i]->draw_hm(params, light_flag, cam->projection_transform, cam_movement_transform);
+		model_list[i]->draw_hm(params, light_flag, cam->get_projection_transform(), cam_movement_transform, interpolation_factor);
 	}
 }
 
@@ -64,7 +65,7 @@ void Scene::draw() {
  */
 HeirarchicalModel* Scene::find_heirarchical_model_by_id(std::string id) {
 	for (int i = 0; i < model_list.size(); ++i) {
-		if (model_list[i]->hm_id == id)
+		if (model_list[i]->get_id() == id)
 			return model_list[i];
 	}
 	return NULL;
@@ -132,5 +133,81 @@ void Scene::translate(std::vector<bool> key_state_translation, bool key_state_re
 	translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
 }
 
-void Scene::save_keyframe(){}
-void Scene::save_animation(){}
+void Scene::save_keyframe(int frame_num) {
+	FILE *fp = fopen(KEY_FRAME_FILE_NAME.c_str(), "a" );
+	if (fp ==  NULL) {
+		printf("Error opening file %s\n", KEY_FRAME_FILE_NAME.c_str());
+		return;
+	}
+	// fprintf(fp,"keyframe_no ");
+
+	fprintf(fp, "%d ", frame_num);
+	for (int i = 1; i < model_list.size(); ++i) {
+		model_list[i]->save_keyframe_hm(fp);
+	}
+	fprintf(fp, "\n");
+
+	fclose(fp);
+	return;
+}
+
+void Scene::save_animation_frame(int frame_num, int windowWidth, int windowHeight) {
+	FILE *fp_out = fopen((IMAGES_FILE_NAME + "out" + std::to_string(frame_num) + ".tga").c_str(), "wb");
+	if (fp_out == NULL) {
+		printf("Error opening file %s\n", (IMAGES_FILE_NAME + "out.bmp").c_str());
+	}
+
+	unsigned char *pixel_data = new unsigned char[windowWidth * windowHeight * 3];
+	printf("%d %d\n", short(windowWidth), short(windowHeight));
+	short TGAhead[] = { 0, 2, 0, 0, 0, 0, windowWidth, windowHeight, 24 };
+
+	glReadBuffer(GL_BACK);
+	glReadPixels(0, 0, windowWidth, windowWidth, GL_BGR, GL_UNSIGNED_BYTE, pixel_data);
+
+	fwrite(TGAhead, sizeof(TGAhead), 1, fp_out);
+	fwrite(pixel_data, 3 * windowWidth * windowHeight, 1, fp_out);
+
+	fclose(fp_out);
+	delete[] pixel_data;
+}
+
+void Scene::play(GLFWwindow* window) {
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	
+	FILE *fp = fopen(KEY_FRAME_FILE_NAME.c_str(), "r" );
+	if (fp ==  NULL) {
+		printf("Error opening file %s\n", KEY_FRAME_FILE_NAME.c_str());
+		return;
+	}
+	while (fgetc(fp) != '\n');
+	int frane_num = 0;
+	// double super_init_timer = glfwGetTime();
+	while (fscanf(fp, "%d ", &next_frame_num) != EOF) {
+		for (int i = 1; i < model_list.size(); ++i) {
+			model_list[i]->load_next_keyframe_hm(fp);
+		}
+
+		double current_frame_time = current_frame_num / FPS ;
+		double next_frame_time = next_frame_num / FPS ;
+		
+		double init_timer = glfwGetTime();
+		double curr_timer = glfwGetTime();
+		while (curr_timer - init_timer <= next_frame_time - current_frame_time) {
+			
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			// printf("%f %f\n", (curr_timer - init_timer) / (next_frame_time - current_frame_time), glfwGetTime() - super_init_timer);
+			draw((curr_timer - init_timer) / (next_frame_time - current_frame_time));
+			
+			save_animation_frame(frane_num++, width, height);
+			
+			glfwSwapBuffers(window);
+			
+			curr_timer = glfwGetTime();
+		}
+		current_frame_num = next_frame_num;
+		// printf("Next frame %d \n", next_frame_num);
+	}
+
+	fclose(fp);
+}
