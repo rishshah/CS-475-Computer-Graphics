@@ -221,7 +221,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	
 	// Switch to Recode mode
-	else if ( key == GLFW_KEY_R) {
+	else if ( key == GLFW_KEY_R  and action == GLFW_PRESS) {
 		mode = RECORD_MODE;
 		printf("In Recording Mode...\n");
 	}
@@ -253,7 +253,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 	// Third Person View Callbacks	
-	else if ( key == GLFW_KEY_T) {
+	else if ( key == GLFW_KEY_T  and action == GLFW_PRESS) {
 		if (mode == RECORD_MODE or  mode == VIEW_MODE)
 			recenter_callback(key, action);
 	}

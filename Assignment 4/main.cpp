@@ -17,7 +17,6 @@ Model* sky_model = NULL;
 
 //-----------------------------------------------
 
-
 /**
  * @brief    Adjust rotation matrix according to key_state_rotation shared variable
  */

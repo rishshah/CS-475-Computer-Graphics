@@ -158,7 +158,6 @@ void Scene::save_animation_frame(int frame_num, int windowWidth, int windowHeigh
 	}
 
 	unsigned char *pixel_data = new unsigned char[windowWidth * windowHeight * 3];
-	printf("%d %d\n", short(windowWidth), short(windowHeight));
 	short TGAhead[] = { 0, 2, 0, 0, 0, 0, windowWidth, windowHeight, 24 };
 
 	glReadBuffer(GL_BACK);
