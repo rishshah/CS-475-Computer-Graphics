@@ -72,12 +72,13 @@
 - Basic file structure created
 - Translatation of models taken care of
 - Necessary callbacks created functinality on these remaining
-
-### In Progress
-- Saving keyframes  				(record   mode)
-- Loading keyframes 				(playback mode)
-- Saving framebuffer data 			(playback mode)
+- Saving keyframes
+- Loading keyframes
+- Saving framebuffer data
 - Finding commands to join movie
+- Incorporating camera movements
+
+### InProgress
 
 ### ToDo
 - Story Plot finalizing
@@ -87,13 +88,14 @@
 ---
 
 ## Execution 
-
+	
 ### Compiling
 - `cd "Assignment 4"`
 - `make`
 
 ### Testing
 - `./executable`
+- Open keyframe file in csv
 
 ### Video
 - requires installed vlc 

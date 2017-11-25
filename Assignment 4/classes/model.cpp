@@ -3,16 +3,6 @@
 const std::string FILE_NAME = "./models/";
 
 /**
- * @brief calculate rotation and scale matrix for each part corresponding to file's rotation and scale vector inputs
- */
-void Model::calc_rotation_mtx() {
-	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.x), glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.y), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(rotation_vec.z), glm::vec3(0.0f, 0.0f, 1.0f));
-	rotation_mtx = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
-}
-
-/**
  * @brief      Load model from a .raw file  and store its vertex data
  *
  * @param filename 	the .raw file that contains the model
@@ -136,9 +126,7 @@ void Model::assignBuffer() {
  * @param half_third_person 	Only camera movements matrix
  * @param third_person_transform camera movements * heirarchial initial setup matrix
  */
-void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_transform,
-                 glm::mat4 projection_transform, glm::mat4 half_third_person, glm::mat4 third_person_transform,
-                 double interpolation_factor) {
+void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_transform, glm::mat4 projection_transform, glm::mat4 half_third_person, glm::mat4 third_person_transform, double interpolation_factor) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -151,11 +139,13 @@ void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_trans
 	glm::mat4 par_translation_transform = glm::translate(glm::mat4(1.0f), par_translation_vec);
 	glm::mat4 self_translation_transform = glm::translate(glm::mat4(1.0f), self_translation_vec);
 
-	rotation_vec.x += interpolation_factor * (next_rotation_vec.x - rotation_vec.x);
-	rotation_vec.y += interpolation_factor * (next_rotation_vec.y - rotation_vec.y);
-	rotation_vec.z += interpolation_factor * (next_rotation_vec.z - rotation_vec.z);
-	calc_rotation_mtx();
-	glm::mat4 modelling_transform = par_translation_transform  * rotation_mtx * glm::inverse(self_translation_transform);
+	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(float(rotation_vec.x + interpolation_factor * (next_rotation_vec.x - rotation_vec.x))), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(float(rotation_vec.y + interpolation_factor * (next_rotation_vec.y - rotation_vec.y))), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(float(rotation_vec.z + interpolation_factor * (next_rotation_vec.z - rotation_vec.z))), glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 rotation_matrix = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
+
+
+	glm::mat4 modelling_transform = par_translation_transform  * rotation_matrix * glm::inverse(self_translation_transform);
 	glm::mat4 temp_matrix = projection_transform * third_person_transform * par_final_transform *  modelling_transform * scale_mtx;
 
 	glUniformMatrix4fv(params->uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(temp_matrix));
@@ -227,7 +217,13 @@ void Model::rotate(std::vector<bool> key_state_rotation) {
 	}
 }
 
+/**
+ * @brief Load next key frame part in memory of model to get interpolation information
+ * 
+ * @param fp keyframe file pointer
+ */
 void Model::load_next_keyframe(FILE* fp) {
+	rotation_vec = next_rotation_vec;
 	fscanf(fp, "%f ", &next_rotation_vec.x);
 	fscanf(fp, "%f ", &next_rotation_vec.y);
 	fscanf(fp, "%f ", &next_rotation_vec.z);
@@ -237,11 +233,12 @@ void Model::load_next_keyframe(FILE* fp) {
 	}
 }
 
+/**
+ * @brief save current keyframe part for this model
+ * 
+ * @param fp keyframe file pointer
+ */
 void Model::save_keyframe(FILE* fp) {
-	// fprintf(fp, "%s~Rx ", id);
-	// fprintf(fp, "%s~Ry ", id);
-	// fprintf(fp, "%s~Rz ", id);
-
 	fprintf(fp, "%.2f ", rotation_vec.x);
 	fprintf(fp, "%.2f ", rotation_vec.y);
 	fprintf(fp, "%.2f ", rotation_vec.z);

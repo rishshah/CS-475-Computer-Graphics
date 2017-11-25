@@ -140,23 +140,6 @@ void translation_callback(int key, int action) {
 }
 
 /**
- * @brief      Update(Set/Reset) global shared varible key_state_recenter according to
- *             usage of key R.
- *
- *
- * @param[in]  key     The key pressed
- * @param[in]  action  The action (release or press)
- */
-void recenter_callback(int key, int action) {
-	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-		key_state_recenter = true;
-	}
-	else if (key == GLFW_KEY_R && action == GLFW_RELEASE) {
-		key_state_recenter = false;
-	}
-}
-
-/**
  * @brief select part of model based on which key is pressed
  *
  * @param key key pressed
@@ -253,10 +236,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 	// Third Person View Callbacks	
-	else if ( key == GLFW_KEY_T  and action == GLFW_PRESS) {
-		if (mode == RECORD_MODE or  mode == VIEW_MODE)
-			recenter_callback(key, action);
-	}
 	else if ( key == GLFW_KEY_UP or key == GLFW_KEY_DOWN or
 	          key == GLFW_KEY_LEFT or key == GLFW_KEY_RIGHT or
 	          key == GLFW_KEY_PAGE_UP or key == GLFW_KEY_PAGE_DOWN) {

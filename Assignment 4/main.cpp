@@ -9,7 +9,6 @@ Model* curr_model = NULL;
 
 std::vector<bool> key_state_translation(6, false);
 std::vector<bool> key_state_rotation(6, false);
-bool key_state_recenter = false;
 
 int mode = base::VIEW_MODE;
 
@@ -34,9 +33,9 @@ void handle_rotation() {
  */
 void handle_translation() {
     if (mode == base::VIEW_MODE)
-        scene->translate(key_state_translation, key_state_recenter);
+        scene->translate(key_state_translation);
     else if(mode == base::RECORD_MODE and curr_heirarchical_model != NULL)
-        curr_heirarchical_model->translate(key_state_translation, key_state_recenter);
+        curr_heirarchical_model->translate(key_state_translation);
 
 }
 

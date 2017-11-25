@@ -2,7 +2,9 @@
 #define _CAMERA_HPP_
 
 #include "../global.hpp"
-
+/**
+ * @brief Class to store camera related constants and perspective projection
+ */
 class Camera {
 private:
 	const float field_of_view = 60.0f;

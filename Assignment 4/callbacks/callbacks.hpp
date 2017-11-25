@@ -22,7 +22,6 @@ extern std::vector<bool> key_state_rotation;
 //X     0 -> Up     1 -> Down	
 //Y     2 -> Left   3 -> Right
 //Z     4 -> pgUp   5 -> PgDown
-extern bool key_state_recenter;
 
 
 extern HeirarchicalModel* curr_heirarchical_model;

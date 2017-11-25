@@ -7,7 +7,10 @@ Scene::Scene() {
 	params = new OpenglParams();
 	cam = new Camera();
 	model_list.resize(0);
+	xpos = ypos = zpos = next_xpos = next_ypos = next_zpos = 0;
+	rotation_vec = next_rotation_vec = glm::vec3(0.0f);
 }
+
 /**
  * @brief destructor to deallocate all models
  */
@@ -31,7 +34,6 @@ bool Scene::toggle_light() {
 
 /**
  * @brief Load new model in scene
- * @details [long description]
  *
  * @param model_filename filename to load the model from relative to FILENAME path
  * @param id the folder which is the root of heirarchitiacal model to load
@@ -46,8 +48,17 @@ void Scene::load_new_model(std::string model_filename, std::string id, glm::vec3
 
 /**
  * @brief      draw all contents of scene of the screen
+ *
+ * @params 	   interpolation factor to be multiplied in every draw call
  */
 void Scene::draw(double interpolation_factor) {
+	glm::mat4 translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos + interpolation_factor * (next_xpos - xpos), ypos + interpolation_factor * (next_ypos - ypos), zpos + interpolation_factor * (next_zpos - zpos)));
+	
+	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(float(rotation_vec.x + interpolation_factor * (next_rotation_vec.x - rotation_vec.x))), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 rotation_mtx_y = glm::rotate( glm::mat4(1.0f), glm::radians(float(rotation_vec.y + interpolation_factor * (next_rotation_vec.y - rotation_vec.y))), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(float(rotation_vec.z + interpolation_factor * (next_rotation_vec.z - rotation_vec.z))), glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 rotation_matrix = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
+
 	glBindVertexArray(params->vao);
 	glm::mat4 cam_movement_transform = translation_matrix * glm::translate(glm::mat4(1.0f), cam->get_eye_position()) * glm::inverse(translation_matrix) *
 	                                   rotation_matrix * translation_matrix * glm::translate(glm::mat4(1.0f), -cam->get_eye_position());
@@ -77,71 +88,77 @@ HeirarchicalModel* Scene::find_heirarchical_model_by_id(std::string id) {
  */
 void Scene::rotate(std::vector<bool> key_state_rotation) {
 	if (key_state_rotation[0]) {
-		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
+		rotation_vec.x -= ROT_DELTA;
 	}
 	else if (key_state_rotation[1]) {
-		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Z_UNIT));
+		rotation_vec.x += ROT_DELTA;
 	}
 
 	if (key_state_rotation[2]) {
-		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
+		rotation_vec.y -= ROT_DELTA;
 	}
 	else if (key_state_rotation[3]) {
-		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * Y_UNIT));
+		rotation_vec.y += ROT_DELTA;
 	}
 
 	if (key_state_rotation[4]) {
-		rotation_matrix = glm::rotate(rotation_matrix, ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
+		rotation_vec.z += ROT_DELTA;
 	}
 	else if (key_state_rotation[5]) {
-		rotation_matrix = glm::rotate(rotation_matrix, -ROT_DELTA, glm::vec3(glm::transpose(rotation_matrix) * X_UNIT));
+		rotation_vec.z -= ROT_DELTA;
 	}
 }
 
 /**
  * @brief recalculate translation matrix of scene corresponding to third person camera
+ *
  * @param key_state_translation 	key press boolean vector input 	{WASDZX}
- * @param key_state_recenter 	key press boolean vector inputs 	{R}
  */
-void Scene::translate(std::vector<bool> key_state_translation, bool key_state_recenter) {
-	if (key_state_recenter) {
-		xpos = ypos = zpos = 0.0f;
-		rotation_matrix = glm::mat4(1.0f);
+void Scene::translate(std::vector<bool> key_state_translation) {	
+	if (key_state_translation[4]) {
+		xpos -= TRANS_DELTA;
 	}
-	else {
-		if (key_state_translation[4]) {
-			xpos -= TRANS_DELTA;
-		}
-		else if (key_state_translation[5]) {
-			xpos += TRANS_DELTA;
-		}
-
-		if (key_state_translation[2]) {
-			ypos += TRANS_DELTA;
-		}
-		else if (key_state_translation[3]) {
-			ypos -= TRANS_DELTA;
-		}
-
-		if (key_state_translation[0]) {
-			zpos += TRANS_DELTA;
-		}
-		else if (key_state_translation[1]) {
-			zpos -= TRANS_DELTA;
-		}
+	else if (key_state_translation[5]) {
+		xpos += TRANS_DELTA;
 	}
-	translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
+
+	if (key_state_translation[2]) {
+		ypos += TRANS_DELTA;
+	}
+	else if (key_state_translation[3]) {
+		ypos -= TRANS_DELTA;
+	}
+
+	if (key_state_translation[0]) {
+		zpos += TRANS_DELTA;
+	}
+	else if (key_state_translation[1]) {
+		zpos -= TRANS_DELTA;
+	}
 }
 
+/**
+ * @brief Saving keyframe for all models of this scene
+ * 
+ * @param frame_number 
+ */
 void Scene::save_keyframe(int frame_num) {
 	FILE *fp = fopen(KEY_FRAME_FILE_NAME.c_str(), "a" );
 	if (fp ==  NULL) {
 		printf("Error opening file %s\n", KEY_FRAME_FILE_NAME.c_str());
 		return;
 	}
-	// fprintf(fp,"keyframe_no ");
 
 	fprintf(fp, "%d ", frame_num);
+	
+	fprintf(fp, "%.2f ", xpos);
+	fprintf(fp, "%.2f ", ypos);
+	fprintf(fp, "%.2f ", zpos);
+	
+	fprintf(fp, "%.2f ", rotation_vec.x);
+	fprintf(fp, "%.2f ", rotation_vec.y);
+	fprintf(fp, "%.2f ", rotation_vec.z);
+
 	for (int i = 1; i < model_list.size(); ++i) {
 		model_list[i]->save_keyframe_hm(fp);
 	}
@@ -151,6 +168,13 @@ void Scene::save_keyframe(int frame_num) {
 	return;
 }
 
+/**
+ * @brief save current animation frame in out{{frame_num}}.tga
+ * 
+ * @param frame_num frame number to save (deciding image name)
+ * @param windowWidth window width
+ * @param windowHeight window height
+ */
 void Scene::save_animation_frame(int frame_num, int windowWidth, int windowHeight) {
 	FILE *fp_out = fopen((IMAGES_FILE_NAME + "out" + std::to_string(frame_num) + ".tga").c_str(), "wb");
 	if (fp_out == NULL) {
@@ -170,6 +194,11 @@ void Scene::save_animation_frame(int frame_num, int windowWidth, int windowHeigh
 	delete[] pixel_data;
 }
 
+/**
+ * @brief play the animation
+ * 
+ * @param window [description]
+ */
 void Scene::play(GLFWwindow* window) {
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
@@ -181,8 +210,17 @@ void Scene::play(GLFWwindow* window) {
 	}
 	while (fgetc(fp) != '\n');
 	int frane_num = 0;
-	// double super_init_timer = glfwGetTime();
+	double super_init_timer = glfwGetTime();
 	while (fscanf(fp, "%d ", &next_frame_num) != EOF) {
+		
+		fscanf(fp, "%f ", &next_xpos);
+		fscanf(fp, "%f ", &next_ypos);
+		fscanf(fp, "%f ", &next_zpos);
+
+		fscanf(fp, "%f ", &next_rotation_vec.x);
+		fscanf(fp, "%f ", &next_rotation_vec.y);
+		fscanf(fp, "%f ", &next_rotation_vec.z);
+		
 		for (int i = 1; i < model_list.size(); ++i) {
 			model_list[i]->load_next_keyframe_hm(fp);
 		}
@@ -191,7 +229,8 @@ void Scene::play(GLFWwindow* window) {
 		double next_frame_time = next_frame_num / FPS ;
 		
 		double init_timer = glfwGetTime();
-		double curr_timer = glfwGetTime();
+		double curr_timer = init_timer;
+
 		while (curr_timer - init_timer <= next_frame_time - current_frame_time) {
 			
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -205,6 +244,13 @@ void Scene::play(GLFWwindow* window) {
 			curr_timer = glfwGetTime();
 		}
 		current_frame_num = next_frame_num;
+		
+		xpos = next_xpos;
+		ypos = next_ypos;
+		zpos = next_zpos;
+		
+		rotation_vec = next_rotation_vec;
+
 		// printf("Next frame %d \n", next_frame_num);
 	}
 
