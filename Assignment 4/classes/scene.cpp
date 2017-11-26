@@ -158,7 +158,7 @@ void Scene::save_keyframe(int frame_num) {
 		return;
 	}
 
-	// fprintf(fp, "Keyframe_no cam_Tx cam_Ty cam_Tz cam_Rx cam_Ry cam_Rz ");
+	// fprintf(fp, "Keyframe_no cam_Tx cam_Ty cam_Tz cam_Rx cam_Ry cam_Rz Light_status");
 	fprintf(fp, "%d ", frame_num);
 	
 	fprintf(fp, "%.2f ", xpos);
@@ -168,6 +168,7 @@ void Scene::save_keyframe(int frame_num) {
 	fprintf(fp, "%.2f ", rotation_vec.x);
 	fprintf(fp, "%.2f ", rotation_vec.y);
 	fprintf(fp, "%.2f ", rotation_vec.z);
+	fprintf(fp, "%d ", light_flag);
 
 	for (int i = 0; i < model_list.size(); ++i) {
 		model_list[i]->save_keyframe_hm(fp);
@@ -231,6 +232,8 @@ void Scene::play(GLFWwindow* window) {
 		fscanf(fp, "%f ", &next_rotation_vec.y);
 		fscanf(fp, "%f ", &next_rotation_vec.z);
 		
+		fscanf(fp, "%d ", &light_flag);
+
 		for (int i = 0; i < model_list.size(); ++i) {
 			model_list[i]->load_next_keyframe_hm(fp);
 		}
@@ -258,10 +261,9 @@ void Scene::play(GLFWwindow* window) {
 		ypos = next_ypos;
 		zpos = next_zpos;
 		rotation_vec = next_rotation_vec;
-		printf("\n");
-
 		// printf("Next frame %d \n", next_frame_num);
 	}
+	printf("\n");
 
 	fclose(fp);
 }

@@ -224,9 +224,9 @@ void Model::rotate(std::vector<bool> key_state_rotation) {
  * @param fp keyframe file pointer
  */
 void Model::load_next_keyframe(FILE* fp) {
-	printf("%.2f %.2f %.2f\n", scale_vec.x, scale_vec.y, scale_vec.z);
-	printf("%.2f %.2f %.2f\n", next_scale_vec.x, next_scale_vec.y, next_scale_vec.z);
-	printf("xxxx :: %s \n", id);
+	// printf("%.2f %.2f %.2f\n", scale_vec.x, scale_vec.y, scale_vec.z);
+	// printf("%.2f %.2f %.2f\n", next_scale_vec.x, next_scale_vec.y, next_scale_vec.z);
+	// printf("xxxx :: %s \n", id);
 	scale_vec = next_scale_vec;	
 	rotation_vec = next_rotation_vec;
 	
