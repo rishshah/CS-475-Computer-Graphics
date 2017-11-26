@@ -60,7 +60,7 @@ void Scene::load_new_model(std::string model_filename, std::string id, glm::vec3
  *
  * @params 	   interpolation factor to be multiplied in every draw call
  */
-void Scene::draw(double interpolation_factor) {
+void Scene::draw(float interpolation_factor) {
 	glm::mat4 translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos + interpolation_factor * (next_xpos - xpos), ypos + interpolation_factor * (next_ypos - ypos), zpos + interpolation_factor * (next_zpos - zpos)));
 	
 	glm::mat4 rotation_mtx_x = glm::rotate( glm::mat4(1.0f), glm::radians(float(rotation_vec.x + interpolation_factor * (next_rotation_vec.x - rotation_vec.x))), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -158,6 +158,7 @@ void Scene::save_keyframe(int frame_num) {
 		return;
 	}
 
+	// fprintf(fp, "Keyframe_no cam_Tx cam_Ty cam_Tz cam_Rx cam_Ry cam_Rz ");
 	fprintf(fp, "%d ", frame_num);
 	
 	fprintf(fp, "%.2f ", xpos);
@@ -168,7 +169,7 @@ void Scene::save_keyframe(int frame_num) {
 	fprintf(fp, "%.2f ", rotation_vec.y);
 	fprintf(fp, "%.2f ", rotation_vec.z);
 
-	for (int i = 1; i < model_list.size(); ++i) {
+	for (int i = 0; i < model_list.size(); ++i) {
 		model_list[i]->save_keyframe_hm(fp);
 	}
 	fprintf(fp, "\n");
@@ -219,7 +220,7 @@ void Scene::play(GLFWwindow* window) {
 	}
 	while (fgetc(fp) != '\n');
 	int frane_num = 0;
-	double super_init_timer = glfwGetTime();
+	float super_init_timer = glfwGetTime();
 	while (fscanf(fp, "%d ", &next_frame_num) != EOF) {
 		
 		fscanf(fp, "%f ", &next_xpos);
@@ -230,15 +231,15 @@ void Scene::play(GLFWwindow* window) {
 		fscanf(fp, "%f ", &next_rotation_vec.y);
 		fscanf(fp, "%f ", &next_rotation_vec.z);
 		
-		for (int i = 1; i < model_list.size(); ++i) {
+		for (int i = 0; i < model_list.size(); ++i) {
 			model_list[i]->load_next_keyframe_hm(fp);
 		}
 
-		double current_frame_time = current_frame_num / FPS ;
-		double next_frame_time = next_frame_num / FPS ;
+		float current_frame_time = current_frame_num / FPS ;
+		float next_frame_time = next_frame_num / FPS ;
 		
-		double init_timer = glfwGetTime();
-		double curr_timer = init_timer;
+		float init_timer = glfwGetTime();
+		float curr_timer = init_timer;
 
 		while (curr_timer - init_timer <= next_frame_time - current_frame_time) {
 			

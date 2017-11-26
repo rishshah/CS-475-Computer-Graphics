@@ -19,9 +19,9 @@ HeirarchicalModel::HeirarchicalModel() {
  * @param scale_vec initial scaling vector
  * @param translation_vec initial positioning
  */
-HeirarchicalModel::HeirarchicalModel(std::string id_str, glm::vec3 scale_vec, glm::vec3 translation_vec) {
+HeirarchicalModel::HeirarchicalModel(std::string id_str, glm::vec3 scale_vector, glm::vec3 translation_vec) {
 	hm_id = id_str;
-	scaling_matrix = glm::scale(glm::mat4(1.0f), scale_vec);
+	scale_vec = next_scale_vec = scale_vector;
 	xpos = next_xpos = translation_vec.x;
 	ypos = next_ypos = translation_vec.y;
 	zpos = next_zpos = translation_vec.z;
@@ -40,8 +40,9 @@ std::string HeirarchicalModel::get_id() {
  * @param tpt third person transform (Camera movement)
  * @param interpolation_factor between current and next frame 
  */
-void HeirarchicalModel::draw_hm(OpenglParams* params, int light_flag, glm::mat4 projection_transform, glm::mat4 tpt, double interpolation_factor) {
+void HeirarchicalModel::draw_hm(OpenglParams* params, int light_flag, glm::mat4 projection_transform, glm::mat4 tpt, float interpolation_factor) {
 	glm::mat4 translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos + interpolation_factor * (next_xpos - xpos), ypos + interpolation_factor * (next_ypos - ypos), zpos + interpolation_factor * (next_zpos - zpos)));
+	glm::mat4 scaling_matrix = glm::scale(glm::mat4(1.0f), scale_vec + interpolation_factor * (next_scale_vec - scale_vec));
 	draw(params, light_flag, glm::mat4(1.0f), projection_transform, tpt, tpt * translation_matrix * scaling_matrix, interpolation_factor);
 }
 
@@ -51,9 +52,22 @@ void HeirarchicalModel::draw_hm(OpenglParams* params, int light_flag, glm::mat4 
  * @param fp keyframe file pointer
  */
 void HeirarchicalModel::save_keyframe_hm(FILE* fp) {
+	// fprintf(fp, "%s~Tx ", hm_id.c_str());
+	// fprintf(fp, "%s~Ty ", hm_id.c_str());
+	// fprintf(fp, "%s~Tz ", hm_id.c_str());
+	
+	// fprintf(fp, "%s~Sx ", hm_id.c_str());
+	// fprintf(fp, "%s~Sy ", hm_id.c_str());
+	// fprintf(fp, "%s~Sz ", hm_id.c_str());
+	
 	fprintf(fp, "%.2f ", xpos);
 	fprintf(fp, "%.2f ", ypos);
 	fprintf(fp, "%.2f ", zpos);
+	
+	fprintf(fp, "%.2f ", scale_vec.x);
+	fprintf(fp, "%.2f ", scale_vec.y);
+	fprintf(fp, "%.2f ", scale_vec.z);
+	
 	save_keyframe(fp);
 }
 
@@ -67,9 +81,15 @@ void HeirarchicalModel::load_next_keyframe_hm(FILE* fp) {
 	ypos = next_ypos;
 	zpos = next_zpos;
 
+	scale_vec = next_scale_vec;
+
 	fscanf(fp, "%f ", &next_xpos);
 	fscanf(fp, "%f ", &next_ypos);
 	fscanf(fp, "%f ", &next_zpos);
+
+	fscanf(fp, "%f ", &next_scale_vec.x);
+	fscanf(fp, "%f ", &next_scale_vec.y);
+	fscanf(fp, "%f ", &next_scale_vec.z);
 
 	load_next_keyframe(fp);
 }

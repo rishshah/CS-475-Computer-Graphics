@@ -14,14 +14,14 @@ private:
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 	float next_xpos = 0.0, next_ypos = 0.0, next_zpos = 0.0;
 
-	glm::mat4 scaling_matrix = glm::mat4(1.0f);
+	glm::vec3 scale_vec, next_scale_vec;
 	std::string hm_id;
 
 public:
 	std::string get_id();
 	HeirarchicalModel();
 	HeirarchicalModel(std::string id, glm::vec3 scale_vec, glm::vec3 translation_vec);
-	void draw_hm(OpenglParams* params, int, glm::mat4, glm::mat4, double);
+	void draw_hm(OpenglParams* params, int, glm::mat4, glm::mat4, float);
 	void save_keyframe_hm(FILE* fp);
 	void load_next_keyframe_hm(FILE* fp);
 	void translate(std::vector<bool> key_state_translation);

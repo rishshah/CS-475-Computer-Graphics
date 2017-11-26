@@ -22,6 +22,9 @@ private:
 	glm::vec3 par_translation_vec, self_translation_vec;
 	
 	glm::vec3 rotation_lim_base, rotation_lim_top;
+	
+	glm::vec3 scale_vec, next_scale_vec;
+	glm::vec3 rotation_vec, next_rotation_vec;
 
 	glm::mat4 scale_mtx;
 	
@@ -30,12 +33,11 @@ private:
 	void calc_rotation_mtx();
 
 public:
-	glm::vec3 scale_vec, rotation_vec, next_rotation_vec;
 
 	bool load(std::string id, std::string filename, glm::mat4 scale_mtx);
 	void save_keyframe(FILE* fp);
 	void load_next_keyframe(FILE* fp);
-	void draw(OpenglParams* params, int, glm::mat4, glm::mat4, glm::mat4, glm::mat4, double);
+	void draw(OpenglParams* params, int, glm::mat4, glm::mat4, glm::mat4, glm::mat4, float);
 	Model* find_by_id(std::string id);
 	void rotate(std::vector<bool> key_state_rotation);
 	~Model();

@@ -194,6 +194,16 @@ std::string handle_modelling_callback(std::string model_id, int key) {
 			return "body";
 		}
 	}
+	else if (model_id == "scene") {
+		switch (key) {
+		case GLFW_KEY_1:
+			return "spaceship";
+		case GLFW_KEY_2:
+			return "ball";
+		case GLFW_KEY_3:
+			return "sky";
+		}
+	}
 }
 
 namespace base {
@@ -204,7 +214,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-	
+
 	// Switch to Recode mode
 	else if ( key == GLFW_KEY_R  and action == GLFW_PRESS) {
 		mode = RECORD_MODE;
@@ -237,7 +247,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		}
 	}
 
-	// Third Person View Callbacks	
+	// Third Person View Callbacks
 	else if ( key == GLFW_KEY_UP or key == GLFW_KEY_DOWN or
 	          key == GLFW_KEY_LEFT or key == GLFW_KEY_RIGHT or
 	          key == GLFW_KEY_PAGE_UP or key == GLFW_KEY_PAGE_DOWN) {
@@ -284,6 +294,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			printf("Modelling PHINEAS now!\n");
 		}
 	}
+	//Modelling mode SCENE
+	else if (key == GLFW_KEY_J and action == GLFW_PRESS) {
+		if (mode == RECORD_MODE) {
+			curr_heirarchical_model = scene->find_heirarchical_model_by_id("scene");
+			curr_model = curr_heirarchical_model->find_by_id("body");
+			printf("Modelling SCENE now!\n");
+		}
+	}
+
 	//Model individual parts
 	else if (action == GLFW_PRESS and
 	         (key == GLFW_KEY_0 or
