@@ -24,7 +24,8 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 
 	//scale
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
-	scale_vec = glm::vec3(x, y, z);
+	scale_vec = next_scale_vec = glm::vec3(x, y, z);
+	scale_mtx = glm::scale(glm::mat4(1.0f), scale_vec); 
 
 	//rotation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
@@ -36,8 +37,6 @@ bool Model::load(std::string hm_id, std::string filename, glm::mat4 par_scale_mt
 	rotation_lim_base = glm::vec3(x, y, z);
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
 	rotation_lim_top = glm::vec3(x, y, z);
-
-	scale_mtx = glm::scale(glm::mat4(1.0f), scale_vec);
 
 	//par_translation
 	fscanf(fp_input, "%f %f %f", &x, &y, &z);
@@ -127,7 +126,7 @@ void Model::assignBuffer() {
  * @param half_third_person 	Only camera movements matrix
  * @param third_person_transform camera movements * heirarchial initial setup matrix
  */
-void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_transform, glm::mat4 projection_transform, glm::mat4 half_third_person, glm::mat4 third_person_transform, double interpolation_factor) {
+void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_transform, glm::mat4 projection_transform, glm::mat4 half_third_person, glm::mat4 third_person_transform, float interpolation_factor) {
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -145,6 +144,7 @@ void Model::draw(OpenglParams* params, int light_flag, glm::mat4 par_final_trans
 	glm::mat4 rotation_mtx_z = glm::rotate( glm::mat4(1.0f), glm::radians(float(rotation_vec.z + interpolation_factor * (next_rotation_vec.z - rotation_vec.z))), glm::vec3(0.0f, 0.0f, 1.0f));
 	glm::mat4 rotation_matrix = rotation_mtx_z * rotation_mtx_y * rotation_mtx_x;
 
+	scale_mtx = glm::scale(glm::mat4(1.0f), scale_vec + interpolation_factor * (next_scale_vec - scale_vec));
 
 	glm::mat4 modelling_transform = par_translation_transform  * rotation_matrix * glm::inverse(self_translation_transform);
 	glm::mat4 temp_matrix = projection_transform * third_person_transform * par_final_transform *  modelling_transform * scale_mtx;
@@ -224,10 +224,19 @@ void Model::rotate(std::vector<bool> key_state_rotation) {
  * @param fp keyframe file pointer
  */
 void Model::load_next_keyframe(FILE* fp) {
+	// printf("%.2f %.2f %.2f\n", scale_vec.x, scale_vec.y, scale_vec.z);
+	// printf("%.2f %.2f %.2f\n", next_scale_vec.x, next_scale_vec.y, next_scale_vec.z);
+	// printf("xxxx :: %s \n", id);
+	scale_vec = next_scale_vec;	
 	rotation_vec = next_rotation_vec;
+	
 	fscanf(fp, "%f ", &next_rotation_vec.x);
 	fscanf(fp, "%f ", &next_rotation_vec.y);
 	fscanf(fp, "%f ", &next_rotation_vec.z);
+
+	fscanf(fp, "%f ", &next_scale_vec.x);
+	fscanf(fp, "%f ", &next_scale_vec.y);
+	fscanf(fp, "%f ", &next_scale_vec.z);
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
 		child_model_list[i]->load_next_keyframe(fp);
@@ -240,9 +249,22 @@ void Model::load_next_keyframe(FILE* fp) {
  * @param fp keyframe file pointer
  */
 void Model::save_keyframe(FILE* fp) {
+	// fprintf(fp, "%s-Rx ", id);
+	// fprintf(fp, "%s-Ry ", id);
+	// fprintf(fp, "%s-Rz ", id);
+	
+	// fprintf(fp, "%s-Sx ", id);
+	// fprintf(fp, "%s-Sy ", id);
+	// fprintf(fp, "%s-Sz ", id);
+
 	fprintf(fp, "%.2f ", rotation_vec.x);
 	fprintf(fp, "%.2f ", rotation_vec.y);
 	fprintf(fp, "%.2f ", rotation_vec.z);
+
+	fprintf(fp, "%.2f ", scale_vec.x);
+	fprintf(fp, "%.2f ", scale_vec.y);
+	fprintf(fp, "%.2f ", scale_vec.z);
+
 
 	for (int i = 0; i < child_model_list.size(); ++i) {
 		child_model_list[i]->save_keyframe(fp);

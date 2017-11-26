@@ -80,7 +80,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     //! Create a windowed mode window and its OpenGL context
-    window = glfwCreateWindow(700, 700, "CS475 Assignment 4: Animation", NULL, NULL);
+    window = glfwCreateWindow(900, 700, "CS475 Assignment 4: Animation", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

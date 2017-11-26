@@ -42,7 +42,7 @@ public:
 	Scene();
 	~Scene();
 	void load_new_model(std::string filename, std::string id, glm::vec3 scale_vec, glm::vec3 translation_vec);
-	void draw(double interpolation_factor); 
+	void draw(float interpolation_factor); 
 	HeirarchicalModel* find_heirarchical_model_by_id(std::string id);
 	void rotate(std::vector<bool> key_state_rotation);
 	void translate(std::vector<bool> key_state_translation);
