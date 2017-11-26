@@ -148,6 +148,8 @@ void translation_callback(int key, int action) {
 std::string handle_modelling_callback(std::string model_id, int key) {
 	if (model_id == "perry") {
 		switch (key) {
+		case GLFW_KEY_0:
+			return "face";
 		case GLFW_KEY_1:
 			return "eye_ball_left";
 		case GLFW_KEY_2:
