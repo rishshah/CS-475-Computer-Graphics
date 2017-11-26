@@ -21,7 +21,7 @@ $(BIN): $(OBJS)
 
 
 video:
-	ffmpeg -r 24 -start_number 0 -i ./animation/frames/out%d.tga -b:v 16384k  -vcodec libx264 -r 60 ./animation/video/animation.avi
+	ffmpeg -r 60 -start_number 0 -i ./animation/frames/out%d.tga -b:v 16384k  -vcodec libx264 -r 60 ./animation/video/animation.avi
 
 report:  
 	doxygen config_file
