@@ -194,6 +194,7 @@ std::string handle_modelling_callback(std::string model_id, int key) {
 			return "body";
 		}
 	}
+	return "NULL";
 }
 
 namespace base {
@@ -316,6 +317,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	        ) {
 		if (mode == RECORD_MODE and curr_heirarchical_model != NULL) {
 			std::string id = handle_modelling_callback(curr_heirarchical_model->get_id(), key);
+			if(id == "NULL"){
+				printf("Part selection failed! Retry again...\n");
+			}
 			curr_model = curr_heirarchical_model->find_by_id(id);
 			if (curr_model != NULL) {
 				printf("Modelling %s now!\n", id.c_str());
