@@ -40,6 +40,7 @@ public:
 	void draw(OpenglParams* params, int, glm::mat4, glm::mat4, glm::mat4, glm::mat4, float);
 	Model* find_by_id(std::string id);
 	void rotate(std::vector<bool> key_state_rotation);
+	void reload_last_keyframe();
 	~Model();
 };
 #endif

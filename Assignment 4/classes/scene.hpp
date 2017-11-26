@@ -14,7 +14,7 @@ class Scene {
 private:
 	
 	// Translation Parameters 
-	const float TRANS_DELTA = 0.2;
+	const float TRANS_DELTA = 0.1;
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 	float next_xpos = 0.0, next_ypos = 0.0, next_zpos = 0.0;
 	// Rotation Parameters

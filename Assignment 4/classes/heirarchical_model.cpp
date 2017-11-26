@@ -12,6 +12,15 @@
 HeirarchicalModel::HeirarchicalModel() {
 }
 
+void HeirarchicalModel::reload_last_keyframe_hm(){
+	xpos = next_xpos;
+	ypos = next_ypos;
+	zpos = next_zpos;
+
+	scale_vec = next_scale_vec;
+
+	reload_last_keyframe();
+}
 /**
  * @brief Initialize heirarchical model
  * 
