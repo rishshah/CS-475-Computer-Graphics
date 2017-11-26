@@ -194,16 +194,6 @@ std::string handle_modelling_callback(std::string model_id, int key) {
 			return "body";
 		}
 	}
-	else if (model_id == "scene") {
-		switch (key) {
-		case GLFW_KEY_1:
-			return "spaceship";
-		case GLFW_KEY_2:
-			return "ball";
-		case GLFW_KEY_3:
-			return "sky";
-		}
-	}
 }
 
 namespace base {
@@ -294,12 +284,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			printf("Modelling PHINEAS now!\n");
 		}
 	}
-	//Modelling mode SCENE
+	//Modelling mode BALL
 	else if (key == GLFW_KEY_J and action == GLFW_PRESS) {
 		if (mode == RECORD_MODE) {
-			curr_heirarchical_model = scene->find_heirarchical_model_by_id("scene");
+			curr_heirarchical_model = scene->find_heirarchical_model_by_id("ball");
 			curr_model = curr_heirarchical_model->find_by_id("body");
-			printf("Modelling SCENE now!\n");
+			printf("Modelling BALL now!\n");
+		}
+	}
+	//Modelling mode SPACESHIP
+	else if (key == GLFW_KEY_M and action == GLFW_PRESS) {
+		if (mode == RECORD_MODE) {
+			curr_heirarchical_model = scene->find_heirarchical_model_by_id("spaceship");
+			curr_model = curr_heirarchical_model->find_by_id("body");
+			printf("Modelling SPACESHIP now!\n");
 		}
 	}
 
