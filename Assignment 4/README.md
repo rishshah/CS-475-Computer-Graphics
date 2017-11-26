@@ -14,8 +14,8 @@
 ### Keyboard callbacks
 
 - `[ P ]` -> switch to playback mode
-- `[ R ]` -> switch to record mode
-- `[ V ]` -> switch to view mode ( Camera Part models saved in this state )
+- `[ R ]` -> switch to record mode ( Saving frames in this mode )
+- `[ V ]` -> switch to view mode ( Camera Moving in this moode )
 
 #### Pan(View) mode
 - Just see things (and adjust camera) from all angles by moving third person camera about its center (but axes of rotation are global axes)
@@ -34,6 +34,8 @@
 - `[ Q ]` -> Append and save current state into a keyframe
 - `[ H ]` -> switch to modelling mode {"phineas"}
 - `[ N ]` -> switch to modelling mode {"perry"}
+- `[ J ]` -> switch to modelling mode {"ball"}
+- `[ M ]` -> switch to modelling mode {"spaceship"}
 - `[ L ]` -> toggle spotlight from sun shaped sphere
 
 ##### Modelling mode for rotating parts about their joins
@@ -51,6 +53,7 @@
 - `[7]` -> back_left_leg
 - `[8]` -> back_right_leg
 - `[9]` -> body
+- `[0]` -> face
 
 ###### Choose Phineas parts to model
 - `[1]` -> face
@@ -77,22 +80,15 @@
 - Saving framebuffer data
 - Finding commands to join movie
 - Incorporating camera movements and fixed rotation of other entities
+- Explicitly creating keyframes
+- Playing the animation
 
 ### Story Plot
 ``` Phineas doing timepass (walking or ball jugling)
 	Spaceship comes into picture 
 	It tries to take phineas and perry puts on hat to save phineas
 	Phineas is still unaware of this because as he turns around perry still acts as platipus
-	Shapeship future?? ```
-
-#### Extra features required
-- Spaceship
-- Ball
-- Sounds
-
-### ToDo
-- Explicitly creating keyframes
-- Playing the animation
+	Shapeship crashes and phineas see perry's identity ```
 
 ---
 
@@ -104,12 +100,16 @@
 
 ### Testing
 - `./executable`
-- Open keyframe file in csv
+- press P
+- `make video`
+- `vlc ./animation.avi`
+
 
 ### Video
 - requires installed vlc 
+- requires installed ffmpeg 
 - `make video`
-- `vlc ./animation/video/output.avi`
+- This takes around 30sec to generate a 30sec video
 
 ### Clean up
 - `make clean`

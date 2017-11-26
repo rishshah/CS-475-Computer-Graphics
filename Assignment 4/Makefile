@@ -21,7 +21,8 @@ $(BIN): $(OBJS)
 
 
 video:
-	ffmpeg -r 60 -start_number 0 -i ./animation/frames/out%d.tga -b:v 16384k  -vcodec libx264 -r 60 ./animation/video/animation.avi
+	ffmpeg -r 60 -start_number 0 -i ./animation/frames/out%d.tga -b:v 16384k  -vcodec libx264 -r 60 ./animation/video/temp.avi
+	ffmpeg -i ./animation/video/temp.avi -i ./animation/video/animation_audio.mp3  -c:v copy -c:a aac -strict experimental animation.avi
 
 report:  
 	doxygen config_file
@@ -30,4 +31,5 @@ clean:
 	rm -f $(OBJS) $(BIN)
 	rm -rf html/
 	rm -f ./animation/frames/out*.tga
-	rm -f ./animation/video/animation.avi
+	rm -f ./animation/video/temp.avi
+	rm -f ./animation.avi
