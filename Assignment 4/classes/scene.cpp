@@ -171,6 +171,7 @@ void Scene::save_keyframe(int frame_num) {
 	fprintf(fp, "%d ", light_flag);
 
 	for (int i = 1; i < model_list.size(); ++i) {
+		printf("NAME %s\n", model_list[i]->get_id().c_str());
 		model_list[i]->save_keyframe_hm(fp);
 	}
 	fprintf(fp, "\n");
@@ -179,13 +180,13 @@ void Scene::save_keyframe(int frame_num) {
 	return;
 }
 
-/**
+/*
  * @brief save current animation frame in out{{frame_num}}.tga
  * 
  * @param frame_num frame number to save (deciding image name)
  * @param windowWidth window width
  * @param windowHeight window height
- */
+*/ 
 void Scene::save_animation_frame(int frame_num, int windowWidth, int windowHeight) {
 	FILE *fp_out = fopen((IMAGES_FILE_NAME + "out" + std::to_string(frame_num) + ".tga").c_str(), "wb");
 	if (fp_out == NULL) {
@@ -237,9 +238,9 @@ void Scene::play(GLFWwindow* window) {
 		for (int i = 1; i < model_list.size(); ++i) {
 			model_list[i]->load_next_keyframe_hm(fp);
 		}
-
-		float current_frame_time = current_frame_num / FPS ;
-		float next_frame_time = next_frame_num / FPS ;
+		// printf("C :%d, N :%d\n", current_frame_num, next_frame_num);
+		float current_frame_time = float(current_frame_num) / FPS ;
+		float next_frame_time = float(next_frame_num) / FPS ;
 		
 		float init_timer = glfwGetTime();
 		float curr_timer = init_timer;
@@ -247,7 +248,7 @@ void Scene::play(GLFWwindow* window) {
 		while (curr_timer - init_timer <= next_frame_time - current_frame_time) {
 			
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			// printf("%f %f\n", (curr_timer - init_timer) / (next_frame_time - current_frame_time), glfwGetTime() - super_init_timer);
+			// printf("%f %f %f %f\n", (curr_timer - init_timer) / (next_frame_time - current_frame_time), (curr_timer - init_timer),  glfwGetTime() - super_init_timer);
 			draw((curr_timer - init_timer) / (next_frame_time - current_frame_time));
 			
 			save_animation_frame(frane_num++, width, height);
@@ -261,9 +262,12 @@ void Scene::play(GLFWwindow* window) {
 		ypos = next_ypos;
 		zpos = next_zpos;
 		rotation_vec = next_rotation_vec;
-		// printf("Next frame %d \n", next_frame_num);
+		printf("Next frame %d \n", next_frame_num);
 	}
 	printf("\n");
-
+	for (int i = 1; i < model_list.size(); ++i) {
+		model_list[i]->reload_last_keyframe_hm();
+	}
+	
 	fclose(fp);
 }

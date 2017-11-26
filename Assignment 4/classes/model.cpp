@@ -243,6 +243,15 @@ void Model::load_next_keyframe(FILE* fp) {
 	}
 }
 
+
+void Model::reload_last_keyframe(){
+	scale_vec = next_scale_vec;	
+	rotation_vec = next_rotation_vec;
+	
+	for (int i = 0; i < child_model_list.size(); ++i) {
+		child_model_list[i]->reload_last_keyframe();
+	}
+}
 /**
  * @brief save current keyframe part for this model
  * 

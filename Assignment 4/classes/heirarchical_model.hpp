@@ -10,7 +10,7 @@
  */
 class HeirarchicalModel : public Model {
 private:
-	const float TRANS_DELTA = 0.05;
+	const float TRANS_DELTA = 0.02;
 	float xpos = 0.0, ypos = 0.0, zpos = 0.0;
 	float next_xpos = 0.0, next_ypos = 0.0, next_zpos = 0.0;
 
@@ -24,6 +24,7 @@ public:
 	void draw_hm(OpenglParams* params, int, glm::mat4, glm::mat4, float);
 	void save_keyframe_hm(FILE* fp);
 	void load_next_keyframe_hm(FILE* fp);
+	void reload_last_keyframe_hm();	
 	void translate(std::vector<bool> key_state_translation);
 };
 
